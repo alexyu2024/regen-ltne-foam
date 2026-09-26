@@ -47,8 +47,8 @@ Or by hand: `cases/<level>_*/Allrun`, `cases/<level>_*/Allclean`. `tools/verify.
 | level | case | status |
 |---|---|---|
 | L0 build + smoke | `cases/L0_smoke` | PASS (8/8, merged) |
-| L1 closed tube, piston | `cases/L1_closedTube` | 15/15 PASS locally (`results/L1`); in review |
-| L2 porous plug, steady | | not started |
+| L1 closed tube, piston | `cases/L1_closedTube` | PASS (15/15, merged) |
+| L2 porous plug, steady | `cases/L2_porousPlug` | FAIL 12/16 (dp 2.2-3.7 % low at 1 mm; first-order interface error, see `results/L2`) |
 | L3 LTNE relaxation | | not started |
 | L4 LTNE with flow | | not started |
 | L5 regenerator slice | | not started |
