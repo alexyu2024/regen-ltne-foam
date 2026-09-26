@@ -89,8 +89,18 @@ const volScalarField epsS("epsS", max(1 - eps, dimensionedScalar(dimless, 1e-6))
 // Solid heat capacity per unit total volume [J/m3/K]
 const volScalarField CS("CS", epsS*rhoS*CpS);
 
-// Solid effective conductivity on faces (harmonic: series conduction)
-const surfaceScalarField kSf("kSf", harmonic(mesh).interpolate(epsS*kS));
+// Solid effective conductivity on faces (harmonic: series conduction; the
+// harmonic mean is undefined for kS = 0, which then means no conduction)
+surfaceScalarField kSf
+(
+    IOobject("kSf", runTime.timeName(), mesh),
+    mesh,
+    dimensionedScalar(kS.dimensions(), Zero)
+);
+if (kS.value() > 0)
+{
+    kSf = harmonic(mesh).interpolate(epsS*kS);
+}
 
 Info<< "Reading field Ts\n" << endl;
 autoPtr<volScalarField> TsPtr;

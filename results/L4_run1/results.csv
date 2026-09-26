@@ -1,0 +1,9 @@
+metric,value,source
+final_time,not read,results/L4/log.ltneFoam (not found)
+out_err,not read,results/L4/outletT.dat (not found)
+t_half,not read,results/L4/outletT.dat (not found)
+t_half_exact,not read,results/L4/outletT.dat (not found)
+Es_err,not read,results/L4/ltne.dat (not found)
+energy_err,not read,results/L4/ltne.dat (not found)
+fatal_or_nan_count,0,results/L4/log.*:all lines of all logs
+allclean_leftover,0,results/L4/log.allclean-check:empty file
