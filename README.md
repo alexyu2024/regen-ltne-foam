@@ -59,3 +59,24 @@ Or by hand: `cases/<level>_*/Allrun`, `cases/<level>_*/Allclean`. `tools/verify.
 | L3 LTNE relaxation | `cases/L3_ltneRelax` | PASS (10/10, merged) |
 | L4 LTNE with flow | `cases/L4_singleBlow` | 6/6 PASS locally (`results/L4`; first run crashed, `results/L4_run1`); in review |
 | L5 regenerator slice | | not started |
+
+## License and rights
+
+Copyright (C) 2026 Qiming Yu <qimingyu.alex@gmail.com>
+Enterprise Research Fellow, University of Southampton.
+
+This program is free software: you can redistribute it and/or modify it under the terms of the
+GNU General Public License as published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version. It is distributed in the hope that it will be
+useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See [LICENSE](LICENSE).
+
+This offering is not approved or endorsed by OpenCFD Limited, producer and distributor of the
+OpenFOAM software via www.openfoam.com, and owner of the OPENFOAM(R) and OpenCFD(R) trade marks.
+`ltneFoam` is an independent solver built on the OpenFOAM(R) libraries (ESI / openfoam.com
+distribution).
+
+The solver was developed with AI assistance (Anthropic Claude) under the author's direction;
+every acceptance level is backed by the recorded runs and the CI in this repository. The
+verification cases use published, public-domain benchmarks only. If you use this solver in
+academic work, please cite this repository (a paper reference will be added when available).
