@@ -1,0 +1,27 @@
+metric,value,source
+a_final_time,0.06,results/fix_L1/a.log.ltneFoam:42060
+a_p1_rel_err,1.902698461675456e-06,results/fix_L1/a.ltne.dat:2003-3002
+a_p1_iso_rel_err,2.0138022142068834e-06,results/fix_L1/a.ltne.dat:2003-3002
+a_mass_cycle,3.583073978335452e-13,"results/fix_L1/a.ltne.dat:2002,3002"
+a_energy_cycle,3.375140187211796e-06,"results/fix_L1/a.ltne.dat:2002,3002,2003-3002"
+b_final_time,0.06,results/fix_L1/b.log.ltneFoam:10560
+b_p1_rel_err,2.766943803689248e-05,results/fix_L1/b.ltne.dat:503-752
+b_p1_iso_rel_err,2.778057529495559e-05,results/fix_L1/b.ltne.dat:503-752
+b_mass_cycle,5.639593751412964e-13,"results/fix_L1/b.ltne.dat:502,752"
+b_energy_cycle,1.3504788109134797e-05,"results/fix_L1/b.ltne.dat:502,752,503-752"
+c_final_time,0.06,results/fix_L1/c.log.ltneFoam:2160
+c_p1_rel_err,0.0006021811168284152,results/fix_L1/c.ltne.dat:103-152
+c_p1_iso_rel_err,0.0006022930532443294,results/fix_L1/c.ltne.dat:103-152
+c_mass_cycle,4.583463165722963e-12,"results/fix_L1/c.ltne.dat:102,152"
+c_energy_cycle,6.771361427398768e-05,"results/fix_L1/c.ltne.dat:102,152,103-152"
+d_final_time,0.06,results/fix_L1/d.log.ltneFoam:420060
+d_p1_rel_err,6.358580680565495e-05,results/fix_L1/d.ltne.dat:20003-30002
+d_p1_iso_rel_err,2.573646060488599e-06,results/fix_L1/d.ltne.dat:20003-30002
+d_mass_cycle,1.4019806255833735e-13,"results/fix_L1/d.ltne.dat:20002,30002"
+d_energy_cycle,8.236835544326396e-06,"results/fix_L1/d.ltne.dat:20002,30002,20003-30002"
+d_hmin_mm,0.0511999999999992,results/fix_L1/d.ltne.dat:20003-30002
+d_hmax_mm,0.148800000000001,results/fix_L1/d.ltne.dat:20003-30002
+d_h_ratio,2.906250000000065,results/fix_L1/d.ltne.dat:20003-30002
+c_p1_vs_a,0.0005999379609196165,"results/fix_L1/c.ltne.dat:with a.ltne.dat, rows as c_p1_rel_err and a_p1_rel_err"
+fatal_or_nan_count,0,results/fix_L1/log.*:all lines of all logs
+allclean_leftover,0,results/fix_L1/log.allclean-check:empty file

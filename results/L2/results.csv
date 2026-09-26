@@ -1,23 +1,23 @@
 metric,value,source
-v1_final_time,0.05,results/L2/v1.log.ltneFoam:71277
-v1_dp,0.39220599993132055,results/L2/v1.inletP.dat:105 minus v1.outletP.dat:105
-v1_rel_err,0.02244065202199519,"results/L2/v1.inletP.dat:105 with v1.outletP.dat:105, v1.inletFlux.dat:105, v1.porousRho.dat:104"
-v1_ratio,0.008063681598723617,results/L2/v1.porousRho.dat:104 with v1.inletFlux.dat:105
-v1_steady,2.549699940002147e-06,"results/L2/v1.inletP.dat:95,105 with v1.outletP.dat:95,105"
-v2_final_time,0.05,results/L2/v2.log.ltneFoam:71277
-v2_dp,4.20278299995698,results/L2/v2.inletP.dat:105 minus v2.outletP.dat:105
-v2_rel_err,0.02282258515027824,"results/L2/v2.inletP.dat:105 with v2.outletP.dat:105, v2.inletFlux.dat:105, v2.porousRho.dat:104"
-v2_ratio,0.08063696962359296,results/L2/v2.porousRho.dat:104 with v2.inletFlux.dat:105
-v2_steady,1.1896969395084235e-06,"results/L2/v2.inletP.dat:95,105 with v2.outletP.dat:95,105"
-v3_final_time,0.05,results/L2/v3.log.ltneFoam:71277
-v3_dp,69.96239200001583,results/L2/v3.inletP.dat:105 minus v3.outletP.dat:105
-v3_rel_err,0.026903305392853905,"results/L2/v3.inletP.dat:105 with v3.outletP.dat:105, v3.inletFlux.dat:105, v3.porousRho.dat:104"
-v3_ratio,0.8063962094585426,results/L2/v3.porousRho.dat:104 with v3.inletFlux.dat:105
-v3_steady,1.8581553055548573e-07,"results/L2/v3.inletP.dat:95,105 with v3.outletP.dat:95,105"
-v4_final_time,0.05,results/L2/v4.log.ltneFoam:71277
-v4_dp,3484.6916070000734,results/L2/v4.inletP.dat:105 minus v4.outletP.dat:105
-v4_rel_err,0.036529972112332776,"results/L2/v4.inletP.dat:105 with v4.outletP.dat:105, v4.inletFlux.dat:105, v4.porousRho.dat:104"
-v4_ratio,8.07772973645226,results/L2/v4.porousRho.dat:104 with v4.inletFlux.dat:105
-v4_steady,0.0002231023825906778,"results/L2/v4.inletP.dat:95,105 with v4.outletP.dat:95,105"
+v1_final_time,0.05,results/L2/v1.log.ltneFoam:71279
+v1_dp,0.4012090000323951,results/L2/v1.inletP.dat:105 minus v1.outletP.dat:105
+v1_rel_err,1.0012468423248322e-06,"results/L2/v1.inletP.dat:105 with v1.outletP.dat:105, v1.inletFlux.dat:105, v1.porousRho.dat:104"
+v1_ratio,0.008063681635022614,results/L2/v1.porousRho.dat:104 with v1.inletFlux.dat:105
+v1_steady,0.0,"results/L2/v1.inletP.dat:95,105 with v1.outletP.dat:95,105"
+v2_final_time,0.05,results/L2/v2.log.ltneFoam:71279
+v2_dp,4.3009369999635965,results/L2/v2.inletP.dat:105 minus v2.outletP.dat:105
+v2_rel_err,1.106048323595843e-06,"results/L2/v2.inletP.dat:105 with v2.outletP.dat:105, v2.inletFlux.dat:105, v2.porousRho.dat:104"
+v2_ratio,0.08063697358103013,results/L2/v2.porousRho.dat:104 with v2.inletFlux.dat:105
+v2_steady,0.0,"results/L2/v2.inletP.dat:95,105 with v2.outletP.dat:95,105"
+v3_final_time,0.05,results/L2/v3.log.ltneFoam:71279
+v3_dp,71.89552600006573,results/L2/v3.inletP.dat:105 minus v3.outletP.dat:105
+v3_rel_err,1.6494313372028557e-05,"results/L2/v3.inletP.dat:105 with v3.outletP.dat:105, v3.inletFlux.dat:105, v3.porousRho.dat:104"
+v3_ratio,0.8063969888660804,results/L2/v3.porousRho.dat:104 with v3.inletFlux.dat:105
+v3_steady,1.5299771127306808e-07,"results/L2/v3.inletP.dat:95,105 with v3.outletP.dat:95,105"
+v4_final_time,0.05,results/L2/v4.log.ltneFoam:71279
+v4_dp,3615.766151000047,results/L2/v4.inletP.dat:105 minus v4.outletP.dat:105
+v4_rel_err,0.0003833087411541092,"results/L2/v4.inletP.dat:105 with v4.outletP.dat:105, v4.inletFlux.dat:105, v4.porousRho.dat:104"
+v4_ratio,8.078258201515075,results/L2/v4.porousRho.dat:104 with v4.inletFlux.dat:105
+v4_steady,0.000223507817210639,"results/L2/v4.inletP.dat:95,105 with v4.outletP.dat:95,105"
 fatal_or_nan_count,0,results/L2/log.*:all lines of all logs
 allclean_leftover,0,results/L2/log.allclean-check:empty file
