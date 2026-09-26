@@ -44,7 +44,7 @@ Or by hand: `cases/<level>_*/Allrun`, `cases/<level>_*/Allclean`. `tools/verify.
 
 | level | case | status |
 |---|---|---|
-| L0 build + smoke | `cases/L0_smoke` | in review |
+| L0 build + smoke | `cases/L0_smoke` | 8/8 PASS locally (`results/L0`), CI pending |
 | L1 closed tube, piston | | not started |
 | L2 porous plug, steady | | not started |
 | L3 LTNE relaxation | | not started |
