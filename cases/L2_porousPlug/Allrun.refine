@@ -1,0 +1,48 @@
+#!/bin/sh
+# Diagnostic for the L2 FAIL (not part of the bars): runs v1 (Darcy) and v4
+# (Forchheimer) on 1, 0.5 and 0.25 mm cells, t = 0.02 s, and prints dp against
+# the closed form. Output: log.refine.
+cd "${0%/*}" || exit 1
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions
+
+for res in 1 2 4
+do
+    for u in 0.001 1
+    do
+        d=refine_${res}_$u
+        rm -rf $d
+        mkdir $d
+        cp -r 0.orig constant system $d/
+        (
+            cd $d || exit 1
+            sed -i "s/(40 1 1)/($((40*res)) 1 1)/g; s/(20 1 1)/($((20*res)) 1 1)/" \
+                system/blockMeshDict
+            foamDictionary 0.orig/U -entry boundaryField/inlet/value \
+                -set "uniform ($u 0 0)" > /dev/null
+            foamDictionary system/controlDict -entry endTime -set 0.02 > /dev/null
+            foamDictionary system/controlDict -entry writeInterval -set 0.02 > /dev/null
+            restore0Dir > /dev/null
+            runApplication blockMesh
+            runApplication setFields
+            runApplication ltneFoam
+        )
+    done
+done
+
+python3 - > log.refine <<'PY'
+def last(f):
+    ls = [l for l in open(f) if l.strip() and not l.startswith('#')]
+    return len(open(f).readlines()), float(ls[-1].split()[1])
+print('cells_in_plug u_in dp dp_closed_form rel_err  (sources: refine_*/postProcessing/*/0/*.dat last row)')
+for res in (1, 2, 4):
+    for u in ('0.001', '1'):
+        d = f'refine_{res}_{u}/postProcessing/'
+        _, pi = last(d + 'inletP/0/surfaceFieldValue.dat')
+        _, po = last(d + 'outletP/0/surfaceFieldValue.dat')
+        _, phi = last(d + 'inletFlux/0/surfaceFieldValue.dat')
+        _, rho = last(d + 'porousRho/0/volFieldValue.dat')
+        v = abs(phi) / 1e-4 / rho
+        cf = 0.02 * (1.99e-5 * 1e9 * v + 1e5 * rho * v * v / 2)
+        print(20 * res, u, f'{pi - po:.6g}', f'{cf:.6g}', f'{(pi - po) / cf - 1:+.5f}')
+PY
+cat log.refine

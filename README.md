@@ -3,7 +3,8 @@
 `ltneFoam`: an OpenFOAM solver for compressible, oscillating (piston-driven) helium flow through porous media with
 local thermal non-equilibrium (LTNE). It is `rhoPimpleFoam` plus porosity-weighted storage terms, a solid-matrix
 energy equation coupled to the gas by `h_sf a_sf (T_s - T_g)`, and a prescribed piston motion. Darcy-Forchheimer
-drag uses the standard `explicitPorositySource`. Reference model: Tew et al. 2006, NASA/TM (Fluent porous-media LTNE).
+drag coefficients are read from the standard `explicitPorositySource` entries and balanced on faces in the pressure
+equation, with the cell velocity reconstructed from face fluxes (`docs/L2_FIX_DESIGN.md`). Reference model: Tew et al. 2006, NASA/TM (Fluent porous-media LTNE).
 Task: `docs/TASK.md`. Acceptance bars: `docs/VERIFICATION.md`.
 
 ## Distribution: OpenFOAM v2512 (openfoam.com, OpenCFD/ESI), apt package `openfoam2512-dev` 2512.0-2
@@ -47,8 +48,8 @@ Or by hand: `cases/<level>_*/Allrun`, `cases/<level>_*/Allclean`. `tools/verify.
 | level | case | status |
 |---|---|---|
 | L0 build + smoke | `cases/L0_smoke` | PASS (8/8, merged) |
-| L1 closed tube, piston | `cases/L1_closedTube` | 15/15 PASS locally (`results/L1`); in review |
-| L2 porous plug, steady | | not started |
+| L1 closed tube, piston | `cases/L1_closedTube` | PASS (15/15, merged) |
+| L2 porous plug, steady | `cases/L2_porousPlug` | 16/16 PASS locally after the face-consistent drag fix (`results/L2`; first run FAIL 12/16 in `results/L2_run1`); in review |
 | L3 LTNE relaxation | | not started |
 | L4 LTNE with flow | | not started |
 | L5 regenerator slice | | not started |

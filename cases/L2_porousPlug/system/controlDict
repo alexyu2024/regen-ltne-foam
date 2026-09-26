@@ -1,0 +1,73 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  regen-ltne-foam, OpenFOAM v2512
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     ltneFoam;
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         0.05;
+deltaT          1e-5;
+writeControl    runTime;
+writeInterval   0.05;
+purgeWrite      0;
+writeFormat     ascii;
+writePrecision  12;
+writeCompression off;
+timeFormat      general;
+timePrecision   8;
+runTimeModifiable false;
+adjustTimeStep  no;
+
+// Keep the log short: no per-solve residual lines
+DebugSwitches
+{
+    SolverPerformance   0;
+}
+
+functions
+{
+    inletP
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        regionType      patch;
+        name            inlet;
+        operation       areaAverage;
+        fields          (p);
+        writeFields     false;
+        writeControl    timeStep;
+        writeInterval   50;
+    }
+    outletP
+    {
+        $inletP;
+        name            outlet;
+    }
+    inletFlux
+    {
+        $inletP;
+        operation       sum;
+        fields          (phi);
+    }
+    porousRho
+    {
+        type            volFieldValue;
+        libs            (fieldFunctionObjects);
+        regionType      cellZone;
+        name            porous;
+        operation       volAverage;
+        fields          (rho);
+        writeFields     false;
+        writeControl    timeStep;
+        writeInterval   50;
+    }
+}

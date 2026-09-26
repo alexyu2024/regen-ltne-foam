@@ -1,0 +1,9 @@
+metric,value,source
+solver_built,1,results/fix_L0/log.build:3
+end_line_count,1,results/fix_L0/log.ltneFoam:44086
+final_time,0.001,results/fix_L0/log.ltneFoam:44043
+fatal_or_nan_count,0,results/fix_L0/log.*:all lines
+p_min,2000000.0,results/fix_L0/fieldMinMax.dat:5-3002 (rows with field p)
+T_min,300.0,results/fix_L0/fieldMinMax.dat:3-3000 (rows with field T)
+Ts_min,300.0,results/fix_L0/fieldMinMax.dat:4-3001 (rows with field Ts)
+allclean_leftover,0,results/fix_L0/log.allclean-check:empty file

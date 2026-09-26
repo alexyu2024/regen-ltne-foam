@@ -92,3 +92,46 @@ steps-per-cycle rows, t in (0.04, 0.06] s):
 | L1.21 | d_hmax_mm | report | 0 | run d: maximum piston-space cell height over the last cycle, mm |
 | L1.22 | d_h_ratio | report | 0 | run d: max / min piston-space cell height over the last cycle |
 | L1.23 | allclean_leftover | == | 0 | files under the case directory that `git status --porcelain --ignored` lists after `Allclean` |
+
+## L2 Porous plug, steady flow
+
+Committed before any L2 case (`cases/L2_porousPlug`) was run.
+
+Setup: helium as in L0 (ideal gas, Cp = 5193 J/kg/K, mu = 1.99e-5 Pa s), 1-D channel x in [0, 0.1] m, 100 cells of
+1 mm, cross-section 1e-4 m2, no mesh motion, no solid energy equation (the gas is adiabatic). Porous plug x in
+[0.04, 0.06] m (L = 0.02 m, 20 cells, porosity 0.7), `explicitPorositySource` DarcyForchheimer, isotropic d = 1e9 1/m2
+(alpha = 1e-9 m2), f = C2 = 1e5 1/m. Inlet x = 0: fixed superficial velocity u_in, T = 300 K. Outlet x = 0.1 m: fixed
+p = 2 MPa. Four runs, u_in = 0.001 (v1), 0.01 (v2), 0.1 (v3) and 1 m/s (v4), each from rest to t = 0.05 s with
+dt = 1e-5 s (acoustic CFL 10).
+
+Definitions (from the run's `postProcessing` function-object files, last written row, t = 0.05 s):
+- dp = area-average p on the inlet patch - area-average p on the outlet patch. The open parts of the channel add
+  only momentum-flux and viscous terms that are below 1e-5 of dp here (1-D, Mach <= 1e-3).
+- G = |sum(phi)| on the inlet patch / 1e-4 m2 (mass flux); rho_p = volume-average rho over the `porous` zone;
+  u = G / rho_p (superficial velocity in the plug).
+- closed form: dp_cf = L (mu / alpha u + C2 rho_p u^2 / 2); rel_err = abs(dp / dp_cf - 1).
+- ratio = (C2 rho_p u / 2) / (mu / alpha), Forchheimer term / Darcy term.
+- steady = abs(dp(0.05) - dp(row nearest 0.045)) / dp(0.05).
+
+| id | metric | op | bar | description |
+|----|--------|----|-----|-------------|
+| L2.1 | v1_final_time | == | 0.05 | run v1 reaches endTime |
+| L2.2 | v2_final_time | == | 0.05 | run v2 reaches endTime |
+| L2.3 | v3_final_time | == | 0.05 | run v3 reaches endTime |
+| L2.4 | v4_final_time | == | 0.05 | run v4 reaches endTime |
+| L2.5 | fatal_or_nan_count | == | 0 | lines matching `FOAM FATAL`, `nan` or `inf` over all logs of all runs |
+| L2.6 | v1_rel_err | <= | 0.01 | run v1: dp against the closed form |
+| L2.7 | v2_rel_err | <= | 0.01 | run v2: dp against the closed form |
+| L2.8 | v3_rel_err | <= | 0.01 | run v3: dp against the closed form |
+| L2.9 | v4_rel_err | <= | 0.01 | run v4: dp against the closed form |
+| L2.10 | v1_ratio | <= | 0.1 | run v1 is in the Darcy regime |
+| L2.11 | v4_ratio | >= | 1 | run v4 is in the Forchheimer regime |
+| L2.12 | v2_ratio | report | 0 | run v2 Forchheimer / Darcy |
+| L2.13 | v3_ratio | report | 0 | run v3 Forchheimer / Darcy |
+| L2.14 | v1_steady | <= | 1e-3 | run v1 steady |
+| L2.15 | v2_steady | <= | 1e-3 | run v2 steady |
+| L2.16 | v3_steady | <= | 1e-3 | run v3 steady |
+| L2.17 | v4_steady | <= | 1e-3 | run v4 steady |
+| L2.18 | v1_dp | report | 0 | run v1 dp, Pa |
+| L2.19 | v4_dp | report | 0 | run v4 dp, Pa |
+| L2.20 | allclean_leftover | == | 0 | files under the case directory that `git status --porcelain --ignored` lists after `Allclean` |

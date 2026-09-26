@@ -25,8 +25,9 @@ Description
 
     eps (field "porosity") is 1 in open gas regions. hA = hsf*asf where
     asf (field "asf", 1/m) is the interfacial area per unit total volume.
-    The Darcy-Forchheimer drag term comes from the standard fvOption
-    explicitPorositySource (DarcyForchheimer model, d = 1/K, f = C2).
+    The Darcy-Forchheimer coefficients (d = 1/K, f = C2) are read from the
+    explicitPorositySource entries of constant/fvOptions and the drag is
+    balanced on faces in the pressure equation (docs/L2_FIX_DESIGN.md).
     Porosity does not appear in the momentum inertia terms (Fluent default).
 
 \*---------------------------------------------------------------------------*/
@@ -62,6 +63,7 @@ int main(int argc, char *argv[])
     #include "createFields.H"
     #include "createFieldRefs.H"
     #include "createLtneFields.H"
+    #include "createPorousDrag.H"
     #include "createRhoUfIfPresent.H"
 
     turbulence->validate();
