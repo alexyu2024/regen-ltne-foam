@@ -1,0 +1,6 @@
+#!/bin/sh
+# Build ltneFoam into $FOAM_USER_APPBIN and libltnePistonMotion into
+# $FOAM_USER_LIBBIN. Requires a sourced OpenFOAM v2512 environment.
+cd "${0%/*}" || exit 1
+wmake libso pistonMotion || exit 1
+wmake ltneFoam || exit 1
