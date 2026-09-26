@@ -1,0 +1,17 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  regen-ltne-foam, OpenFOAM v2512
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      ltneProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+active  true;
+rhoS    7900;       // kg/m3
+CpS     500;        // J/kg/K (run r; Allrun sets 5 for run b)
+kS      15;         // W/m/K
+hsf     1000;       // W/m2/K

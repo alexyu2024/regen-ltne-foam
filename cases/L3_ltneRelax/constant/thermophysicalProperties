@@ -1,0 +1,43 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  regen-ltne-foam, OpenFOAM v2512
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      thermophysicalProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Helium, ideal gas, constant properties at 300 K
+thermoType
+{
+    type            hePsiThermo;
+    mixture         pureMixture;
+    transport       const;
+    thermo          hConst;
+    equationOfState perfectGas;
+    specie          specie;
+    energy          sensibleEnthalpy;
+}
+
+dpdt yes;
+
+mixture
+{
+    specie
+    {
+        molWeight   4.0026;
+    }
+    thermodynamics
+    {
+        Cp          5193;
+        Hf          0;
+    }
+    transport
+    {
+        mu          1.99e-05;
+        Pr          0.667;
+    }
+}

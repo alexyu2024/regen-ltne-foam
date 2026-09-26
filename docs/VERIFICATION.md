@@ -135,3 +135,49 @@ Definitions (from the run's `postProcessing` function-object files, last written
 | L2.18 | v1_dp | report | 0 | run v1 dp, Pa |
 | L2.19 | v4_dp | report | 0 | run v4 dp, Pa |
 | L2.20 | allclean_leftover | == | 0 | files under the case directory that `git status --porcelain --ignored` lists after `Allclean` |
+
+## L3 LTNE relaxation, no flow
+
+Committed before any L3 case (`cases/L3_ltneRelax`) was run.
+
+Setup: closed 1-D block of 10 cells of 1 mm, cross-section 1e-4 m2, all walls adiabatic and closed, no mesh motion,
+no drag entries. Helium as in L0 (Cp = 5193 J/kg/K, M = 4.0026), p0 = 2 MPa, gas T_g0 = 300 K, solid T_s0 = 320 K,
+uniform porosity eps = 0.7, a_sf = 24000 1/m, h_sf = 1000 W/m2/K (hA = 2.4e7 W/m3/K), rho_s = 7900 kg/m3, k_s = 15
+W/m/K. Two runs:
+- r: c_s = 500 J/kg/K (stainless steel). C_s/C_g = 169.
+- b: c_s = 5 J/kg/K, an artificial value chosen so that both temperatures move (C_s/C_g = 1.69).
+
+Exact solution. The gas is at constant density, so C_g = eps rho c_v per unit volume, with c_v = Cp - R. Then
+eps rho c_v dT_g/dt = hA (T_s - T_g) and (1 - eps) rho_s c_s dT_s/dt = hA (T_g - T_s), which give
+- T_eq = (C_g T_g0 + C_s T_s0) / (C_g + C_s);
+- T_g(t) = T_eq + (T_g0 - T_eq) exp(-t/tau) and T_s(t) = T_eq + (T_s0 - T_eq) exp(-t/tau);
+- 1/tau = hA (1/C_g + 1/C_s).
+
+From the inputs: tau = 2.899e-4 s (r) and 1.833e-4 s (b); T_eq = 319.883 K (r) and 312.573 K (b).
+
+Time step dt = 2.9e-6 s (r) and 1.8e-6 s (b), about tau/100; 500 steps (about 5 tau). Implicit Euler gives an
+expected maximum error of about (dt/tau)/2 * exp(-1) = 0.2 % of |T_s0 - T_g0|.
+
+Definitions (every row of `postProcessing/ltneDiagnostics/0/ltne.dat`):
+- T_g = (gasInternalEnergy / gasMass + Cp 298.15) / c_v, from the sensible-enthalpy reference of hConst; the field is
+  uniform. c_v = 5193 - 8314.462618 / 4.0026.
+- T_s = solidEnergy / (C_s V), with V = gasVolume / eps.
+- C_g and C_s in the exact solution come from the inputs, with rho = gasMass / gasVolume from the first row.
+- err_g = max over rows of |T_g - T_g,exact| / |T_s0 - T_g0|, and err_s likewise.
+- energy = max over rows of |E(t) - E(0)| / Q, with E = gasInternalEnergy + gasKineticEnergy + solidEnergy and
+  Q = C_g V |T_g0 - T_eq| (the energy exchanged).
+
+| id | metric | op | bar | description |
+|----|--------|----|-----|-------------|
+| L3.1 | r_final_time | == | 0.00145 | run r reaches endTime |
+| L3.2 | b_final_time | == | 0.0009 | run b reaches endTime |
+| L3.3 | fatal_or_nan_count | == | 0 | lines matching `FOAM FATAL`, `nan` or `inf` over all logs |
+| L3.4 | r_err_g | <= | 0.01 | run r: gas temperature against the exact solution |
+| L3.5 | r_err_s | <= | 0.01 | run r: solid temperature against the exact solution |
+| L3.6 | r_energy | <= | 1e-3 | run r: total energy conservation |
+| L3.7 | b_err_g | <= | 0.01 | run b: gas temperature against the exact solution |
+| L3.8 | b_err_s | <= | 0.01 | run b: solid temperature against the exact solution |
+| L3.9 | b_energy | <= | 1e-3 | run b: total energy conservation |
+| L3.10 | r_Teq | report | 0 | run r: T_g at endTime, K |
+| L3.11 | b_Teq | report | 0 | run b: T_g at endTime, K |
+| L3.12 | allclean_leftover | == | 0 | files under the case directory that `git status --porcelain --ignored` lists after `Allclean` |

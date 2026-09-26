@@ -1,0 +1,13 @@
+metric,value,source
+r_final_time,0.00145,results/L3/r.log.ltneFoam:7058
+r_err_g,0.0018524230590713842,results/L3/r.ltne.dat:2-502
+r_err_s,9.320147273683688e-06,results/L3/r.ltne.dat:2-502
+r_energy,0.0006624253040098374,results/L3/r.ltne.dat:2-502
+r_Teq,319.7455433893626,results/L3/r.ltne.dat:502
+b_final_time,0.0009,results/L3/b.log.ltneFoam:7058
+b_err_g,0.0011082747087158395,results/L3/b.ltne.dat:2-502
+b_err_s,0.0006346681022932898,results/L3/b.ltne.dat:2-502
+b_energy,0.0006456878334820943,results/L3/b.ltne.dat:2-502
+b_Teq,312.4799024281084,results/L3/b.ltne.dat:502
+fatal_or_nan_count,0,results/L3/log.*:all lines of all logs
+allclean_leftover,0,results/L3/log.allclean-check:empty file
