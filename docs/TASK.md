@@ -29,6 +29,8 @@ one from scratch; keep the code minimal.
    before explaining it. A story whose numbers happen to fit is not evidence.
 7. Name the characteristic numbers (acoustic CFL c*dt/dx, Womersley, thermal penetration depth vs pore size, Re) for
    every case before running it. Use them to choose dt and dx.
+8. Re-read this file before starting each level. It is the leader's text; do not edit it. Questions and proposed
+   changes go in a PR description or an issue.
 
 ## Levels
 - **L0 Build**: install, compile the solver, a tiny smoke case runs to completion, `Allrun` works from a clean clone.
