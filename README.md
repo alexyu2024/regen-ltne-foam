@@ -20,9 +20,11 @@ Task: `docs/TASK.md`. Acceptance bars: `docs/VERIFICATION.md`.
 
 `src/pistonMotion` (`motionSolver pistonLinear`) moves the mesh points between each piston face and a fixed plane
 linearly along the axis. Nothing moves outside the piston spaces, so porous zones stay stationary, and there is no
-topology change or field mapping. This is used instead of layer addition/removal. It is valid while the stroke is
-small compared with the piston-space length; the cells there are stretched by at most `stroke / length`. Works for
-1-D and 2-D axisymmetric (wedge) meshes with an axial piston.
+topology change or field mapping. This is used instead of layer addition/removal. Cell heights in the piston space
+are h0 (1 - x_p / length), so the amplitude must stay below the piston-space length. Measured limit (L1 run d,
+`results/L1`): at amplitude / piston-space length = 0.488, as in L5, the cell heights range from 0.512 to 1.488 h0. The
+pressure amplitude is within 2.6e-6 of the isentropic lumped result, mass closure per cycle is 2.2e-14 and energy
+closure 8.2e-6. Works for 1-D and 2-D axisymmetric (wedge) meshes with an axial piston.
 
 ## Install and build (Ubuntu 22.04 or 24.04)
 
@@ -44,8 +46,8 @@ Or by hand: `cases/<level>_*/Allrun`, `cases/<level>_*/Allclean`. `tools/verify.
 
 | level | case | status |
 |---|---|---|
-| L0 build + smoke | `cases/L0_smoke` | 8/8 PASS locally (`results/L0`) and in CI; in review |
-| L1 closed tube, piston | | not started |
+| L0 build + smoke | `cases/L0_smoke` | PASS (8/8, merged) |
+| L1 closed tube, piston | `cases/L1_closedTube` | 15/15 PASS locally (`results/L1`); in review |
 | L2 porous plug, steady | | not started |
 | L3 LTNE relaxation | | not started |
 | L4 LTNE with flow | | not started |
