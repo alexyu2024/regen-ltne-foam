@@ -52,3 +52,34 @@ unchanged; CI re-runs both.
 
 If the 1 mm case still misses 1 %, it is reported as FAIL again, with the error split between the edge faces and the
 interior faces. The bars do not move.
+
+## Revision 2 (after the first implementation missed; committed before the recorded run)
+
+First implementation, exactly as above. L2 re-run unchanged; diagnostic copy in scratch, not stored:
+- rel_err 0.026 to 0.039, **worse** than before (0.022 to 0.037);
+- L0 and L1 unchanged: 8/8 and 15/15.
+
+Cause, from the steady discrete equations:
+- With the cell velocity U = kc (HbyA0 - rAU0 grad p), the steady Rhie-Chow flux is
+  u_f = kf [avg(U_L, U_R) - rAU0_f (grad_f p + Df u_f)] + (ddtCorr).
+- rho/dt is 16 times mu d here, so the face flux follows the average of the two cell velocities.
+- In open cells the steady cell equation only forces the central gradient to zero, so their velocities are free to
+  ripple (measured: 0.40 u and 1.69 u next to the plug). Through avg(U) that ripple enters the face flux and the
+  interface pressure drop.
+- Setting `ddtPhiCoeff 1` in a diagnostic copy of fvSchemes changed nothing (identical results).
+
+Change: after the pressure correction, the cell velocity is reconstructed from the absolute face fluxes,
+
+    U = reconstruct(absolute(phi) / interpolate(rho))
+
+replacing kc (HbyA0 - rAU0 grad p). Then avg(U) = u_f in 1-D, and the steady face balance is
+grad_f p = -Df u_f exactly. The face drag of the first part stays.
+
+Diagnostic result at 1 mm, t = 0.02 s (scratch copy of v1 and v4, not stored):
+- rel_err -1e-6 (Darcy) and -1.3e-3 (Forchheimer);
+- edge-cell U/u between 0.998 and 1.000.
+
+This changes the cell velocity in every cell, not only in porous ones. L0 and L1 are re-run against their unchanged
+bars in the same PR, and CI re-checks both.
+
+Expected L2 rows: rel_err below 2e-3 for all four runs. The other rows are as in the table above.
