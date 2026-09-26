@@ -1,0 +1,17 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  regen-ltne-foam, OpenFOAM v2512
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      ltneProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+active  true;
+rhoS    7900;       // kg/m3
+CpS     500;        // J/kg/K
+kS      0;          // W/m/K (Schumann: no axial conduction in the solid)
+hsf     20;         // W/m2/K

@@ -181,3 +181,65 @@ Definitions (every row of `postProcessing/ltneDiagnostics/0/ltne.dat`):
 | L3.10 | r_Teq | report | 0 | run r: T_g at endTime, K |
 | L3.11 | b_Teq | report | 0 | run b: T_g at endTime, K |
 | L3.12 | allclean_leftover | == | 0 | files under the case directory that `git status --porcelain --ignored` lists after `Allclean` |
+
+## L4 LTNE with flow: single-blow transient (Schumann solution)
+
+Committed before any L4 case (`cases/L4_singleBlow`) was run. The case and its source are proposed in the L4 PR
+description.
+
+Reference: T. E. W. Schumann, "Heat transfer: a liquid flowing through a porous prism", J. Franklin Inst. 208 (1929)
+405-416. The same solution appears as the Anzelius-Schumann J-function in the regenerator literature (e.g. Schmidt &
+Willmott, *Thermal Energy Storage and Regeneration*, 1981).
+
+Model assumptions of the solution:
+- 1-D plug flow at constant mass flux G;
+- constant properties;
+- no axial conduction in either phase;
+- gas storage represented by the transport delay.
+
+With xi = hA x / (G c_p) and eta = (hA / C_s) (t - eps rho x / G), where C_s = (1 - eps) rho_s c_s, and with a
+step of the inlet gas temperature from T_0 to T_1 into a bed at T_0, the solution for theta = (T - T_0) / (T_1 - T_0)
+is (derived by Laplace transform in eta):
+- g(xi, tau) = exp(-xi - tau) I_0(2 sqrt(xi tau));
+- theta_s(xi, eta) = integral from 0 to eta of g(xi, tau) d tau;
+- theta_g(xi, eta) = g(xi, eta) + theta_s(xi, eta).
+
+Setup:
+- porous bed filling the whole 1-D channel, x in [0, 0.1] m, 200 cells of 0.5 mm, cross-section 1e-4 m2;
+- helium as in L0 at 2 MPa; eps = 0.7, a_sf = 8000 1/m, h_sf = 20 W/m2/K (hA = 1.6e5 W/m3/K);
+- rho_s = 7900 kg/m3, c_s = 500 J/kg/K, k_s = 0; no drag entries;
+- initial gas and solid at T_0 = 300 K, U = 0.1 m/s everywhere;
+- inlet: fixed U = 0.1 m/s and T = T_1 = 310 K; outlet: fixed p = 2 MPa;
+- dt = 5e-3 s, run to t = 150 s (30000 steps).
+
+Resulting numbers:
+- G = rho(310 K) u = 0.31058 kg/m2/s;
+- xi at the outlet = 9.920;
+- hA / C_s = 0.13502 1/s, so eta at endTime = 20.25;
+- gas transit time eps rho L / G = 0.70 s.
+
+Definitions:
+- theta_out(t) = (areaAverage(T) on the outlet patch - 300) / 10, from `postProcessing/outletT/0/surfaceFieldValue.dat`.
+- out_err = max over rows with t >= 2 s of |theta_out - theta_g(9.920, eta(L, t))|.
+- Es_err = max over every 100th row of `ltne.dat` (every 0.5 s) of
+  |solidEnergy(t) - solidEnergy(0) - C_s A 10 K int_0^L theta_s dx| / (C_s V 10 K), with V = 1e-5 m3. The integral
+  is evaluated with Simpson's rule on 400 intervals.
+- Evaluation of the solution: with Poisson probabilities p_a(k) = exp(-a) a^k / k!, the integral form is equivalent
+  to theta_s = sum_k p_xi(k) (1 - sum_{j<=k} p_eta(j)) and g = sum_k p_xi(k) p_eta(k). This follows from the series
+  of I_0 and the incomplete gamma function. The sums are truncated when the terms fall below 1e-16.
+- energy_err: the energy balance over the whole run, E(t_end) - E(0) against the net enthalpy inflow
+  sum over rows of G A c_p (T_1 - T_out) dt, normalised by C_s V 10 K. E = gasInternalEnergy + gasKineticEnergy +
+  solidEnergy. The inflow is integrated with the trapezoid rule over the outlet rows, which are written every
+  20 steps.
+- t_half: the first time at which theta_out reaches 0.5, by linear interpolation between rows.
+
+| id | metric | op | bar | description |
+|----|--------|----|-----|-------------|
+| L4.1 | final_time | == | 150 | run reaches endTime |
+| L4.2 | fatal_or_nan_count | == | 0 | lines matching `FOAM FATAL`, `nan` or `inf` over all logs |
+| L4.3 | out_err | <= | 0.02 | outlet gas temperature (breakthrough curve) against Schumann, fraction of the step |
+| L4.4 | Es_err | <= | 0.01 | solid energy stored against Schumann, fraction of the full-charge energy |
+| L4.5 | energy_err | <= | 0.01 | whole-run energy balance, fraction of the full-charge energy |
+| L4.6 | t_half | report | 0 | time when theta_out = 0.5, s |
+| L4.7 | t_half_exact | report | 0 | the same from the Schumann solution, s |
+| L4.8 | allclean_leftover | == | 0 | files under the case directory that `git status --porcelain --ignored` lists after `Allclean` |
