@@ -52,6 +52,15 @@ one from scratch; keep the code minimal.
 - **L5 Oscillating regenerator slice**: the leader provides the parameter file (geometry, porosity, screen correlations,
   drive) when L4 passes. The comparison with the Fluent results is done by the leader locally from your PR.
 
+## Where the computing runs (added 2026-09-26 by the leader)
+This session's container is for writing code, compiling and SHORT checks (minutes). Any case that runs longer than
+about 15 minutes runs as a GitHub Actions job instead (the account has GitHub Pro education minutes): a
+`workflow_dispatch` workflow (`.github/workflows/run-case.yml`) that takes the case name, runs it, and uploads only
+small result files (CSV summaries, logs trimmed to the lines the results table cites) as artifacts. A single job has a
+time limit (6 h on GitHub-hosted runners, per GitHub's documentation), so long oscillating runs must write restart
+data and continue across jobs. Trigger it, stop, and read the artifacts when the job has finished; do not keep the
+container waiting on it.
+
 ## Reporting
 Open each PR with the status table. Keep `README.md` short: what it is, how to install, how to run each level, the
 current level status. No marketing text, no filler.
