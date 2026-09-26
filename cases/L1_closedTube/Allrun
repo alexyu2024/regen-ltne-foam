@@ -1,0 +1,32 @@
+#!/bin/sh
+# Four runs of the closed tube (see docs/VERIFICATION.md, L1): a, b, c differ
+# only in deltaT; d has 0.1 mm cells in the piston space and x_a = 2.44 mm.
+cd "${0%/*}" || exit 1
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions
+
+../../src/Allwmake > log.build 2>&1 \
+ && echo "ltneFoam binary: $(command -v ltneFoam)" >> log.build
+
+for run in a b c d
+do
+    rm -rf run_$run
+    mkdir run_$run
+    cp -r 0.orig constant system run_$run/
+done
+
+foamDictionary run_b/system/controlDict -entry deltaT -set 8e-5 > /dev/null
+foamDictionary run_c/system/controlDict -entry deltaT -set 4e-4 > /dev/null
+foamDictionary run_d/system/controlDict -entry deltaT -set 2e-6 > /dev/null
+mv run_d/system/blockMeshDict.d run_d/system/blockMeshDict
+foamDictionary run_d/constant/dynamicMeshDict \
+    -entry pistons/piston/displacement/amplitude -set 2.44e-3 > /dev/null
+
+for run in a b c d
+do
+    (
+        cd run_$run || exit 1
+        restore0Dir
+        runApplication blockMesh
+        runApplication ltneFoam
+    )
+done

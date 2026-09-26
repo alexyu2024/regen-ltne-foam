@@ -15,7 +15,7 @@ OPS = {
 
 
 def bars(level):
-    rx = re.compile(r'^\|\s*(%s\.\d+)\s*\|\s*(\S+)\s*\|\s*(==|<=|>=|<|>)\s*\|\s*(\S+)\s*\|\s*(.*?)\s*\|\s*$' % level)
+    rx = re.compile(r'^\|\s*(%s\.\d+)\s*\|\s*(\S+)\s*\|\s*(==|<=|>=|<|>|report)\s*\|\s*(\S+)\s*\|\s*(.*?)\s*\|\s*$' % level)
     rows = []
     for i, l in enumerate(open(os.path.join(REPO, 'docs', 'VERIFICATION.md'))):
         m = rx.match(l)
@@ -41,6 +41,13 @@ def main():
         r = res.get(metric)
         value = r['value'] if r else 'not read'
         src = r['source'] if r else 'not read'
+        if op == 'report':
+            try:
+                status = 'REPORT (%s %s)' % ('<=' if float(value) <= float(bar) else '>', bar)
+            except ValueError:
+                status = 'REPORT (not read)'
+            lines.append(f'| {cid} {metric} | report (docs/VERIFICATION.md:{vline}) | {value} | {status} | {src} |')
+            continue
         try:
             ok = OPS[op](float(value), float(bar))
         except ValueError:
@@ -48,7 +55,8 @@ def main():
         fails += not ok
         lines.append(f'| {cid} {metric} | {op} {bar} (docs/VERIFICATION.md:{vline}) | {value} | '
                      f'{"PASS" if ok else "FAIL"} | {src} |')
-    lines += ['', f'{len(bar_rows) - fails}/{len(bar_rows)} PASS', '']
+    n = sum(1 for b in bar_rows if b[2] != 'report')
+    lines += ['', f'{n - fails}/{n} PASS', '']
     open(os.path.join(out, 'STATUS.md'), 'w').write('\n'.join(lines))
     print('\n'.join(lines))
     sys.exit(1 if fails else 0)

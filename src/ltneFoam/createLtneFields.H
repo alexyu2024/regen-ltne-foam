@@ -132,3 +132,26 @@ else
     );
 }
 volScalarField& Ts = TsPtr();
+
+// Diagnostics file (see ltneDiagnostics.H)
+scalar boundaryWork = 0;
+autoPtr<OFstream> diagFile;
+if (Pstream::master())
+{
+    const fileName dir
+    (
+        runTime.globalPath()/"postProcessing"/"ltneDiagnostics"
+       /runTime.timeName()
+    );
+    mkDir(dir);
+    diagFile.reset(new OFstream(dir/"ltne.dat"));
+    diagFile().precision(15);
+    diagFile()
+        << "# time gasMass gasInternalEnergy gasKineticEnergy solidEnergy"
+        << " gasVolume pAvg boundaryWork";
+    for (const cellZone& zone : mesh.cellZones())
+    {
+        diagFile() << ' ' << zone.name() << "_Vmin " << zone.name() << "_Vmax";
+    }
+    diagFile() << endl;
+}

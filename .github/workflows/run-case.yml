@@ -1,0 +1,38 @@
+# Manually triggered run of one level's case, for cases too long for the session container (docs/TASK.md, "Where the
+# computing runs"). Uploads only the level's result directory (results.csv, STATUS.md, cited logs, files over 1 MB
+# gzipped). Restart across jobs for runs longer than the 6 h job limit is added when a level needs it.
+name: run-case
+
+on:
+  workflow_dispatch:
+    inputs:
+      level:
+        description: "Level to run, e.g. L1"
+        required: true
+
+jobs:
+  run:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install OpenFOAM v2512 and build ltneFoam
+        run: sudo tools/install.sh
+
+      - name: Run the case and check bars
+        shell: bash {0}
+        run: |
+          source /usr/lib/openfoam/openfoam2512/etc/bashrc
+          tools/run_level.sh "${{ inputs.level }}" "out/${{ inputs.level }}"
+          rc=$?
+          cat "out/${{ inputs.level }}/STATUS.md" >> "$GITHUB_STEP_SUMMARY" 2>/dev/null
+          exit $rc
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.level }}-results
+          path: out
+          retention-days: 14
