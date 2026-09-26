@@ -1,0 +1,41 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  regen-ltne-foam, OpenFOAM v2512
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     ltneFoam;
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         0.001;
+deltaT          1e-6;
+writeControl    adjustable;
+writeInterval   5e-4;
+purgeWrite      0;
+writeFormat     ascii;
+writePrecision  12;
+writeCompression off;
+timeFormat      general;
+timePrecision   8;
+runTimeModifiable false;
+adjustTimeStep  no;
+
+functions
+{
+    minMax
+    {
+        type            fieldMinMax;
+        libs            (fieldFunctionObjects);
+        mode            magnitude;
+        fields          (p T Ts);
+        writeControl    timeStep;
+        writeInterval   1;
+    }
+}

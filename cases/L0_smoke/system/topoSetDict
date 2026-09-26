@@ -1,0 +1,22 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  regen-ltne-foam, OpenFOAM v2512
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+actions
+(
+    {
+        name    porous;
+        type    cellZoneSet;
+        action  new;
+        source  boxToCell;
+        box     (0.04 -1 -1) (0.06 1 1);
+    }
+);

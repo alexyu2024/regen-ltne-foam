@@ -1,0 +1,38 @@
+# Installs OpenFOAM v2512, builds the solver and, for every level listed in tools/ci_levels.txt (the levels that
+# have passed, plus the one under review), re-runs its case from scratch and checks the bars in docs/VERIFICATION.md.
+name: verify
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install OpenFOAM v2512 and build ltneFoam
+        run: sudo tools/install.sh
+
+      - name: Run levels and check bars
+        shell: bash {0}
+        run: |
+          source /usr/lib/openfoam/openfoam2512/etc/bashrc
+          rc=0
+          for level in $(cat tools/ci_levels.txt); do
+            tools/run_level.sh "$level" "ci-out/$level" || rc=1
+            cat "ci-out/$level/STATUS.md" >> "$GITHUB_STEP_SUMMARY" 2>/dev/null \
+              || echo "$level: no STATUS.md" >> "$GITHUB_STEP_SUMMARY"
+          done
+          exit $rc
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-out
+          path: ci-out

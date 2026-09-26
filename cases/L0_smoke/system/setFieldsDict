@@ -1,0 +1,27 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  regen-ltne-foam, OpenFOAM v2512
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      setFieldsDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+defaultFieldValues ();
+
+regions
+(
+    zoneToCell
+    {
+        zone porous;
+        fieldValues
+        (
+            volScalarFieldValue porosity 0.7
+            volScalarFieldValue asf      24000   // 4 (1 - eps) / d_wire, d_wire = 50 um
+            volScalarFieldValue Ts       310
+        );
+    }
+);
