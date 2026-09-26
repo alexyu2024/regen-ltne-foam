@@ -27,6 +27,12 @@ are h0 (1 - x_p / length), so the amplitude must stay below the piston-space len
 pressure amplitude is within 2.6e-6 of the isentropic lumped result, mass closure per cycle is 2.2e-14 and energy
 closure 8.2e-6. Works for 1-D and 2-D axisymmetric (wedge) meshes with an axial piston.
 
+## Limitations
+
+Darcy-Forchheimer drag must be isotropic (`explicitPorositySource`, `DarcyForchheimer`); an anisotropic model, or any
+other fvOption acting on U, stops with a fatal error. The transonic pressure formulation is not supported (fatal
+error). Solid properties are constant.
+
 ## Install and build (Ubuntu 22.04 or 24.04)
 
     sudo tools/install.sh
@@ -49,7 +55,7 @@ Or by hand: `cases/<level>_*/Allrun`, `cases/<level>_*/Allclean`. `tools/verify.
 |---|---|---|
 | L0 build + smoke | `cases/L0_smoke` | PASS (8/8, merged) |
 | L1 closed tube, piston | `cases/L1_closedTube` | PASS (15/15, merged) |
-| L2 porous plug, steady | `cases/L2_porousPlug` | 16/16 PASS locally after the face-consistent drag fix (`results/L2`; first run FAIL 12/16 in `results/L2_run1`); in review |
-| L3 LTNE relaxation | | not started |
+| L2 porous plug, steady | `cases/L2_porousPlug` | PASS (16/16 after the face-consistent drag fix, merged; first run FAIL 12/16 in `results/L2_run1`) |
+| L3 LTNE relaxation | `cases/L3_ltneRelax` | in progress |
 | L4 LTNE with flow | | not started |
 | L5 regenerator slice | | not started |
