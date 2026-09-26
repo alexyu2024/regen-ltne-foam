@@ -1,0 +1,36 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  regen-ltne-foam, OpenFOAM v2512
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      dynamicMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Piston at x = 0; the cells in the piston space [0, 5 mm] stretch linearly,
+// the rest of the mesh does not move. Displacement x_a sin(2 pi f t).
+dynamicFvMesh    dynamicMotionSolverFvMesh;
+motionSolverLibs (ltnePistonMotion);
+motionSolver     pistonLinear;
+
+axis    (1 0 0);
+
+pistons
+{
+    piston
+    {
+        piston      0;
+        fixed       0.005;
+        displacement
+        {
+            type        sine;
+            amplitude   1e-4;       // m (runs a, b, c); Allrun sets 2.44e-3 for run d
+            frequency   50;         // Hz
+            scale       1;
+            level       0;
+        }
+    }
+}

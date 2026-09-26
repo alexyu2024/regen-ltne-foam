@@ -2,3 +2,4 @@ src/**/Make/linux64*
 src/**/lnInclude
 __pycache__/
 ci-out/
+out/

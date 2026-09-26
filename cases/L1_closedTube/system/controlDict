@@ -1,0 +1,34 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  regen-ltne-foam, OpenFOAM v2512
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     ltneFoam;
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         0.06;          // three cycles at 50 Hz
+deltaT          2e-5;          // run a; Allrun sets b, c, d
+writeControl    runTime;
+writeInterval   0.06;
+purgeWrite      0;
+writeFormat     ascii;
+writePrecision  12;
+writeCompression off;
+timeFormat      general;
+timePrecision   8;
+runTimeModifiable false;
+adjustTimeStep  no;
+
+// Keep the log short: no per-solve residual lines
+DebugSwitches
+{
+    SolverPerformance   0;
+}

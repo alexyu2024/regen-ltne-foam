@@ -1,0 +1,3 @@
+#!/bin/sh
+cd "${0%/*}" || exit 1
+rm -rf run_a run_b run_c run_d log.build

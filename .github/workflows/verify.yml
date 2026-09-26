@@ -36,3 +36,4 @@ jobs:
         with:
           name: ci-out
           path: ci-out
+          retention-days: 14

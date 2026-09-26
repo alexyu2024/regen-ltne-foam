@@ -30,3 +30,9 @@ r.write(mode='a')
 PY
 
 python3 tools/verify.py "$level" "$out"
+status=$?
+
+# Keep the stored results small: gzip every file over 1 MB (line numbers in the
+# sources refer to the uncompressed text)
+find "$out" -type f -size +1M ! -name '*.gz' -exec gzip -9 {} \;
+exit $status
