@@ -1,0 +1,181 @@
+      1  /*---------------------------------------------------------------------------*\
+      2  | =========                 |                                                 |
+      3  | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+      4  |  \\    /   O peration     | Version:  2512                                  |
+      5  |   \\  /    A nd           | Website:  www.openfoam.com                      |
+      6  |    \\/     M anipulation  |                                                 |
+      7  \*---------------------------------------------------------------------------*/
+      8  Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+      9  Arch   : "LSB;label=32;scalar=64"
+     10  Exec   : ltneFoam
+     11  Date   : Sep 26 2026
+     12  Time   : 22:11:59
+     13  Host   : vm
+     14  PID    : 2455
+     15  I/O    : uncollated
+     16  Case   : /tmp/claude-0/-home-user-regen-ltne-foam/dc12042d-894c-5db9-b3c9-0425e1896857/scratchpad/clone/cases/L4_singleBlow
+     17  nProcs : 1
+     18  trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+     19  memory pool : not available
+     20  fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+     21  allowSystemOperations : Allowing user-supplied system call operations
+     22  
+     23  // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+     24  Create time
+     25  
+     26  Overriding DebugSwitches according to controlDict
+     27      SolverPerformance 0;
+     28  
+     29  Create mesh for time = 0
+     30  
+     31  Selecting dynamicFvMesh staticFvMesh
+     32  
+     33  PIMPLE: no residual control data found. Calculations will employ 3 corrector loops
+     34  
+     35  Reading thermophysical properties
+     36  
+     37  Selecting thermodynamics package 
+     38  {
+     39      type            hePsiThermo;
+     40      mixture         pureMixture;
+     41      transport       const;
+     42      thermo          hConst;
+     43      equationOfState perfectGas;
+     44      specie          specie;
+     45      energy          sensibleEnthalpy;
+     46  }
+     47  
+     48  Reading field U
+     49  
+     50  Reading/calculating face flux field phi
+     51  
+     52  Creating turbulence model
+     53  
+     54  Selecting turbulence model type laminar
+     55  Selecting laminar stress model Stokes
+     56  Creating field dpdt
+     57  
+     58  Creating field kinetic energy K
+     59  
+     60  No finite volume options present
+     61  Reading porous-medium fields
+     62  
+     63  LTNE solid matrix: rhoS = 7900, CpS = 500, kS = 0, hsf = 20
+     64  
+     65  Reading field Ts
+     66  
+     67  Courant Number mean: 0.999919354839 max: 1
+     68  
+     69  Starting time loop
+     70  
+     71  surfaceFieldValue outletT:
+     72      operation     = areaAverage
+     73  
+     74  
+     75  Courant Number mean: 0.999919354839 max: 1
+     76  Time = 0.005
+     77  
+     78  PIMPLE: iteration 1
+     79  time step continuity errors : sum local = 1.2770734542e-08, global = -6.19748344847e-09, cumulative = -6.19748344847e-09
+     80  time step continuity errors : sum local = 1.16118091576e-08, global = -6.71840909337e-09, cumulative = -1.29158925418e-08
+     81  PIMPLE: iteration 2
+     82  time step continuity errors : sum local = 1.08403594683e-08, global = -6.58157598225e-09, cumulative = -1.94974685241e-08
+     83  time step continuity errors : sum local = 1.13853195273e-08, global = -6.64949276165e-09, cumulative = -2.61469612857e-08
+     84  PIMPLE: iteration 3
+     85  time step continuity errors : sum local = 1.12113396016e-08, global = -5.93616851893e-09, cumulative = -3.20831298047e-08
+     86  time step continuity errors : sum local = 1.1861862111e-08, global = -7.00815537994e-09, cumulative = -3.90912851846e-08
+     87  ExecutionTime = 0.02 s  ClockTime = 0 s
+     88  
+     89  Courant Number mean: 1.00045921486 max: 1.00048897895
+     90  Time = 0.01
+     91  
+     92  PIMPLE: iteration 1
+     93  time step continuity errors : sum local = 1.02353407045e-08, global = -5.94421439829e-09, cumulative = -4.50354995829e-08
+     94  time step continuity errors : sum local = 1.13483358867e-08, global = -5.53350167059e-09, cumulative = -5.05690012535e-08
+     95  PIMPLE: iteration 2
+     96  time step continuity errors : sum local = 1.16986507648e-08, global = 1.46096812268e-09, cumulative = -4.91080331308e-08
+     97  time step continuity errors : sum local = 1.11067454005e-08, global = 2.7088530836e-09, cumulative = -4.63991800472e-08
+     98  PIMPLE: iteration 3
+     99  time step continuity errors : sum local = 1.09875011861e-08, global = 3.15906077482e-09, cumulative = -4.32401192724e-08
+    100  time step continuity errors : sum local = 1.15784457758e-08, global = 9.8517578956e-10, cumulative = -4.22549434828e-08
+    101  ExecutionTime = 0.02 s  ClockTime = 0 s
+    102  
+    103  Courant Number mean: 0.996496624635 max: 0.999755628243
+    104  Time = 0.015
+    105  
+    106  PIMPLE: iteration 1
+    107  time step continuity errors : sum local = 1.1132172908e-08, global = 3.36987521533e-09, cumulative = -3.88850682675e-08
+    108  time step continuity errors : sum local = 1.13541932233e-08, global = 4.25867650069e-09, cumulative = -3.46263917668e-08
+    109  PIMPLE: iteration 2
+    110  time step continuity errors : sum local = 1.12808700061e-08, global = -3.87234706489e-09, cumulative = -3.84987388317e-08
+    111  time step continuity errors : sum local = 1.2623764231e-08, global = -2.73431610641e-09, cumulative = -4.12330549381e-08
+    112  PIMPLE: iteration 3
+    113  time step continuity errors : sum local = 1.20072007794e-08, global = -1.96523718158e-09, cumulative = -4.31982921197e-08
+    114  time step continuity errors : sum local = 1.1549600948e-08, global = -1.13370122085e-09, cumulative = -4.43319933406e-08
+    115  ExecutionTime = 0.02 s  ClockTime = 0 s
+    116  
+    117  Courant Number mean: 0.994166736987 max: 0.999762789465
+    118  Time = 0.02
+    119  
+    120  PIMPLE: iteration 1
+      ...  lines 121-424519 omitted (full log: CI artifact, or rerun Allrun)
+ 424520  Time = 149.985
+ 424521  
+ 424522  PIMPLE: iteration 1
+ 424523  time step continuity errors : sum local = 1.08718448535e-08, global = -1.06691157999e-09, cumulative = -4.06110865912e-06
+ 424524  time step continuity errors : sum local = 1.12218676342e-08, global = 1.00160292211e-09, cumulative = -4.0601070562e-06
+ 424525  PIMPLE: iteration 2
+ 424526  time step continuity errors : sum local = 1.30201631597e-08, global = -4.47455928253e-10, cumulative = -4.06055451213e-06
+ 424527  time step continuity errors : sum local = 1.17401905475e-08, global = -6.13573796552e-10, cumulative = -4.06116808592e-06
+ 424528  PIMPLE: iteration 3
+ 424529  time step continuity errors : sum local = 1.15071740013e-08, global = -4.9507324387e-10, cumulative = -4.06166315917e-06
+ 424530  time step continuity errors : sum local = 1.17010684551e-08, global = -1.26959587069e-09, cumulative = -4.06293275504e-06
+ 424531  ExecutionTime = 78.98 s  ClockTime = 79 s
+ 424532  
+ 424533  Courant Number mean: 0.999883251691 max: 1.00000005751
+ 424534  Time = 149.99
+ 424535  
+ 424536  PIMPLE: iteration 1
+ 424537  time step continuity errors : sum local = 9.66657342337e-09, global = -4.03279035079e-11, cumulative = -4.06297308294e-06
+ 424538  time step continuity errors : sum local = 1.09407864079e-08, global = -3.66332316026e-10, cumulative = -4.06333941526e-06
+ 424539  PIMPLE: iteration 2
+ 424540  time step continuity errors : sum local = 1.24528958229e-08, global = -2.97352790804e-10, cumulative = -4.06363676805e-06
+ 424541  time step continuity errors : sum local = 1.14994027688e-08, global = -1.53182760387e-09, cumulative = -4.06516859565e-06
+ 424542  PIMPLE: iteration 3
+ 424543  time step continuity errors : sum local = 1.19656929649e-08, global = -4.51958124778e-11, cumulative = -4.06521379147e-06
+ 424544  time step continuity errors : sum local = 1.15256254001e-08, global = -7.31801585779e-10, cumulative = -4.06594559305e-06
+ 424545  ExecutionTime = 78.99 s  ClockTime = 79 s
+ 424546  
+ 424547  Courant Number mean: 0.999883295719 max: 1.00000005719
+ 424548  Time = 149.995
+ 424549  
+ 424550  PIMPLE: iteration 1
+ 424551  time step continuity errors : sum local = 1.14219852836e-08, global = 3.77659831353e-10, cumulative = -4.06556793322e-06
+ 424552  time step continuity errors : sum local = 1.16653354584e-08, global = -1.47893476511e-09, cumulative = -4.06704686799e-06
+ 424553  PIMPLE: iteration 2
+ 424554  time step continuity errors : sum local = 1.11909003694e-08, global = 7.7319004848e-10, cumulative = -4.06627367794e-06
+ 424555  time step continuity errors : sum local = 1.16610622452e-08, global = -2.57063054536e-10, cumulative = -4.06653074099e-06
+ 424556  PIMPLE: iteration 3
+ 424557  time step continuity errors : sum local = 1.17872053346e-08, global = -8.65290912054e-10, cumulative = -4.0673960319e-06
+ 424558  time step continuity errors : sum local = 1.16723620268e-08, global = -9.17468046385e-10, cumulative = -4.06831349995e-06
+ 424559  ExecutionTime = 78.99 s  ClockTime = 79 s
+ 424560  
+ 424561  Courant Number mean: 0.999883317854 max: 1.00000006273
+ 424562  Time = 150
+ 424563  
+ 424564  PIMPLE: iteration 1
+ 424565  time step continuity errors : sum local = 1.27187851527e-08, global = -1.66449030863e-09, cumulative = -4.06997799026e-06
+ 424566  time step continuity errors : sum local = 1.17405863781e-08, global = 9.78253099122e-11, cumulative = -4.06988016495e-06
+ 424567  PIMPLE: iteration 2
+ 424568  time step continuity errors : sum local = 1.09714950264e-08, global = 2.84347506923e-10, cumulative = -4.06959581744e-06
+ 424569  time step continuity errors : sum local = 1.11284019189e-08, global = 1.68549289777e-09, cumulative = -4.06791032454e-06
+ 424570  PIMPLE: iteration 3
+ 424571  time step continuity errors : sum local = 1.24101179666e-08, global = 7.93859396401e-10, cumulative = -4.06711646515e-06
+ 424572  time step continuity errors : sum local = 1.18158298927e-08, global = -7.56117168794e-10, cumulative = -4.06787258232e-06
+ 424573  ExecutionTime = 78.99 s  ClockTime = 79 s
+ 424574  
+ 424575  surfaceFieldValue outletT write:
+ 424576      areaAverage(outlet) of T = 309.763930688
+ 424577  
+ 424578  End
+ 424579  

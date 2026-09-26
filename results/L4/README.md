@@ -18,7 +18,8 @@
 - **Case and bars**: unchanged since 85b4e55, when they were committed with the proposal before any run.
 - **First run**: at 85b4e55 it crashed at start with a division by zero in the kS = 0 path. Record and diagnosis:
   `results/L4_run1/`. The fix (9b31098) only touches the kS = 0 path.
-- **Storage**: files ending in `.gz` are cited by their uncompressed line numbers.
+- **Storage**: files ending in `.gz` are cited by their uncompressed line numbers. `log.ltneFoam` is stored as
+  `log.ltneFoam.trimmed`: the first 120 and last 60 lines, prefixed with their original line numbers.
 
 ## Notes on the values
 
