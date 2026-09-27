@@ -63,7 +63,9 @@ The mapping is as follows:
   `rampTime` option of `pistonLinear` (the Function1 value minus its t = 0 value times exp(-t/rampTime)). The
   Fluent twin uses the same formula.
 - **Sensitivity bar.** The < 1 % bar is applied relative to amplitudes and as 0.5 deg absolute to phases.
-- **Cold piston direction** (flagged in the PR). The file says x = displacement toward the matrix, with
+## Interpretation not yet confirmed (flagged in the PR)
+
+- **Cold piston direction.** The file says x = displacement toward the matrix, with
   U_p = A dxi/dt, and that "the cold piston ABSORBS the machine's +z flow: sign -". This case takes the cold
   piston's positive displacement as +z, the machine's flow direction, i.e. away from the matrix. With that
   reading:
@@ -137,3 +139,7 @@ nodes), and 8 in the cold chamber. dt = 1.8115942e-5 s, 2400 steps per cycle. Th
 - `piston_check.csv`: the realised piston volume-flow phasor against the file's spec.
 - `per_cycle_sensitivity.csv`: per cycle of the sensitivity run.
 - `results.csv`, `STATUS.md` and the trimmed logs.
+
+The crash scan (L5.2) skips OpenFOAM's start-up banner `trapFpe: Floating point exception trapping enabled`, which
+every OpenFOAM log prints and which reports a setting, not a crash. `results.csv` gives the number of skipped banner
+lines.
