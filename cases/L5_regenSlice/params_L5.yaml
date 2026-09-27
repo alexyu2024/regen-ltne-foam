@@ -1,0 +1,401 @@
+# =====================================================================================
+# L5 parameter file - oscillating regenerator slice (Huang 2020 low-temperature regenerator)
+# Provided by the leader per docs/TASK.md (L5). 2026-09-27.
+#
+# PROVENANCE. Geometry and screens: Huang et al., Int. J. Refrigeration 111 (2020) 29-38,
+# Table 1 (52 x 28 mm low-temperature regenerator, 635# + 500# stainless screens, 23 Hz,
+# 0.75 MPa) with the two [ASSUME]d wire diameters noted below. Drive and targets: the
+# leader's local DeltaEC replica of that machine (joined whole-machine model, Err 5.9e-11,
+# reproducing the paper's Sage Table 3 station values). Correlations: Sage v13 manual
+# (Gedeon & Wood screens) and DeltaEC Users Guide property fits. Everything in this file
+# is published data or standard published correlations - nothing proprietary.
+#
+# CONVENTION. Every oscillating quantity is x(t) = x_mean + |x| * cos(omega*t + Ph_deg),
+# Ph in degrees, ONE common phase frame (only phase differences are physical). The axial
+# coordinate z runs hot -> cold with z = 0 at the matrix hot face.
+#
+# WHAT L5 IS. Two codes run THIS same model - ltneFoam here, Fluent locally by the leader:
+# same layout, correlations, drive, initial state, numerics. The PASS bars are
+# code-to-code (B1-B6). DeltaEC values are context only (a different model class), never
+# a pass criterion.
+# =====================================================================================
+
+case: L5_regenSlice
+
+operating_point:
+  frequency_Hz: 23.0
+  omega_rad_s: 144.51326206513048
+  mean_pressure_Pa: 750000.0
+  gravity: "off"
+  turbulence: laminar          # Re_ref ~ 40-54 on the wire scale (see porous_matrix)
+
+gas:                           # helium, ideal gas (as the DeltaEC model's gas option)
+  R_J_kgK: 2077.3
+  cp_J_kgK: 5193.25            # 2.5 R, monatomic
+  gamma: 1.6666667
+  # transport: piecewise-linear tables, CoolProp (NIST-grade) helium at 0.75 MPa.
+  # BOTH codes use THESE numbers verbatim (do not re-derive from another source).
+  mu_table_T_K__Pa_s:
+    - [18, 3.630722e-06]
+    - [21, 3.941834e-06]
+    - [24, 4.242703e-06]
+    - [27, 4.533032e-06]
+    - [30, 4.813382e-06]
+    - [33, 5.084553e-06]
+    - [36, 5.347372e-06]
+    - [39, 5.602615e-06]
+    - [42, 5.850984e-06]
+    - [45, 6.093106e-06]
+    - [48, 6.329535e-06]
+    - [51, 6.560762e-06]
+    - [54, 6.787222e-06]
+    - [57, 7.009300e-06]
+    - [60, 7.227338e-06]
+    - [63, 7.441642e-06]
+    - [66, 7.652485e-06]
+    - [69, 7.860114e-06]
+    - [72, 8.064748e-06]
+    - [75, 8.266589e-06]
+    - [78, 8.465817e-06]
+    - [81, 8.662596e-06]
+    - [84, 8.857077e-06]
+    - [87, 9.049398e-06]
+    - [90, 9.239682e-06]
+  k_table_T_K__W_mK:
+    - [18, 2.669143e-02]
+    - [21, 2.885879e-02]
+    - [24, 3.097522e-02]
+    - [27, 3.304195e-02]
+    - [30, 3.506230e-02]
+    - [33, 3.703979e-02]
+    - [36, 3.897771e-02]
+    - [39, 4.087899e-02]
+    - [42, 4.274625e-02]
+    - [45, 4.458183e-02]
+    - [48, 4.638779e-02]
+    - [51, 4.816599e-02]
+    - [54, 4.991811e-02]
+    - [57, 5.164565e-02]
+    - [60, 5.334998e-02]
+    - [63, 5.503233e-02]
+    - [66, 5.669385e-02]
+    - [69, 5.833558e-02]
+    - [72, 5.995845e-02]
+    - [75, 6.156335e-02]
+    - [78, 6.315109e-02]
+    - [81, 6.472242e-02]
+    - [84, 6.627803e-02]
+    - [87, 6.781857e-02]
+    - [90, 6.934464e-02]
+
+solids:
+  matrix_material: stainless_steel
+  # DeltaEC Users Guide section 13.5 fits (valid 6-1300 K), used verbatim by both codes:
+  #   rho_ss(T) = 7993 - (0.3*T + 8e-5*T^2) * T^2 / (20000 + T^2)                [kg/m3]
+  #   k_ss(T)   = (266800*T^-5.2 + 0.21416*T^-1.6)^-0.25                         [W/(m K)]
+  #   cp_ss(T)  = (1.7054e-6*T^-0.88962 + 23324*T^-6)^(-1/3) + 15/T - 35/T^2 + 25/T^3  [J/(kg K)]
+  # rho_ss may be held constant at 7990 kg/m3 (< 1 % band over 18-90 K) where a code
+  # cannot table a solid density.
+  hx_material: copper          # DeltaEC 13.3: rho 9000, cp 420, k = 398 - 0.0567*(T - 300)
+  # PHYSICAL effective properties of the screen matrix, per unit TOTAL volume:
+  #   axial solid conduction: k_eff(T) = ksFrac * (1 - eps) * k_ss(T), ksFrac = 0.10
+  #     (stacked-screen contact resistance, DeltaEC Users Guide 10.5.2 / Lewis 1998;
+  #      the DeltaEC model runs the same 0.10)
+  #   solid heat capacity: (1 - eps) * rho_ss(T) * cp_ss(T)
+  # Each code enters whatever ITS OWN solid equation needs to realize exactly these
+  # physical values and DOCUMENTS the mapping in its README. (Fluent example: its solid
+  # equation already carries (1-eps) on both terms, so it is fed ksFrac*k_ss and bulk
+  # rho*cp. State the ltneFoam equivalent explicitly.)
+  ksFrac: 0.10
+
+layout:                        # 1-D axial column, uniform cross-section
+  area_m2: 6.1575e-4           # full 28 mm bore; any cross-section works if every
+                               # per-area quantity is preserved
+  zones:                       # [z_from_m, z_to_m] measured from the MATRIX HOT FACE
+    hot_chamber:  { z: [-0.017, -0.005], gas_only: true, walls: adiabatic }
+    hot_hx:       { z: [-0.005,  0.000], porous: hx, solid_T_fixed_K: 80.033 }
+    matrix_500:   { z: [ 0.000,  0.026], porous: screen_500 }
+    matrix_635:   { z: [ 0.026,  0.052], porous: screen_635 }
+    cold_hx:      { z: [ 0.052,  0.057], porous: hx, solid_T_fixed_K: 21.997 }
+    cold_chamber: { z: [ 0.057,  0.061], gas_only: true, walls: adiabatic }
+  # Chamber mean gas lengths: hot 12 mm, cold 4 mm. The pistons sweep +-5.82 / +-2.01 mm
+  # about the chamber outer ends (min residual gas column 6.2 / 2.0 mm).
+
+porous_matrix:
+  # Gedeon & Wood woven screens, Sage v13 eqs (18.4/18.5/20.8-20.10), superficial form.
+  # Formulas (beta = porosity, dw = wire diameter, u_sup = superficial velocity):
+  #   d_re    = dw/(1-beta)                 Reynolds length: Re = rho*|u_sup|*d_re/mu
+  #   d_h     = beta*dw/(1-beta)            heat-transfer length
+  #   a_sf    = 4*(1-beta)/dw               wetted area per unit canister volume
+  #   1/alpha = 129*(1-beta)^2/(2*beta^3*dw^2)          Darcy (viscous) resistance
+  #   C2      = 2.91*Re_ref^-0.103*(1-beta)/(beta^3*dw) Forchheimer (inertial)
+  #   Nu      = (1 + 0.99*Pe^0.66)*beta^1.79 ; Pe = Re*Pr ; h_sf = Nu*k_gas(T)/d_h
+  # Momentum sink: dp/dz = -(mu/alpha)*u_sup - C2*0.5*rho*u_sup^2.
+  # C2 is evaluated ONCE at the reference state below and held constant (as the local
+  # code does); h_sf is a live field via the Nu formula. Mixing d_re and d_h is the
+  # classic error here - Re uses d_re, h_sf divides by d_h.
+  reference_state:
+    T_ref_K: 51.015            # mean of the two face temperatures
+    rho_ref_kg_m3: 7.0772      # p_m / (R * T_ref)
+    mu_ref_Pa_s: 6.56191e-06   # CoolProp helium (T_ref, p_m)
+    v_ref_m_s: 0.77095         # peak superficial velocity, hot face (drive table)
+  screen_500:                  # warm half; 500 mesh, wire 24 um [ASSUME, as DeltaEC model]
+    dw_m: 2.4e-5
+    porosity: 0.6289
+    d_re_m: 6.4673e-5
+    d_h_m: 4.0673e-5
+    a_sf_m1: 61850.0
+    inv_alpha_m2: 6.19975e+10
+    Re_ref: 53.77
+    C2_m1: 1.19999e+5
+    nu_beta_factor: 0.43597    # beta^1.79 in the Nu formula
+  screen_635:                  # cold half; 635 mesh, wire 20 um [ASSUME, as DeltaEC model]
+    dw_m: 2.0e-5
+    porosity: 0.6073
+    d_re_m: 5.0929e-5
+    d_h_m: 3.0929e-5
+    a_sf_m1: 78540.0
+    inv_alpha_m2: 1.11023e+11
+    Re_ref: 42.35
+    C2_m1: 1.73441e+5
+    nu_beta_factor: 0.40954
+
+porous_hx:                     # idealized isothermal heat exchangers ([ASSUME]d slit
+  porosity: 0.70               # geometry as in the DeltaEC model)
+  d_h_m: 2.0e-4
+  a_sf_m1: 1.0e5
+  inv_alpha_m2: 1.0e5          # nominal - negligible dp on purpose
+  C2_m1: 1.0e-5
+  Nu_formula: "max(2.0, 2.0 + 1.1 * Re^0.6 * Pr^(1/3))"  # Wakao-type; Re on d_h, superficial
+  solid_note: copper; solid temperature FIXED (hot 80.033 K / cold 21.997 K). The HX
+    solid is the model's only thermal anchor - chamber and matrix walls are adiabatic.
+
+drive:                         # two pistons, x(t) = |x| * cos(omega*t + Ph)
+  # Derivation: the DeltaEC face volume-flow phasors (face_targets below) corrected for
+  # the compressibility of the gas column between each piston and its matrix face
+  # (adiabatic chamber V_ch/(gamma*p_m) + isothermal HX gas V_hx_gas/p_m):
+  #   U_piston = U_face + j*omega*[V_ch/(gamma*p_m) + V_hx_gas/p_m]*p_face  (hot: sign +;
+  #   the cold piston ABSORBS the machine's +z flow: sign -)
+  # Piston displacement xi toward the matrix reduces the chamber: U_p = A*dxi/dt, so
+  # |xi| = |U_p|/(A*omega) and Ph(xi) = Ph(U_p) - 90 deg.
+  hot_piston:
+    U_amp_m3_s: 5.17850e-4
+    U_phase_deg: 34.1095
+    displacement_amp_m: 5.81958e-3
+    displacement_phase_deg: -55.8905
+  cold_piston:
+    U_amp_m3_s: 1.78560e-4
+    U_phase_deg: -39.2630
+    displacement_amp_m: 2.00665e-3
+    displacement_phase_deg: -129.2630
+  implementation: moving wall/mesh or an equivalent verified source model - the code's
+    choice, documented. The REALIZED piston volume flow must match this spec within
+    0.5 % in amplitude and 0.5 deg in phase (report the check - piston_check.csv).
+
+face_targets_deltaec_context:  # context from the DeltaEC replica - NOT pass bars
+  matrix_hot_face:
+    T_K: 80.033
+    p_amp_Pa: 67505.9
+    p_phase_deg: -0.3025
+    U_amp_m3_s: 0.000474712
+    U_phase_deg: 25.5443
+    mdot_amp_kg_s: 0.00214156
+    u_superficial_amp_m_s: 0.770949
+    Htot_W: 1.8275
+    Edot_W: 14.4200
+  joint_500_635:
+    T_K: 28.036
+    p_amp_Pa: 59191.1
+    p_phase_deg: -3.1448
+    U_amp_m3_s: 0.0001669
+    U_phase_deg: 2.5845
+    mdot_amp_kg_s: 0.00214936
+    u_superficial_amp_m_s: 0.271051
+    Htot_W: 1.8275
+    Edot_W: 4.9149
+  matrix_cold_face:
+    T_K: 21.997
+    p_amp_Pa: 52775.8
+    p_phase_deg: -1.8925
+    U_amp_m3_s: 0.000158873
+    U_phase_deg: -28.6135
+    mdot_amp_kg_s: 0.00260769
+    u_superficial_amp_m_s: 0.258016
+    Htot_W: 1.8275
+    Edot_W: 3.7447
+  derived:
+    dp_amp_across_matrix_Pa: 14730.2
+    p_amp_ratio_hot_over_cold: 1.2791
+    mdot_amp_spread_pct: 23.6  # rho*|U| is NOT constant along the matrix (|p|/p_m ~ 0.09)
+  cautions:
+    - "phases: compare a CFD matrix-cold-face result against station 4; the paper's
+       theta_c = -39.6 deg is quoted 5 mm further on (CHX exit), 6.6 deg away."
+    - "the DeltaEC model carries NO time-averaged pressure difference along the machine
+       (p2,0,DEC = 0 everywhere): compare the dp AMPLITUDE and waveform, never the mean."
+
+initial_conditions:
+  p_Pa: 750000.0 uniform
+  velocity: 0 everywhere; pistons at mean position (the phases above define t = 0)
+  T_chambers_and_hx: hot side 80.033 K flat; cold side 21.997 K flat (gas and solid)
+  T_solid: equal to the gas everywhere at t = 0
+  # matrix gas/solid T(z): the DeltaEC steady profile, 121 nodes, z from the matrix hot
+  # face (dz = 0.4333 mm). Interpolate linearly onto cell centres.
+  T_matrix_profile_z_m__T_K:
+    - [0.000000, 80.033]
+    - [0.000433, 78.879]
+    - [0.000867, 77.727]
+    - [0.001300, 76.576]
+    - [0.001733, 75.426]
+    - [0.002167, 74.278]
+    - [0.002600, 73.133]
+    - [0.003033, 71.989]
+    - [0.003467, 70.848]
+    - [0.003900, 69.710]
+    - [0.004333, 68.575]
+    - [0.004767, 67.444]
+    - [0.005200, 66.316]
+    - [0.005633, 65.192]
+    - [0.006067, 64.073]
+    - [0.006500, 62.958]
+    - [0.006933, 61.849]
+    - [0.007367, 60.745]
+    - [0.007800, 59.647]
+    - [0.008233, 58.556]
+    - [0.008667, 57.472]
+    - [0.009100, 56.395]
+    - [0.009533, 55.326]
+    - [0.009967, 54.266]
+    - [0.010400, 53.215]
+    - [0.010833, 52.174]
+    - [0.011267, 51.143]
+    - [0.011700, 50.123]
+    - [0.012133, 49.116]
+    - [0.012567, 48.120]
+    - [0.013000, 47.139]
+    - [0.013433, 46.171]
+    - [0.013867, 45.219]
+    - [0.014300, 44.283]
+    - [0.014733, 43.363]
+    - [0.015167, 42.462]
+    - [0.015600, 41.579]
+    - [0.016033, 40.717]
+    - [0.016467, 39.875]
+    - [0.016900, 39.055]
+    - [0.017333, 38.258]
+    - [0.017767, 37.485]
+    - [0.018200, 36.737]
+    - [0.018633, 36.014]
+    - [0.019067, 35.318]
+    - [0.019500, 34.650]
+    - [0.019933, 34.009]
+    - [0.020367, 33.398]
+    - [0.020800, 32.815]
+    - [0.021233, 32.262]
+    - [0.021667, 31.738]
+    - [0.022100, 31.244]
+    - [0.022533, 30.779]
+    - [0.022967, 30.343]
+    - [0.023400, 29.936]
+    - [0.023833, 29.556]
+    - [0.024267, 29.202]
+    - [0.024700, 28.875]
+    - [0.025133, 28.573]
+    - [0.025567, 28.293]
+    - [0.026000, 28.036]
+    - [0.026433, 27.582]
+    - [0.026867, 27.171]
+    - [0.027300, 26.801]
+    - [0.027733, 26.468]
+    - [0.028167, 26.171]
+    - [0.028600, 25.906]
+    - [0.029033, 25.669]
+    - [0.029467, 25.458]
+    - [0.029900, 25.269]
+    - [0.030330, 25.101]
+    - [0.030770, 24.950]
+    - [0.031200, 24.814]
+    - [0.031630, 24.692]
+    - [0.032070, 24.581]
+    - [0.032500, 24.479]
+    - [0.032930, 24.387]
+    - [0.033370, 24.301]
+    - [0.033800, 24.222]
+    - [0.034230, 24.148]
+    - [0.034670, 24.078]
+    - [0.035100, 24.012]
+    - [0.035530, 23.949]
+    - [0.035970, 23.889]
+    - [0.036400, 23.830]
+    - [0.036830, 23.774]
+    - [0.037270, 23.719]
+    - [0.037700, 23.666]
+    - [0.038130, 23.614]
+    - [0.038570, 23.562]
+    - [0.039000, 23.511]
+    - [0.039430, 23.461]
+    - [0.039870, 23.411]
+    - [0.040300, 23.362]
+    - [0.040730, 23.313]
+    - [0.041170, 23.264]
+    - [0.041600, 23.215]
+    - [0.042030, 23.166]
+    - [0.042470, 23.117]
+    - [0.042900, 23.068]
+    - [0.043330, 23.019]
+    - [0.043770, 22.971]
+    - [0.044200, 22.921]
+    - [0.044630, 22.872]
+    - [0.045070, 22.823]
+    - [0.045500, 22.773]
+    - [0.045930, 22.724]
+    - [0.046370, 22.674]
+    - [0.046800, 22.623]
+    - [0.047230, 22.573]
+    - [0.047670, 22.522]
+    - [0.048100, 22.471]
+    - [0.048530, 22.420]
+    - [0.048970, 22.368]
+    - [0.049400, 22.316]
+    - [0.049830, 22.264]
+    - [0.050270, 22.211]
+    - [0.050700, 22.158]
+    - [0.051130, 22.105]
+    - [0.051570, 22.051]
+    - [0.052000, 21.997]
+
+numerics:
+  dt_s: 1.8115942e-5           # 2400 steps per cycle (the local line's measurement-backed choice)
+  mesh:
+    matrix: 120 cells of 0.43333 mm (cell FACES on the 121 comparison nodes)
+    hx: 10 cells of 0.5 mm each side
+    chambers: cells of ~0.5 mm at mean volume
+  run_length_cycles: ">= 40 from the given initial state, then until bar B6 holds"
+  sensitivity_check: restart the converged state, halve dt (4800 steps/cycle) AND halve
+    the matrix dx, run >= 5 cycles - the B1/B2 quantities must move < 1 %.
+
+acceptance_bars:
+  # Code-to-code, ltneFoam vs the leader's local Fluent twin. PREREGISTERED - this file
+  # is the prereg. The PR that runs L5 quotes these bars UNCHANGED before any run is
+  # submitted; a FAIL is recorded as a FAIL.
+  B1_face_phasors: at both matrix faces, cycle-fitted |p| and |mdot| within 3 %, phases
+    within 3 deg
+  B2_dp_amplitude: cycle-fitted dp amplitude across the matrix within 5 %
+  B3_enthalpy_flow: cycle-mean total enthalpy + conduction flux <H> at the two faces and
+    the joint within max(5 %, 0.1 W)
+  B4_temperature_profile: cycle-mean Tg(z) at the 121 nodes, max |delta T| < 2 K
+  B5_energy_closure: EACH code separately - the cycle-mean boundary energy flows (piston
+    work in, HX solid heat out) close to < 0.15 W (1 % of the hot-face Edot)
+  B6_periodicity: last 5 cycles - |d(cycle-mean T at the joint)/d(cycle)| < 0.1 K and the
+    relative drift of the matrix <H> < 2 % per cycle
+
+deliverables:                  # in the L5 PR (small CSVs, per docs/TASK.md job rules)
+  - "per_cycle.csv: cycle, cycle-mean T at the joint, <H> at the 3 stations, fitted dp
+     amplitude, fitted face phasors (|p|, Ph, |mdot|, Ph at both faces)"
+  - "final_cycle_faces.csv: t, p, u_superficial, mdot, Tg at both matrix faces, every step"
+  - "profiles.csv: cycle-mean Tg(z) and Ts(z) at the 121 nodes, final cycle"
+  - "piston_check.csv: realized piston volume-flow phasor vs this spec (the 0.5 % check)"
+  - "logs trimmed per repo rules; README status row; results/L5/ layout as L4"
+
+leader_side_note: the leader runs the Fluent twin locally from THIS file and performs the
+  B1-B6 comparison; the cloud PR is judged on bars-before-runs discipline, the sensitivity
+  check, the B5/B6 self-checks, and the deliverables being complete and reproducible.
