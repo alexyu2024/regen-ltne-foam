@@ -58,7 +58,7 @@ Or by hand: `cases/<level>_*/Allrun`, `cases/<level>_*/Allclean`. `tools/verify.
 | L2 porous plug, steady | `cases/L2_porousPlug` | PASS (16/16 after the face-consistent drag fix, merged; first run FAIL 12/16 in `results/L2_run1`) |
 | L3 LTNE relaxation | `cases/L3_ltneRelax` | PASS (10/10, merged) |
 | L4 LTNE with flow | `cases/L4_singleBlow` | PASS (6/6, merged; first run crashed on a k_s = 0 bug, `results/L4_run1`) |
-| L5 regenerator slice | `cases/L5_regenSlice` | running (GitHub Actions `run-case`, PR in draft) |
+| L5 regenerator slice | `cases/L5_regenSlice` | self-checks PASS (12/12, `results/L5`); B1-B4 await the leader's Fluent comparison; PR not merged |
 
 ## License and rights
 
