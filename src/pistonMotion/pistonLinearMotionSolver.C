@@ -32,12 +32,14 @@ Foam::pistonLinearMotionSolver::pistonLinearMotionSolver
     piston_.setSize(names.size());
     fixed_.setSize(names.size());
     displacement_.setSize(names.size());
+    rampTime_.setSize(names.size());
 
     forAll(names, i)
     {
         const dictionary& d = pistonsDict.subDict(names[i]);
         piston_[i] = d.get<scalar>("piston");
         fixed_[i] = d.get<scalar>("fixed");
+        rampTime_[i] = d.getOrDefault<scalar>("rampTime", 0);
         displacement_.set
         (
             i,
@@ -60,7 +62,11 @@ Foam::pistonLinearMotionSolver::curPoints() const
 
     forAll(piston_, i)
     {
-        const scalar d = displacement_[i].value(t);
+        scalar d = displacement_[i].value(t);
+        if (rampTime_[i] > 0)
+        {
+            d -= displacement_[i].value(0)*Foam::exp(-t/rampTime_[i]);
+        }
 
         forAll(points0_, pointi)
         {

@@ -1,32 +1,89 @@
 # Manually triggered run of one level's case, for cases too long for the session container (docs/TASK.md, "Where the
-# computing runs"). Uploads only the level's result directory (results.csv, STATUS.md, cited logs, files over 1 MB
-# gzipped). Restart across jobs for runs longer than the 6 h job limit is added when a level needs it.
+# computing runs"). Uploads only small files: the level's result directory (<level>-results) and, for long cases, the
+# restart state (<level>-state).
+#
+# Long cases provide cases/<level>_*/runLong.sh <outdir> <minutes>: exit 0 = done, 3 = time budget used (state kept).
+# To continue a run across the 6 h job limit, dispatch again with restart_run_id = the previous run's id.
 name: run-case
 
 on:
   workflow_dispatch:
     inputs:
       level:
-        description: "Level to run, e.g. L1"
+        description: "Level to run, e.g. L5"
         required: true
+      restart_run_id:
+        description: "Run id whose <level>-state artifact to continue from (empty: start fresh)"
+        required: false
+        default: ""
+      minutes:
+        description: "Time budget for the solver in this job, minutes"
+        required: false
+        default: "330"
+
+permissions:
+  contents: read
+  actions: read
 
 jobs:
   run:
     runs-on: ubuntu-24.04
-    timeout-minutes: 350
+    timeout-minutes: 355
     steps:
       - uses: actions/checkout@v4
 
       - name: Install OpenFOAM v2512 and build ltneFoam
         run: sudo tools/install.sh
 
+      - name: Fetch restart state
+        if: inputs.restart_run_id != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.level }}-state
+          run-id: ${{ inputs.restart_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: state
+
       - name: Run the case and check bars
         shell: bash {0}
         run: |
           source /usr/lib/openfoam/openfoam2512/etc/bashrc
-          tools/run_level.sh "${{ inputs.level }}" "out/${{ inputs.level }}"
-          rc=$?
-          cat "out/${{ inputs.level }}/STATUS.md" >> "$GITHUB_STEP_SUMMARY" 2>/dev/null
+          level="${{ inputs.level }}"
+          case=$(ls -d cases/"$level"_* | head -1)
+          out="out/$level"
+          mkdir -p "$out"
+          if [ -x "$case/runLong.sh" ]; then
+            [ -f state/state.tgz ] && tar xzf state/state.tgz -C "$case"
+            "$case/runLong.sh" "$out" "${{ inputs.minutes }}"
+            rc=$?
+            # keep the restart state (small: latest time, per-cycle table, last monitor chunk, logs)
+            tar czf state.tgz -C "$case" --exclude=params_L5.yaml --exclude='*.py' --exclude='*.sh' \
+              --exclude=Allrun --exclude=Allrun.continue --exclude=Allclean --exclude=README.md .
+            if [ $rc -eq 0 ]; then
+              for f in "$case"/log.*; do
+                n=$(wc -l < "$f")
+                awk -v n="$n" 'NR<=200 || NR>n-100 {printf "%7d  %s\n", NR, $0}' "$f" > "$out/$(basename "$f").trimmed"
+              done
+              "$case/Allclean"
+              git status --porcelain --ignored -- "$case" > "$out/log.allclean-check"
+              python3 - "$out" <<'PY'
+          import os, sys
+          sys.path.insert(0, 'tools')
+          from resultslib import Results
+          out = sys.argv[1]
+          lines = open(os.path.join(out, 'log.allclean-check')).read().splitlines()
+          r = Results(out)
+          r.add('allclean_leftover', len(lines), 'log.allclean-check', f'1-{len(lines)}' if lines else 'empty file')
+          r.write(mode='a')
+          PY
+              python3 tools/verify.py "$level" "$out"
+              rc=$?
+            fi
+          else
+            tools/run_level.sh "$level" "$out"
+            rc=$?
+          fi
+          cat "$out/STATUS.md" >> "$GITHUB_STEP_SUMMARY" 2>/dev/null
           exit $rc
 
       - name: Upload results
@@ -35,4 +92,12 @@ jobs:
         with:
           name: ${{ inputs.level }}-results
           path: out
+          retention-days: 14
+
+      - name: Upload restart state
+        if: always() && hashFiles('state.tgz') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.level }}-state
+          path: state.tgz
           retention-days: 14

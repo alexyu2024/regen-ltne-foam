@@ -1,0 +1,16 @@
+#!/bin/bash
+# Continue the L5 run from its latest time for <cycles> more cycles (0: use the
+# endTime already set). The solver log keeps every line except the per-step
+# progress lines (Time =, PIMPLE iteration, Courant, continuity, ExecutionTime),
+# so crash messages and the final "End" stay in it.
+cd "${0%/*}" || exit 1
+cycles=${1:?cycles}
+if [ "$cycles" -gt 0 ]; then
+    latest=$(foamListTimes -latestTime | tail -1)
+    end=$(python3 -c "print(repr((round(float('${latest:-0}')*23) + $cycles)/23.0))")
+    sed -i "s/^endTime .*/endTime         $end;/" system/controlDict
+fi
+n=$(ls log.ltneFoam* 2>/dev/null | wc -l)
+log=log.ltneFoam; [ "$n" -gt 0 ] && log=log.ltneFoam.$n
+ltneFoam 2>&1 | grep -v -E '^(Time = |PIMPLE: iteration|Courant Number|time step continuity|ExecutionTime|fieldAverage cycleMean write:|    Calculating averages|    Writing average fields)|^$' > $log
+exit ${PIPESTATUS[0]}
