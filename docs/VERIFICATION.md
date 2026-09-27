@@ -243,3 +243,68 @@ Definitions:
 | L4.6 | t_half | report | 0 | time when theta_out = 0.5, s |
 | L4.7 | t_half_exact | report | 0 | the same from the Schumann solution, s |
 | L4.8 | allclean_leftover | == | 0 | files under the case directory that `git status --porcelain --ignored` lists after `Allclean` |
+
+## L5 Oscillating regenerator slice (Huang 2020, leader's parameter file)
+
+Committed before any L5 run, including debugging runs. The preregistered pass bars are B1-B6 in
+`cases/L5_regenSlice/params_L5.yaml` (lines 376-389), quoted unchanged in the L5 PR. B1-B4 are code-to-code bars
+that the leader evaluates locally against the Fluent twin; they are listed below as `report` rows with the values
+this solver produces. The pass/fail rows below are the self-checks this PR is judged on: B5, B6, the realised
+piston flow, the dt/dx sensitivity check, completion, and the crash-pattern count.
+
+Pre-registered improvement (L4 review): the crash pattern now also matches `Floating point exception` and
+`Segmentation fault`.
+
+Interpretations, stated before any run:
+- **Start-up.** `initial_conditions` asks for pistons at the mean position, and the drive phases define t = 0.
+  Both pistons cannot be at mid-stroke at t = 0 with the given phases. The mesh therefore starts at the mean
+  position (so the gas mass at 0.75 MPa is as specified), and each piston follows
+  x(t) = |x| [cos(omega t + Ph) - cos(Ph) exp(-t / T_cycle)]. After 10 cycles the correction term is below
+  5e-5 |x|, so it does not affect the analysed cycles.
+- **Sensitivity check phases.** "B1/B2 quantities move < 1 %" is applied to amplitudes as a relative change. For
+  phases a relative change is meaningless (they are near 0), so the phase bar is an absolute change of 0.5 deg.
+
+Definitions:
+- Cycle k spans [t_s + (k-1) T, t_s + k T], with T = 1/23 s and t_s = 0.
+- Phasors come from a first-harmonic least-squares fit over one cycle, in the file's convention
+  x = x_mean + |x| cos(omega t + Ph).
+- Face quantities are taken on the face zones at z = 0 (hot face), z = 0.026 m (joint) and z = 0.052 m (cold face).
+- H = sum over the face zone of [phi (h + K) - (eps k_g snGrad T + k_eff,s snGrad T_s) |S_f|]. <H> is its
+  cycle mean.
+- B5 closure = |<W_hot piston> + <W_cold piston> + <Q_hot HX -> gas> + <Q_cold HX -> gas>| over the last cycle,
+  in W.
+- B6a = max over the last 5 cycles of |mean T_joint(k) - mean T_joint(k-1)|, in K. B6b = max over the last 5 cycles
+  of |<H_matrix>(k) - <H_matrix>(k-1)| / |<H_matrix>(k)|, with H_matrix the joint-face <H>.
+- Piston check: the realised piston volume flow U_p = -sum(meshPhi) over the piston patch, fitted over the last
+  cycle, against U_amp_m3_s and U_phase_deg in the file.
+- Sensitivity: the sensitivity run restarts from the converged state with dt/2 and matrix dx/2 (mapped fields) and
+  runs 5 cycles. Its last-cycle B1/B2 quantities (face |p|, |mdot| and their phases at both faces; the dp
+  amplitude) are compared with the base run's last cycle.
+
+| id | metric | op | bar | description |
+|----|--------|----|-----|-------------|
+| L5.1 | cycles_run | >= | 40 | base run: completed cycles (params: at least 40, then until B6 holds) |
+| L5.2 | crash_count | == | 0 | log lines matching `FOAM FATAL`, `nan`, `inf`, `Floating point exception` or `Segmentation fault` over all logs of all runs |
+| L5.3 | piston_hot_amp_err | <= | 0.005 | realised hot piston volume-flow amplitude, relative error |
+| L5.4 | piston_hot_phase_err_deg | <= | 0.5 | realised hot piston volume-flow phase, abs error, deg |
+| L5.5 | piston_cold_amp_err | <= | 0.005 | realised cold piston volume-flow amplitude, relative error |
+| L5.6 | piston_cold_phase_err_deg | <= | 0.5 | realised cold piston volume-flow phase, abs error, deg |
+| L5.7 | B5_closure_W | < | 0.15 | B5: last-cycle boundary energy-flow closure, W |
+| L5.8 | B6a_dTjoint_K | < | 0.1 | B6: last-5-cycle change of cycle-mean T at the joint, K per cycle |
+| L5.9 | B6b_dH_rel | < | 0.02 | B6: last-5-cycle relative change of the matrix <H>, per cycle |
+| L5.10 | sens_amp_max_rel | < | 0.01 | sensitivity: max relative change of the B1/B2 amplitudes (6 values) |
+| L5.11 | sens_phase_max_deg | <= | 0.5 | sensitivity: max abs change of the B1 phases (4 values), deg |
+| L5.12 | hot_p_amp_Pa | report | 0 | B1: hot face |p| (context: DeltaEC 67505.9) |
+| L5.13 | hot_p_ph_deg | report | 0 | B1: hot face p phase (DeltaEC -0.30) |
+| L5.14 | hot_mdot_amp | report | 0 | B1: hot face |mdot|, kg/s (DeltaEC 0.00214156) |
+| L5.15 | hot_mdot_ph_deg | report | 0 | B1: hot face mdot phase (DeltaEC 25.54, the U phase) |
+| L5.16 | cold_p_amp_Pa | report | 0 | B1: cold face |p| (DeltaEC 52775.8) |
+| L5.17 | cold_p_ph_deg | report | 0 | B1: cold face p phase (DeltaEC -1.89) |
+| L5.18 | cold_mdot_amp | report | 0 | B1: cold face |mdot| (DeltaEC 0.00260769) |
+| L5.19 | cold_mdot_ph_deg | report | 0 | B1: cold face mdot phase |
+| L5.20 | dp_amp_Pa | report | 0 | B2: fitted dp amplitude across the matrix (DeltaEC 14730.2) |
+| L5.21 | H_hot_W | report | 0 | B3: <H> at the hot face (DeltaEC 1.8275) |
+| L5.22 | H_joint_W | report | 0 | B3: <H> at the joint |
+| L5.23 | H_cold_W | report | 0 | B3: <H> at the cold face |
+| L5.24 | Tjoint_mean_K | report | 0 | B4 context: cycle-mean T at the joint (DeltaEC 28.036) |
+| L5.25 | allclean_leftover | == | 0 | files under the case directory that `git status --porcelain --ignored` lists after `Allclean` |
