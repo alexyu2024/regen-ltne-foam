@@ -56,8 +56,8 @@ Or by hand: `cases/<level>_*/Allrun`, `cases/<level>_*/Allclean`. `tools/verify.
 | L0 build + smoke | `cases/L0_smoke` | PASS (8/8, merged) |
 | L1 closed tube, piston | `cases/L1_closedTube` | PASS (15/15, merged) |
 | L2 porous plug, steady | `cases/L2_porousPlug` | PASS (16/16 after the face-consistent drag fix, merged; first run FAIL 12/16 in `results/L2_run1`) |
-| L3 LTNE relaxation | `cases/L3_ltneRelax` | 10/10 PASS locally (`results/L3`); in review |
-| L4 LTNE with flow | | not started |
+| L3 LTNE relaxation | `cases/L3_ltneRelax` | PASS (10/10, merged) |
+| L4 LTNE with flow | `cases/L4_singleBlow` | 6/6 PASS locally (`results/L4`; first run crashed, `results/L4_run1`); in review |
 | L5 regenerator slice | | not started |
 
 ## License and rights

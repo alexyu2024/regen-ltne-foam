@@ -1,0 +1,9 @@
+metric,value,source
+final_time,150.0,results/L4/log.ltneFoam:424562
+out_err,0.001473263962978838,results/L4/outletT.dat:6-1505
+t_half,70.36896041267686,results/L4/outletT.dat:6-1505
+t_half_exact,70.4362206670653,results/L4/outletT.dat:computed from the inputs
+Es_err,0.000538644919982398,results/L4/ltne.dat:2-30002 (every 100th row)
+energy_err,0.0005161299789159485,"results/L4/ltne.dat:2,30002 with outletT.dat:6-1505"
+fatal_or_nan_count,0,results/L4/log.*:all lines of all logs
+allclean_leftover,0,results/L4/log.allclean-check:empty file

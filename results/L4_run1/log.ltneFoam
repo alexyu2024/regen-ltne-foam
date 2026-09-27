@@ -1,0 +1,78 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : ltneFoam
+Date   : Sep 26 2026
+Time   : 22:10:11
+Host   : vm
+PID    : 1178
+I/O    : uncollated
+Case   : /tmp/claude-0/-home-user-regen-ltne-foam/dc12042d-894c-5db9-b3c9-0425e1896857/scratchpad/clone/cases/L4_singleBlow
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Overriding DebugSwitches according to controlDict
+    SolverPerformance 0;
+
+Create mesh for time = 0
+
+Selecting dynamicFvMesh staticFvMesh
+
+PIMPLE: no residual control data found. Calculations will employ 3 corrector loops
+
+Reading thermophysical properties
+
+Selecting thermodynamics package 
+{
+    type            hePsiThermo;
+    mixture         pureMixture;
+    transport       const;
+    thermo          hConst;
+    equationOfState perfectGas;
+    specie          specie;
+    energy          sensibleEnthalpy;
+}
+
+Reading field U
+
+Reading/calculating face flux field phi
+
+Creating turbulence model
+
+Selecting turbulence model type laminar
+Selecting laminar stress model Stokes
+Creating field dpdt
+
+Creating field kinetic energy K
+
+No finite volume options present
+Reading porous-medium fields
+
+LTNE solid matrix: rhoS = 7900, CpS = 500, kS = 0, hsf = 20
+
+[stack trace]
+=============
+#1  Foam::sigFpe::sigHandler(int) in /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/lib/libOpenFOAM.so
+#2  ? in /lib/x86_64-linux-gnu/libc.so.6
+#3  Foam::divide(Foam::Field<double>&, double const&, Foam::UList<double> const&) in /usr/lib/openfoam/openfoam2512/platforms/linux64GccDPInt32Opt/lib/libOpenFOAM.so
+#4  ? in ~/OpenFOAM/user-v2512/platforms/linux64GccDPInt32Opt/bin/ltneFoam
+#5  ? in ~/OpenFOAM/user-v2512/platforms/linux64GccDPInt32Opt/bin/ltneFoam
+#6  ? in ~/OpenFOAM/user-v2512/platforms/linux64GccDPInt32Opt/bin/ltneFoam
+#7  ? in ~/OpenFOAM/user-v2512/platforms/linux64GccDPInt32Opt/bin/ltneFoam
+#8  ? in /lib/x86_64-linux-gnu/libc.so.6
+#9  __libc_start_main in /lib/x86_64-linux-gnu/libc.so.6
+#10  ? in ~/OpenFOAM/user-v2512/platforms/linux64GccDPInt32Opt/bin/ltneFoam
+=============
+Floating point exception
