@@ -54,9 +54,12 @@ if [ ! -f sens/per_cycle.csv ] || [ "$(wc -l < sens/per_cycle.csv)" -lt 6 ]; the
         sed -i "s/^startTime .*/startTime       $(python3 -c "print(repr($tr - $dtf))");/; s/^endTime .*/endTime         $tr;/" system/controlDict
         sed -i "s/^writeInterval .*/writeInterval   1;/" system/controlDict
         runApplication moveDynamicMesh
-        [ -d "$tr/polyMesh" ] || { echo "moved mesh not written at $tr"; exit 1; }
-        sed -i "s/^startTime .*/startTime       $tr;/" system/controlDict
-        cp 0.orig/* "$tr"/
+        # the moved mesh is written under this case's own time name (timePrecision
+        # may give fewer digits than the base run's name for the same time)
+        ts=$(foamListTimes -latestTime -noZero 2>/dev/null | tail -1)
+        [ -n "$ts" ] && [ -d "$ts/polyMesh" ] || { echo "moved mesh not written at $tr"; exit 1; }
+        sed -i "s/^startTime .*/startTime       $ts;/" system/controlDict
+        cp 0.orig/* "$ts"/
         runApplication mapFields .. -consistent -sourceTime "$tr"
         end=$(python3 -c "print(repr((round($tr*23) + 5)/23.0))")
         sed -i "s/^endTime .*/endTime         $end;/; s/^writeInterval .*/writeInterval   24000;/" system/controlDict

@@ -194,8 +194,8 @@ def final(case, out):
         amax = max(abs(s[a] / last[a] - 1) for a in amps)
         pmax = max(abs((s[p] - last[p] + 180) % 360 - 180) for p in phs)
         src = f'per_cycle_sensitivity.csv:{len(spc) + 1} vs per_cycle.csv:{len(pc) + 1}'
-        r.add('sens_amp_max_rel', amax, 'per_cycle_sensitivity.csv', src)
-        r.add('sens_phase_max_deg', pmax, 'per_cycle_sensitivity.csv', src)
+        r.add('sens_amp_max_rel', amax, 'per_cycle_sensitivity.csv', src.split(':', 1)[1])
+        r.add('sens_phase_max_deg', pmax, 'per_cycle_sensitivity.csv', src.split(':', 1)[1])
         r.add('sens_cycles', len(spc), 'per_cycle_sensitivity.csv', f'2-{len(spc) + 1}')
     else:
         r.add('sens_amp_max_rel', None, 'per_cycle_sensitivity.csv', None)
@@ -203,12 +203,18 @@ def final(case, out):
 
     # crash patterns over all logs (base and sensitivity)
     bad = re.compile(r'FOAM FATAL|\bnan\b|\binf\b|Floating point exception|Segmentation fault', re.IGNORECASE)
-    hits = []
+    # OpenFOAM's start-up banner "trapFpe: Floating point exception trapping enabled"
+    # reports a setting, not a crash; it is skipped, and the skipped lines are counted
+    banner = re.compile(r'^trapFpe: Floating point exception trapping enabled')
+    hits, skipped = [], 0
     for path in sorted(glob.glob(os.path.join(case, 'log.*')) + glob.glob(os.path.join(sens, 'log.*'))):
         for i, l in enumerate(open(path, errors='replace')):
-            if bad.search(l):
+            if banner.match(l):
+                skipped += 1
+            elif bad.search(l):
                 hits.append(f'{os.path.relpath(path, case)}:{i + 1}')
-    r.add('crash_count', len(hits), 'log.*', hits if hits else 'all lines of all logs (base and sens)')
+    r.add('crash_count', len(hits), 'log.*', hits if hits else
+          f'all lines of all logs (base and sens); {skipped} trapFpe banner lines skipped')
     r.write()
 
 
