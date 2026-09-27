@@ -60,6 +60,25 @@ Or by hand: `cases/<level>_*/Allrun`, `cases/<level>_*/Allclean`. `tools/verify.
 | L4 LTNE with flow | `cases/L4_singleBlow` | PASS (6/6, merged; first run crashed on a k_s = 0 bug, `results/L4_run1`) |
 | L5 regenerator slice | `cases/L5_regenSlice` | self-checks PASS (12/12, `results/L5`); B1-B4 await the leader's Fluent comparison; PR not merged |
 
+## How to cite
+
+Dr Qiming Yu, Enterprise Research Fellow, University of Southampton.
+
+Machine-readable metadata: [CITATION.cff](CITATION.cff) (GitHub's "Cite this repository" uses it). BibTeX:
+
+```bibtex
+@software{yu_regen_ltne_foam,
+  author  = {Yu, Qiming},
+  title   = {regen-ltne-foam: ltneFoam, an OpenFOAM solver for oscillating helium flow in porous
+             regenerators with local thermal non-equilibrium},
+  version = {0.0.0-unreleased},
+  license = {GPL-3.0-or-later},
+  url     = {https://github.com/alexyu2024/regen-ltne-foam}
+}
+```
+
+A DOI will be added here and in `CITATION.cff` at the first verified release.
+
 ## License and rights
 
 Copyright (C) 2026 Qiming Yu <qimingyu.alex@gmail.com>
