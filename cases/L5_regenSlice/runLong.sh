@@ -6,9 +6,9 @@
 #   holds (and >= 40 cycles), then the sensitivity run (dt/2, matrix dx/2, 5 cycles)
 #   and the final post-processing. Exit 0: done; 3: time budget used, state kept
 #   for the next job; other: failure.
+out=$(realpath -m "${1:?outdir}")   # relative to the caller's directory
 cd "${0%/*}" || exit 1
 . "${WM_PROJECT_DIR:?}/bin/tools/RunFunctions"
-out=$(realpath -m "${1:?outdir}")
 budget=$(( ${2:-330} * 60 ))
 t0=$(date +%s)
 

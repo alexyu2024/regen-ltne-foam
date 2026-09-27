@@ -53,12 +53,12 @@ jobs:
           out="out/$level"
           mkdir -p "$out"
           if [ -x "$case/runLong.sh" ]; then
-            [ -f state/state.tgz ] && tar xzf state/state.tgz -C "$case"
+            [ -f state/state.tgz ] && tar xzf state/state.tgz -C "$case" && rm -rf "$case/out"
             "$case/runLong.sh" "$out" "${{ inputs.minutes }}"
             rc=$?
             # keep the restart state (small: latest time, per-cycle table, last monitor chunk, logs)
             tar czf state.tgz -C "$case" --exclude=params_L5.yaml --exclude='*.py' --exclude='*.sh' \
-              --exclude=Allrun --exclude=Allrun.continue --exclude=Allclean --exclude=README.md .
+              --exclude=Allrun --exclude=Allrun.continue --exclude=Allclean --exclude=README.md --exclude=./out .
             if [ $rc -eq 0 ]; then
               for f in "$case"/log.*; do
                 n=$(wc -l < "$f")
