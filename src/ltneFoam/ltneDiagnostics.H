@@ -166,6 +166,22 @@ if (monitorsActive)
         row.append(Qs);
     }
 
+    {
+        scalar Qn = 0, Qa = 0;
+        forAll(hA, celli)
+        {
+            if (fixedZoneOfCell[celli] >= 0) { continue; }
+            const scalar q =
+                hA[celli]*(Ts[celli] - thermo.T()[celli])*mesh.V()[celli];
+            Qn += q;
+            Qa += mag(q);
+        }
+        reduce(Qn, sumOp<scalar>());
+        reduce(Qa, sumOp<scalar>());
+        row.append(Qn);
+        row.append(Qa);
+    }
+
     if (Pstream::master())
     {
         monitorFile() << runTime.value();
