@@ -64,3 +64,19 @@ container waiting on it.
 ## Reporting
 Open each PR with the status table. Keep `README.md` short: what it is, how to install, how to run each level, the
 current level status. No marketing text, no filler.
+
+## L6 (added 2026-09-29 by the leader, leader-gen8; relayed by the owner, text verbatim)
+L6 = verification of the L5 oscillating regenerator slice (Huang 2020 public parameters only). New branch stacked on
+PR #10, one draft PR.
+1. Add an "L6" section to docs/TASK.md with these pre-registered criteria BEFORE running anything; commit it first.
+2. Periodic steady state: run until cycle-averaged QoIs (net enthalpy flow, gas-solid heat exchange, pressure-drop
+   amplitude) change < 0.1 % between consecutive cycles; report the cycle count.
+3. Grid convergence: three grids, refinement ratio >= 1.3, Celik et al. (2008) GCI on the same QoIs; pass = GCI_fine
+   < 3 % and apparent order within 0.5 of the formal order, or state why not.
+4. Time-step convergence: two time steps (ratio 2); pass = QoI change < 1 %.
+5. Energy ledger: report both the registered four-term closure and the six-term closure per cycle; explain physically
+   which terms the four-term form omits. Do not move the L5.7 bar.
+6. Cost: ESI prebuilt, coarse grids first, each long run launched once without polling; stop after the draft PR; first
+   line of the PR description = DONE/BLOCKED + one sentence.
+L7 (later, not now) will be the full Huang 2020 low-temperature stage.
+No radial or intermediate heat interception of any kind, no user designs, no merge, no visibility change.
