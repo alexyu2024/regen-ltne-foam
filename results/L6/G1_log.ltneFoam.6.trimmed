@@ -1,0 +1,153 @@
+      1  /*---------------------------------------------------------------------------*\
+      2  | =========                 |                                                 |
+      3  | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+      4  |  \\    /   O peration     | Version:  2512                                  |
+      5  |   \\  /    A nd           | Website:  www.openfoam.com                      |
+      6  |    \\/     M anipulation  |                                                 |
+      7  \*---------------------------------------------------------------------------*/
+      8  Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+      9  Arch   : "LSB;label=32;scalar=64"
+     10  Exec   : ltneFoam
+     11  Date   : Sep 29 2026
+     12  Time   : 12:26:39
+     13  Host   : runnervmtr4k5
+     14  PID    : 5683
+     15  I/O    : uncollated
+     16  Case   : /home/runner/work/regen-ltne-foam/regen-ltne-foam/cases/L6_regenConvergence/G1
+     17  nProcs : 1
+     18  trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+     19  memory pool : not available
+     20  fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+     21  allowSystemOperations : Allowing user-supplied system call operations
+     22  // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+     23  Create time
+     24  Overriding DebugSwitches according to controlDict
+     25      SolverPerformance 0;
+     26  --> FOAM Warning : 
+     27      From void Foam::Time::setControls()
+     28      in file db/Time/Time.C at line 244
+     29      Increasing the timePrecision from 14 to 17 to support the formatting of the current time directory 2.6086956521762854
+     30  Create mesh for time = 2.6086956521762854
+     31  Selecting dynamicFvMesh dynamicMotionSolverFvMesh
+     32  Selecting motion solver: pistonLinear
+     33  Applying motion to entire mesh
+     34  pistonLinear: hotPiston face at -0.017, fixed plane at -0.005
+     35  pistonLinear: coldPiston face at 0.061, fixed plane at 0.057
+     36  PIMPLE: no residual control data found. Calculations will employ 3 corrector loops
+     37  Reading thermophysical properties
+     38  Selecting thermodynamics package 
+     39  {
+     40      type            heRhoThermo;
+     41      mixture         pureMixture;
+     42      transport       tabulated;
+     43      thermo          hTabulated;
+     44      equationOfState perfectGas;
+     45      specie          specie;
+     46      energy          sensibleEnthalpy;
+     47  }
+     48  Reading field U
+     49  Reading/calculating face flux field phi
+     50  Creating turbulence model
+     51  Selecting turbulence model type laminar
+     52  Selecting laminar stress model Stokes
+     53  Creating field dpdt for moving meshes
+     54  Creating field kinetic energy K
+     55  Creating finite-volume options from "constant/fvOptions"
+     56  Selecting finite volume options type explicitPorositySource
+     57      Source: dragHotHx
+     58      State: active
+     59      - selecting cells using cellZones (hot_hx)
+     60      - selected 5 cell(s) with volume 3.0787500006563e-06
+     61  Porosity region dragHotHx:
+     62      selecting model: DarcyForchheimer
+     63      creating porous zone: hot_hx
+     64      origin: (0 0 0) e1: (1 0 0) e3: (0 0 1)
+     65      local bounds: (0.02481431039 0.02481431039 0.005)
+     66  Selecting finite volume options type explicitPorositySource
+     67      Source: drag500
+     68      State: active
+     69      - selecting cells using cellZones (matrix_500)
+     70      - selected 30 cell(s) with volume 1.6009500003413e-05
+     71  Porosity region drag500:
+     72      selecting model: DarcyForchheimer
+     73      creating porous zone: matrix_500
+     74      origin: (0 0 0) e1: (1 0 0) e3: (0 0 1)
+     75      local bounds: (0.02481431039 0.02481431039 0.026)
+     76  Selecting finite volume options type explicitPorositySource
+     77      Source: drag635
+     78      State: active
+     79      - selecting cells using cellZones (matrix_635)
+     80      - selected 30 cell(s) with volume 1.6009500003413e-05
+     81  Porosity region drag635:
+     82      selecting model: DarcyForchheimer
+     83      creating porous zone: matrix_635
+     84      origin: (0 0 0) e1: (1 0 0) e3: (0 0 1)
+     85      local bounds: (0.02481431039 0.02481431039 0.026)
+     86  Selecting finite volume options type explicitPorositySource
+     87      Source: dragColdHx
+     88      State: active
+     89      - selecting cells using cellZones (cold_hx)
+     90      - selected 5 cell(s) with volume 3.0787500006563e-06
+     91  Porosity region dragColdHx:
+     92      selecting model: DarcyForchheimer
+     93      creating porous zone: cold_hx
+     94      origin: (0 0 0) e1: (1 0 0) e3: (0 0 1)
+     95      local bounds: (0.02481431039 0.02481431039 0.005)
+     96  Reading porous-medium fields
+     97  LTNE solid matrix: rhoS = 7990, CpS = 1, kS = 1, hsf = 0
+     98  LTNE zone hot_hx: porosity 0.7, asf 100000, hsfModel wakao, fixed Ts
+     99  LTNE zone matrix_500: porosity 0.6289, asf 61850, hsfModel screenGedeonWood
+    100  LTNE zone matrix_635: porosity 0.6073, asf 78540, hsfModel screenGedeonWood
+    101  LTNE zone cold_hx: porosity 0.7, asf 100000, hsfModel wakao, fixed Ts
+    102  Reading field Ts
+    103  Porous drag (on faces) in zone hot_hx: d = 100000, f = 1e-05
+    104  Porous drag (on faces) in zone matrix_500: d = 61997500000, f = 119999
+    105  Porous drag (on faces) in zone matrix_635: d = 111023000000, f = 173441
+    106  Porous drag (on faces) in zone cold_hx: d = 100000, f = 1e-05
+    107  Constructing face momentum rhoUf
+    108  Starting time loop
+    109  fieldAverage cycleMean:
+    110      Restart period 0.043478260869565 - next restart at 2.6521739130435
+    111      Restarting averaging for fields:
+    112          T: iters = 2400 time = 0.043478260869567
+    113          Ts: iters = 2400 time = 0.043478260869567
+    114  fieldAverage cycleMean:
+    115      Reading/initialising field TMean
+    116      Reading/initialising field TsMean
+    117      Restarting averaging at time 2.6521920289883
+    118  fieldAverage cycleMean:
+    119      Reading/initialising field TMean
+    120      Reading/initialising field TsMean
+    121      Restarting averaging at time 2.6956702898583
+    122  fieldAverage cycleMean:
+    123      Reading/initialising field TMean
+    124      Reading/initialising field TsMean
+    125      Restarting averaging at time 2.7391485507283
+    126  fieldAverage cycleMean:
+    127      Reading/initialising field TMean
+    128      Reading/initialising field TsMean
+    129      Restarting averaging at time 2.7826268115983
+    130  fieldAverage cycleMean:
+    131      Reading/initialising field TMean
+    132      Reading/initialising field TsMean
+    133      Restarting averaging at time 2.8261050724683
+    134  fieldAverage cycleMean:
+    135      Reading/initialising field TMean
+    136      Reading/initialising field TsMean
+    137      Restarting averaging at time 2.8695833333382
+    138  fieldAverage cycleMean:
+    139      Reading/initialising field TMean
+    140      Reading/initialising field TsMean
+    141      Restarting averaging at time 2.9130615942082
+    142  fieldAverage cycleMean:
+    143      Reading/initialising field TMean
+    144      Reading/initialising field TsMean
+    145      Restarting averaging at time 2.9565398550782
+    146  fieldAverage cycleMean:
+    147      Reading/initialising field TMean
+    148      Reading/initialising field TsMean
+    149      Restarting averaging at time 3.0000181159482
+    150  fieldAverage cycleMean:
+    151      Reading/initialising field TMean
+    152      Reading/initialising field TsMean
+    153  End
