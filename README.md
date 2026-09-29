@@ -58,7 +58,15 @@ Or by hand: `cases/<level>_*/Allrun`, `cases/<level>_*/Allclean`. `tools/verify.
 | L2 porous plug, steady | `cases/L2_porousPlug` | PASS (16/16 after the face-consistent drag fix, merged; first run FAIL 12/16 in `results/L2_run1`) |
 | L3 LTNE relaxation | `cases/L3_ltneRelax` | PASS (10/10, merged) |
 | L4 LTNE with flow | `cases/L4_singleBlow` | PASS (6/6, merged; first run crashed on a k_s = 0 bug, `results/L4_run1`) |
-| L5 regenerator slice | `cases/L5_regenSlice` | self-checks PASS (12/12, `results/L5`); B1-B4 await the leader's Fluent comparison; PR not merged |
+| L5 regenerator slice | `cases/L5_regenSlice` | 11/12 PASS as preregistered (L5.7 FAIL); supplementary check L5.7a PASS (Amendment A1) (`results/L5`); B1-B4 await the leader's Fluent comparison; PR not merged |
+
+Scope:
+- L0-L4 are verified against exact or analytical solutions (L0 is the build and smoke test).
+- L5 is a check of numerical self-consistency: energy closure, periodicity, and grid and time-step sensitivity.
+- The code-to-code comparison with Fluent (bars B1-B4) has not been done yet, and nothing in this repository has
+  been validated against experiments.
+- The L5 energy-closure checks (B5 as L5.7, and L5.7a) test the closure of the model's own energy balance. They
+  cannot detect heat losses that the model does not contain, such as the outer wall or the end faces.
 
 ## How to cite
 
@@ -96,6 +104,9 @@ OpenFOAM software via www.openfoam.com, and owner of the OPENFOAM(R) and OpenCFD
 distribution).
 
 The solver was developed with AI assistance (Anthropic Claude) under the author's direction;
-every acceptance level is backed by the recorded runs and the CI in this repository. The
+every acceptance level is backed by the recorded runs and the CI in this repository. Here "backed" means
+each level was checked against its own bars in `docs/VERIFICATION.md`, within the scope stated under Status. It
+does not mean that L5 has been verified against Fluent, or that anything has been validated against experiments.
+The
 verification cases use published, public-domain benchmarks only. If you use this solver in
 academic work, please cite this repository (a paper reference will be added when available).

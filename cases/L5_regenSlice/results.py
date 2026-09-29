@@ -122,6 +122,14 @@ def latest_mean_field(case, name):
     return t, [float(v) for v in vals[:n]]
 
 
+def closure4(d):
+    return d['W_hot'] + d['W_cold'] + d['Qhot_gas'] + d['Qcold_gas']
+
+
+def closure6(d):
+    return closure4(d) + d['Qhot_solid'] + d['Qcold_solid']
+
+
 def final(case, out):
     from resultslib import Results, last_match
     os.makedirs(out, exist_ok=True)
@@ -145,7 +153,9 @@ def final(case, out):
             r.add(f'piston_{name}_amp_err', ea, 'piston_check.csv', 2 if name == 'hot' else 3)
             r.add(f'piston_{name}_phase_err_deg', ep, 'piston_check.csv', 2 if name == 'hot' else 3)
 
-    r.add('B5_closure_W', abs(last['closure']), 'per_cycle.csv', src_last)
+    # L5.7 (B5 as registered, docs/VERIFICATION.md): four terms, piston work + HX heat to the gas
+    r.add('B5_closure_W', abs(closure4(last)), 'per_cycle.csv',
+          f'{src_last}: abs(W_hot + W_cold + Qhot_gas + Qcold_gas)')
     b = b6(pc)
     r.add('B6a_dTjoint_K', None if b is None else b[0], 'per_cycle.csv', f'{len(pc) - 4}-{len(pc) + 1}')
     r.add('B6b_dH_rel', None if b is None else b[1], 'per_cycle.csv', f'{len(pc) - 4}-{len(pc) + 1}')
@@ -197,7 +207,14 @@ def final(case, out):
         r.add('sens_amp_max_rel', amax, 'per_cycle_sensitivity.csv', src.split(':', 1)[1])
         r.add('sens_phase_max_deg', pmax, 'per_cycle_sensitivity.csv', src.split(':', 1)[1])
         r.add('sens_cycles', len(spc), 'per_cycle_sensitivity.csv', f'2-{len(spc) + 1}')
-    else:
+    # L5.7a (Amendment A1, added after the runs): six terms, plus HX solid -> matrix solid conduction
+    note = f'{src_last}: abs(W_hot + W_cold + Qhot_gas + Qcold_gas + Qhot_solid + Qcold_solid)'
+    if spc:
+        note += (f'; sensitivity run cycle {int(spc[-1]["cycle"])}: six-term {closure6(spc[-1]):.6f} W, '
+                 f'four-term {closure4(spc[-1]):.6f} W (same definition at dt/2 and dx/2, '
+                 'not an independent verification)')
+    r.add('B5_closure6_W', abs(closure6(last)), 'per_cycle.csv', note)
+    if not spc:
         r.add('sens_amp_max_rel', None, 'per_cycle_sensitivity.csv', None)
         r.add('sens_phase_max_deg', None, 'per_cycle_sensitivity.csv', None)
 

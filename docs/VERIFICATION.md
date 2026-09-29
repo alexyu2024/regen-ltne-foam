@@ -308,3 +308,39 @@ Definitions:
 | L5.23 | H_cold_W | report | 0 | B3: <H> at the cold face |
 | L5.24 | Tjoint_mean_K | report | 0 | B4 context: cycle-mean T at the joint (DeltaEC 28.036) |
 | L5.25 | allclean_leftover | == | 0 | files under the case directory that `git status --porcelain --ignored` lists after `Allclean` |
+
+### Amendment A1 (2026-09-28, leader ruling S132a; added after the L5 runs)
+
+The table above and the B5 definition above are unchanged. This amendment records how L5.7 is read and adds one
+supplementary check.
+
+**L5.7 is a FAIL as registered.**
+- The registered B5 formula was committed in 1c929126 before any L5 run. Quoted from the definitions above:
+  "B5 closure = |<W_hot piston> + <W_cold piston> + <Q_hot HX -> gas> + <Q_cold HX -> gas>| over the last cycle,
+  in W."
+- Its value on cycle 40 of the base run is 0.396531 W, against a bar of < 0.15 W.
+- Why it fails: the four-term formula leaves out the conduction between each fixed-temperature HX solid and the
+  neighbouring matrix solid. The parameter file's B5 (`cases/L5_regenSlice/params_L5.yaml`, "piston work in, HX solid
+  heat out") covers heat leaving through the fixed-temperature HX solid, and that heat takes two paths: convection to
+  the gas and conduction to the matrix solid. The defect is in the bar's formula, not in the solver.
+- Order of events:
+  1. The four-term bar was registered in 1c929126.
+  2. A 10-cycle local test then missed it by 0.39 W.
+  3. The six-term formula entered `cases/L5_regenSlice/results.py` in 7521e0df, before the first CI `run-case` job.
+  4. From 7521e0df up to this amendment, `results.py` reported the six-term value under L5.7.
+
+**L5.7a, a supplementary check.** It was added after the runs, so it is not a preregistered bar.
+- Formula: the four terms of L5.7 plus the conduction from each HX solid into the matrix solid:
+  |<W_hot> + <W_cold> + <Q_hot HX -> gas> + <Q_cold HX -> gas> + <Q_hot HX solid -> matrix solid> +
+  <Q_cold HX solid -> matrix solid>| over the last cycle, in W.
+- On the sensitivity run (cycle 45), the same six-term closure is 0.041609 W and the four-term value is 0.508583 W.
+  This shows the same definition holding at dt/2 and dx/2. It is not an independent verification.
+- Neither B5 nor L5.7a can detect heat losses that the model does not contain, such as the outer wall or the end faces.
+
+| id | metric | op | bar | description |
+|----|--------|----|-----|-------------|
+| L5.7a | B5_closure6_W | < | 0.15 | supplementary (Amendment A1, after the runs): six-term last-cycle closure including HX solid -> matrix solid conduction, W |
+
+**L5.10 counting error.** "(6 values)" in the L5.10 description is a counting error. The sensitivity definition
+above lists five amplitudes: |p| and |mdot| at both faces, and the dp amplitude. `results.py` has always used those
+five. No quantity was added and nothing was re-run.

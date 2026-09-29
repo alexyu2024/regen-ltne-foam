@@ -90,10 +90,14 @@ On each piston it records the volume flow and the work rate W = -sum(meshPhi p),
 fixed-Ts HX it records the heat into the gas, Q_gas = sum of hA (Ts - T) V, and the heat conducted from the fixed
 HX solid into the neighbouring matrix solid, Q_solid.
 
-**B5 closure** = <W_hot> + <W_cold> + <Q_gas,hot> + <Q_gas,cold> + <Q_solid,hot> + <Q_solid,cold> over the last
-cycle. The HX solid conduction term is included because the HX solid's heat reaches the column through both the gas
-and the matrix solid. Without it the closure misses by 0.39 W in a 10-cycle local test; with it the miss is 0.04 W.
-This is flagged in the PR.
+**Energy closure** (`docs/VERIFICATION.md`, L5 and Amendment A1):
+- **L5.7 (B5 as registered)** = |<W_hot> + <W_cold> + <Q_gas,hot> + <Q_gas,cold>| over the last cycle. It FAILs:
+  0.397 W on cycle 40, against a bar of 0.15 W.
+- **L5.7a (supplementary, added after the runs)** = the same four terms plus <Q_solid,hot> + <Q_solid,cold>. It
+  gives 0.020 W.
+- Why they differ: the HX solid's heat reaches the column two ways, through the gas and through the matrix solid.
+  The registered formula leaves out the second path.
+- Neither check can detect heat losses that the model does not contain, such as the outer wall or the end faces.
 
 ## Characteristic numbers (from the inputs)
 
