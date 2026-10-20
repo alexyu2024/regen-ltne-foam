@@ -105,10 +105,32 @@ OpenFOAM software via www.openfoam.com, and owner of the OPENFOAM(R) and OpenCFD
 `ltneFoam` is an independent solver built on the OpenFOAM(R) libraries (ESI / openfoam.com
 distribution).
 
-The solver was developed with AI assistance (Anthropic Claude) under the author's direction;
-every acceptance level is backed by the recorded runs and the CI in this repository. Here "backed" means
-each level was checked against its own bars in `docs/VERIFICATION.md`, within the scope stated under Status. It
-does not mean that L5 has been verified against Fluent, or that anything has been validated against experiments.
-The
-verification cases use published, public-domain benchmarks only. If you use this solver in
-academic work, please cite this repository (a paper reference will be added when available).
+### Authorship, Scientific Leadership & AI Disclosure
+
+**Scientific Direction & Principal Investigator:** Qiming Yu (Enterprise Research Fellow, University of Southampton)
+- **Conception & Physics:** Conceived the project and defined the scientific objective (an open-source LTNE
+  regenerator solver succeeding previous Fluent formulations). Selected the governing thermal non-equilibrium
+  transport model (reference model: Tew et al. 2006, the Fluent porous-media LTNE formulation) and the regenerator
+  problem and its parameters (Huang et al. 2020).
+- **Verification Architecture:** Architected the graded verification methodology (L0-L6), required every
+  acceptance threshold to be fixed before the simulation runs to ensure falsification integrity, set the L5 and L6
+  thresholds and accepted those of L0-L4, and established the energy-ledger / GCI assessment framework.
+- **Scientific Rulings:** Specified the physical closure models (`cases/L5_regenSlice/params_L5.yaml`) and
+  adjudicated all numerical closure proposals and technical ambiguities across pull requests (including the
+  face-consistent Darcy-Forchheimer treatment in `docs/L2_FIX_DESIGN.md`). Holds sole scientific responsibility for
+  the codebase and its physical validity.
+
+**AI Implementation Assistance:** Anthropic Claude (Claude Code)
+- Operating under the author's continuous direction, mathematical specification and code review, Claude acted as
+  an agentic co-development tool to draft and implement the OpenFOAM C++ solver, the benchmark set-ups, the
+  acceptance-bar drafts and the CI automation scripts.
+- Claude assisted in diagnosing run failures and proposed and implemented numerical treatments (e.g. the
+  flux-reconstructed velocity, the L4 Schumann test-case proposal and the ledger scripts). All contributions are
+  auditable through the commit history and pull requests.
+- All implementations were reviewed and accepted by the author. L0-L4 are re-checked by CI against published
+  closed-form benchmarks. L5 and L6 are recorded self-consistency and convergence runs, with their outcomes,
+  including the recorded FAILs, under Status (see `docs/VERIFICATION.md`). This does not mean that L5 has been
+  verified against Fluent, or that anything has been validated against experiments.
+
+The verification cases use published, public-domain data only. If you use this solver in academic work, please
+cite this repository (a paper reference will be added when available).
