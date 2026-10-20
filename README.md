@@ -74,6 +74,7 @@ The long levels (L5, L6) run with `cases/<level>_*/runLong.sh <outdir>`, or thro
 | L4 LTNE with flow | `cases/L4_singleBlow` | PASS (6/6, merged; first run crashed on a k_s = 0 bug, `results/L4_run1`) |
 | L5 regenerator slice | `cases/L5_regenSlice` | 11/12 PASS as preregistered (L5.7 FAIL); supplementary check L5.7a PASS (Amendment A1) (`results/L5`); the code-to-code comparison with ANSYS Fluent (B1-B4) is not part of this release |
 | L6 verification of L5 (grid, time step, periodicity) | `cases/L6_regenConvergence` | 17/21 PASS as preregistered: periodicity, GCI_fine < 3 % and dt/2 < 1 % pass; the apparent-order check fails for 4 of 5 QoIs (`results/L6`) |
+| L5D decay ratio of the slow matrix thermal relaxation (L5 slice) | `cases/L5D_decayRatio` | measured, no bar: r = 0.99670 per cycle (tau = 302 cycles = 13.2 s) over 600 cycles; crash and Allclean checks PASS (`results/L5D`) |
 
 Scope:
 - L0-L4 are verified against exact or analytical solutions (L0 is the build and smoke test).

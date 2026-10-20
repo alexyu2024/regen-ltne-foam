@@ -1,0 +1,13 @@
+metric,value,source
+cycles_run,600,results/L5D/decay.csv:2-601
+r_fit_Tjoint,0.9966999800468185,results/L5D/decay.csv:502-601 (cycles 501-600)
+r_mean50_Tjoint,0.9966817899789661,results/L5D/decay.csv:552-601
+r_window_change,4.421358521500274e-05,results/L5D/decay.csv:502-601
+tau_cycles,302.52819533693906,results/L5D/decay.csv:502-601 (cycles 501-600)
+tau_s,13.15339979725822,results/L5D/decay.csv:502-601 (cycles 501-600)
+Tjoint_inf_K,27.042081102899747,"results/L5D/decay.csv:601, r_fit"
+Tjoint_last_K,27.212006706693085,results/L5D/decay.csv:601
+r_fit_H_joint,1.0338594612259537,results/L5D/per_cycle.csv:502-601 (cycles 501-600)
+r_fit_H_hot,0.9901113847845725,results/L5D/per_cycle.csv:502-601 (cycles 501-600)
+crash_count,0,results/L5D/log.*:all lines of all logs; 14 trapFpe banner lines skipped
+allclean_leftover,0,results/L5D/log.allclean-check:empty file
