@@ -5,7 +5,7 @@ local thermal non-equilibrium (LTNE). It is `rhoPimpleFoam` plus porosity-weight
 energy equation coupled to the gas by `h_sf a_sf (T_s - T_g)`, and a prescribed piston motion. Darcy-Forchheimer
 drag coefficients are read from the standard `explicitPorositySource` entries and balanced on faces in the pressure
 equation, with the cell velocity reconstructed from face fluxes (`docs/L2_FIX_DESIGN.md`). Reference model: Tew et al. 2006, NASA/TM (Fluent porous-media LTNE).
-Task: `docs/TASK.md`. Acceptance bars: `docs/VERIFICATION.md`.
+Task: `docs/TASK.md`. Acceptance bars: `docs/VERIFICATION.md`. Release notes: `docs/RELEASE_NOTES.md`.
 
 ## Distribution: OpenFOAM v2512 (openfoam.com, OpenCFD/ESI), apt package `openfoam2512-dev` 2512.0-2
 
@@ -81,7 +81,7 @@ Machine-readable metadata: [CITATION.cff](CITATION.cff) (GitHub's "Cite this rep
   author  = {Yu, Qiming},
   title   = {regen-ltne-foam: ltneFoam, an OpenFOAM solver for oscillating helium flow in porous
              regenerators with local thermal non-equilibrium},
-  version = {0.0.0-unreleased},
+  version = {1.0.0},
   license = {GPL-3.0-or-later},
   url     = {https://github.com/alexyu2024/regen-ltne-foam}
 }
