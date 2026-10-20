@@ -12,7 +12,7 @@
 | L0.8 allclean_leftover | == 0 (docs/VERIFICATION.md:31) | 0 | PASS | results/L0/log.allclean-check:empty file |
 
 8/8 PASS
-Storage note (added in the L1 PR, at the leader's request): `log.ltneFoam` is stored gzipped as `log.ltneFoam.gz`;
+Storage note (added in the L1 PR, at the author's request): `log.ltneFoam` is stored gzipped as `log.ltneFoam.gz`;
 the line numbers cited here refer to the uncompressed text (`zcat log.ltneFoam.gz | sed -n 45085p`).
 
 ## How this was produced

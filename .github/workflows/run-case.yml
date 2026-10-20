@@ -1,5 +1,5 @@
-# Manually triggered run of one level's case, for cases too long for the session container (docs/TASK.md, "Where the
-# computing runs"). Uploads only small files: the level's result directory (<level>-results) and, for long cases, the
+# Manually triggered run of one level's case on GitHub Actions, for cases that take longer than a few minutes.
+# Uploads only small files: the level's result directory (<level>-results) and, for long cases, the
 # restart state (<level>-state).
 #
 # Long cases provide cases/<level>_*/runLong.sh <outdir> <minutes>: exit 0 = done, 3 = time budget used (state kept).

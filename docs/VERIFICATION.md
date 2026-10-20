@@ -1,6 +1,6 @@
 # Verification bars
 
-Rules (from `docs/TASK.md`): the bars of a level are committed before that level's case is run, and never change
+Rules: the bars of a level are committed before that level's case is run, and never change
 afterwards. A miss is reported as FAIL with a diagnosis.
 
 Machine-readable format. `tools/verify.py` reads every table row of the form
@@ -244,12 +244,12 @@ Definitions:
 | L4.7 | t_half_exact | report | 0 | the same from the Schumann solution, s |
 | L4.8 | allclean_leftover | == | 0 | files under the case directory that `git status --porcelain --ignored` lists after `Allclean` |
 
-## L5 Oscillating regenerator slice (Huang 2020, leader's parameter file)
+## L5 Oscillating regenerator slice (Huang 2020, the author's parameter file)
 
 Committed before any L5 run, including debugging runs. The preregistered pass bars are B1-B6 in
 `cases/L5_regenSlice/params_L5.yaml` (lines 376-389), quoted unchanged in the L5 PR. B1-B4 are code-to-code bars
-that the leader evaluates locally against the Fluent twin; they are listed below as `report` rows with the values
-this solver produces. The pass/fail rows below are the self-checks this PR is judged on: B5, B6, the realised
+for a comparison with a Fluent twin by the author (Qiming Yu); they are listed below as `report` rows with the values
+this solver produces. The pass/fail rows below are the self-checks of this level: B5, B6, the realised
 piston flow, the dt/dx sensitivity check, completion, and the crash-pattern count.
 
 Pre-registered improvement (L4 review): the crash pattern now also matches `Floating point exception` and
@@ -309,7 +309,7 @@ Definitions:
 | L5.24 | Tjoint_mean_K | report | 0 | B4 context: cycle-mean T at the joint (DeltaEC 28.036) |
 | L5.25 | allclean_leftover | == | 0 | files under the case directory that `git status --porcelain --ignored` lists after `Allclean` |
 
-### Amendment A1 (2026-09-28, leader ruling S132a; added after the L5 runs)
+### Amendment A1 (2026-09-28, by the author; added after the L5 runs)
 
 The table above and the B5 definition above are unchanged. This amendment records how L5.7 is read and adds one
 supplementary check.
@@ -345,7 +345,7 @@ supplementary check.
 above lists five amplitudes: |p| and |mdot| at both faces, and the dp amplitude. `results.py` has always used those
 five. No quantity was added and nothing was re-run.
 
-## L6 Verification of the L5 regenerator slice (leader-gen8 definition, docs/TASK.md "L6")
+## L6 Verification of the L5 regenerator slice (the author's definition)
 
 Committed before any L6 run, including debugging runs. The model, inputs and numerics are the L5 case
 (`cases/L5_regenSlice`, `params_L5.yaml`, Huang 2020 public parameters) with only the mesh and the time step varied.
