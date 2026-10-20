@@ -1,7 +1,7 @@
-# Release notes: v1.0.0-verified
+# Release notes: v1.0.0
 
-Status: prepared, not yet tagged. The owner creates the tag, sets the repository visibility and links Zenodo. The
-DOI is then added to `CITATION.cff` and `README.md`.
+Tag: `v1.0.0`. The repository stays private; the owner sets its visibility and links Zenodo, and the DOI is then
+added to `CITATION.cff` and `README.md`.
 
 ## What this release is
 

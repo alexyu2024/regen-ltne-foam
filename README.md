@@ -81,7 +81,7 @@ Machine-readable metadata: [CITATION.cff](CITATION.cff) (GitHub's "Cite this rep
   author  = {Yu, Qiming},
   title   = {regen-ltne-foam: ltneFoam, an OpenFOAM solver for oscillating helium flow in porous
              regenerators with local thermal non-equilibrium},
-  version = {1.0.0-verified},
+  version = {1.0.0},
   license = {GPL-3.0-or-later},
   url     = {https://github.com/alexyu2024/regen-ltne-foam}
 }

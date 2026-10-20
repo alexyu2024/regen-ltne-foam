@@ -79,4 +79,3 @@ PR #10, one draft PR.
 6. Cost: ESI prebuilt, coarse grids first, each long run launched once without polling; stop after the draft PR; first
    line of the PR description = DONE/BLOCKED + one sentence.
 L7 (later, not now) will be the full Huang 2020 low-temperature stage.
-No radial or intermediate heat interception of any kind, no user designs, no merge, no visibility change.
