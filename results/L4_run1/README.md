@@ -8,4 +8,4 @@ Fix (next commit): kSf = 0 when kS = 0, harmonic interpolation otherwise. The ca
 
 Bar-definition gap noticed here: the crash message "Floating point exception" is not matched by the L0-L4 pattern
 `FOAM FATAL|nan|inf`, so L4.2 read 0. The crash is caught by L4.1 (final_time "not read" = FAIL). The pattern is
-left unchanged because bars do not move; the leader may add `Floating point exception` to future levels' bars.
+left unchanged because bars do not move; the author may add `Floating point exception` to future levels' bars.

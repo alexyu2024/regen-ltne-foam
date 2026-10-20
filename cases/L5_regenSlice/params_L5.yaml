@@ -1,11 +1,11 @@
 # =====================================================================================
 # L5 parameter file - oscillating regenerator slice (Huang 2020 low-temperature regenerator)
-# Provided by the leader per docs/TASK.md (L5). 2026-09-27.
+# Provided by the author (Qiming Yu) for L5. 2026-09-27.
 #
 # PROVENANCE. Geometry and screens: Huang et al., Int. J. Refrigeration 111 (2020) 29-38,
 # Table 1 (52 x 28 mm low-temperature regenerator, 635# + 500# stainless screens, 23 Hz,
 # 0.75 MPa) with the two [ASSUME]d wire diameters noted below. Drive and targets: the
-# leader's local DeltaEC replica of that machine (joined whole-machine model, Err 5.9e-11,
+# author's local DeltaEC replica of that machine (joined whole-machine model, Err 5.9e-11,
 # reproducing the paper's Sage Table 3 station values). Correlations: Sage v13 manual
 # (Gedeon & Wood screens) and DeltaEC Users Guide property fits. Everything in this file
 # is published data or standard published correlations - nothing proprietary.
@@ -14,7 +14,7 @@
 # Ph in degrees, ONE common phase frame (only phase differences are physical). The axial
 # coordinate z runs hot -> cold with z = 0 at the matrix hot face.
 #
-# WHAT L5 IS. Two codes run THIS same model - ltneFoam here, Fluent locally by the leader:
+# WHAT L5 IS. Two codes run THIS same model - ltneFoam here, Fluent locally by the author:
 # same layout, correlations, drive, initial state, numerics. The PASS bars are
 # code-to-code (B1-B6). DeltaEC values are context only (a different model class), never
 # a pass criterion.
@@ -374,7 +374,7 @@ numerics:
     the matrix dx, run >= 5 cycles - the B1/B2 quantities must move < 1 %.
 
 acceptance_bars:
-  # Code-to-code, ltneFoam vs the leader's local Fluent twin. PREREGISTERED - this file
+  # Code-to-code, ltneFoam vs the author's local Fluent twin. PREREGISTERED - this file
   # is the prereg. The PR that runs L5 quotes these bars UNCHANGED before any run is
   # submitted; a FAIL is recorded as a FAIL.
   B1_face_phasors: at both matrix faces, cycle-fitted |p| and |mdot| within 3 %, phases
@@ -388,7 +388,7 @@ acceptance_bars:
   B6_periodicity: last 5 cycles - |d(cycle-mean T at the joint)/d(cycle)| < 0.1 K and the
     relative drift of the matrix <H> < 2 % per cycle
 
-deliverables:                  # in the L5 PR (small CSVs, per docs/TASK.md job rules)
+deliverables:                  # in the L5 PR (small CSVs, per the repository's job rules)
   - "per_cycle.csv: cycle, cycle-mean T at the joint, <H> at the 3 stations, fitted dp
      amplitude, fitted face phasors (|p|, Ph, |mdot|, Ph at both faces)"
   - "final_cycle_faces.csv: t, p, u_superficial, mdot, Tg at both matrix faces, every step"
@@ -396,6 +396,6 @@ deliverables:                  # in the L5 PR (small CSVs, per docs/TASK.md job 
   - "piston_check.csv: realized piston volume-flow phasor vs this spec (the 0.5 % check)"
   - "logs trimmed per repo rules; README status row; results/L5/ layout as L4"
 
-leader_side_note: the leader runs the Fluent twin locally from THIS file and performs the
-  B1-B6 comparison; the cloud PR is judged on bars-before-runs discipline, the sensitivity
+author_side_note: the author runs the Fluent twin locally from THIS file and performs the
+  B1-B6 comparison; the ltneFoam PR is judged on bars-before-runs discipline, the sensitivity
   check, the B5/B6 self-checks, and the deliverables being complete and reproducible.

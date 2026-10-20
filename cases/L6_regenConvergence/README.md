@@ -1,7 +1,7 @@
 # L6 verification of the L5 regenerator slice
 
 This level is a grid, time-step and periodicity study of the L5 case (`cases/L5_regenSlice`, Huang 2020 public
-parameters via `params_L5.yaml`). The definition is the leader's text in `docs/TASK.md`, "L6". The bars are in
+parameters via `params_L5.yaml`). The definition is by the author (Qiming Yu). The bars are in
 `docs/VERIFICATION.md`, L6, and were committed before any L6 run.
 
 - **What stays fixed**: the model, inputs, schemes and start-up are those of L5.
