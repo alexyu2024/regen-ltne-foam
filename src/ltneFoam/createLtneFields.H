@@ -5,7 +5,7 @@
 Info<< "Reading porous-medium fields\n" << endl;
 
 // Porosity (void fraction); 1 in open gas regions
-const volScalarField eps
+volScalarField eps
 (
     IOobject
     (
@@ -20,7 +20,7 @@ const volScalarField eps
 );
 
 // Interfacial area per unit total volume [1/m]; 0 outside the matrix
-const volScalarField asf
+volScalarField asf
 (
     IOobject
     (
@@ -50,10 +50,25 @@ const bool solidActive = ltneProperties.getOrDefault<bool>("active", false);
 
 // Solid properties (intrinsic; the matrix volume fraction is 1 - eps).
 // Required when active; placeholders otherwise.
+const word solidModel
+(
+    ltneProperties.getOrDefault<word>("solidModel", "constant")
+);
+const bool variableSolid = (solidModel == "stainlessDeltaEC");
+if (solidModel != "constant" && !variableSolid)
+{
+    FatalErrorInFunction
+        << "solidModel " << solidModel
+        << " unknown; use constant or stainlessDeltaEC" << exit(FatalError);
+}
+const bool zonesActive = solidActive && ltneProperties.found("zones");
+
 auto readSolid = [&](const word& name, const dimensionSet& dims)
 {
+    // CpS and kS are not needed for a temperature-dependent solid model
+    const bool optional = variableSolid && name != "rhoS";
     return
-        solidActive
+        solidActive && !optional
       ? dimensionedScalar(name, dims, ltneProperties)
       : dimensionedScalar(name, dims, 1);
 };
@@ -63,7 +78,7 @@ const dimensionedScalar kS(readSolid("kS", dimPower/dimLength/dimTemperature));
 // Film coefficient between gas and matrix
 const dimensionedScalar hsf
 (
-    solidActive
+    solidActive && !zonesActive
   ? dimensionedScalar("hsf", dimPower/dimArea/dimTemperature, ltneProperties)
   : dimensionedScalar("hsf", dimPower/dimArea/dimTemperature, Zero)
 );
@@ -75,19 +90,21 @@ if (solidActive)
         << ", hsf = " << hsf.value() << nl << endl;
 }
 
+#include "createLtneZones.H"
+
 // Volumetric exchange coefficient [W/m3/K]
-const volScalarField hA("hA", hsf*asf);
+volScalarField hA("hA", hsf*asf);
 
 // 1 in cells that contain solid, 0 in open gas cells
-const volScalarField solidMask("solidMask", pos(1 - eps - 1e-6));
+volScalarField solidMask("solidMask", pos(1 - eps - 1e-6));
 
 // Solid volume fraction, floored so the solid equation stays regular in open
 // cells. There hA = 0 and conduction is cut by harmonic interpolation, so the
 // solid equation has no effect; Ts is reset to T in open cells for output.
-const volScalarField epsS("epsS", max(1 - eps, dimensionedScalar(dimless, 1e-6)));
+volScalarField epsS("epsS", max(1 - eps, dimensionedScalar(dimless, 1e-6)));
 
 // Solid heat capacity per unit total volume [J/m3/K]
-const volScalarField CS("CS", epsS*rhoS*CpS);
+volScalarField CS("CS", epsS*rhoS*CpS);
 
 // Solid effective conductivity on faces (harmonic: series conduction; the
 // harmonic mean is undefined for kS = 0, which then means no conduction)
@@ -142,6 +159,10 @@ else
     );
 }
 volScalarField& Ts = TsPtr();
+Ts.oldTime();   // store the old-time level (enthalpy form of the solid equation)
+
+#include "ltneUpdate.H"
+#include "createLtneMonitors.H"
 
 // Diagnostics file (see ltneDiagnostics.H)
 scalar boundaryWork = 0;

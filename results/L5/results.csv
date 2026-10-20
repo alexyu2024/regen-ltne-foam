@@ -1,0 +1,28 @@
+metric,value,source
+cycles_run,40,results/L5/per_cycle.csv:2-41
+piston_hot_amp_err,7.758558149273398e-07,results/L5/piston_check.csv:2
+piston_hot_phase_err_deg,0.07499999986492867,results/L5/piston_check.csv:2
+piston_cold_amp_err,1.2592335406624855e-06,results/L5/piston_check.csv:3
+piston_cold_phase_err_deg,0.07500000013982344,results/L5/piston_check.csv:3
+B5_closure_W,0.39653103903072084,results/L5/per_cycle.csv:41 (cycle 40): abs(W_hot + W_cold + Qhot_gas + Qcold_gas)
+B5_closure6_W,0.020348915695467644,"results/L5/per_cycle.csv:41 (cycle 40): abs(W_hot + W_cold + Qhot_gas + Qcold_gas + Qhot_solid + Qcold_solid); sensitivity run cycle 45: six-term -0.041609 W, four-term -0.508583 W (same definition at dt/2 and dx/2, not an independent verification)"
+B6a_dTjoint_K,0.0014748476829531398,results/L5/per_cycle.csv:36-41
+B6b_dH_rel,0.00016253614883509672,results/L5/per_cycle.csv:36-41
+hot_p_amp_Pa,65475.5301437779,results/L5/per_cycle.csv:41 (cycle 40)
+hot_p_ph_deg,1.1541538710949113,results/L5/per_cycle.csv:41 (cycle 40)
+hot_mdot_amp,0.002094612997814045,results/L5/per_cycle.csv:41 (cycle 40)
+hot_mdot_ph_deg,25.596097316502128,results/L5/per_cycle.csv:41 (cycle 40)
+cold_p_amp_Pa,54199.34175338808,results/L5/per_cycle.csv:41 (cycle 40)
+cold_p_ph_deg,0.2710576212335728,results/L5/per_cycle.csv:41 (cycle 40)
+cold_mdot_amp,0.002638840675553126,results/L5/per_cycle.csv:41 (cycle 40)
+cold_mdot_ph_deg,-28.7836108133822,results/L5/per_cycle.csv:41 (cycle 40)
+dp_amp_Pa,11313.506950653024,results/L5/per_cycle.csv:41 (cycle 40)
+H_hot_W,1.8626998185155996,results/L5/per_cycle.csv:41 (cycle 40)
+H_joint_W,1.82415750768259,results/L5/per_cycle.csv:41 (cycle 40)
+H_cold_W,1.8545024112289,results/L5/per_cycle.csv:41 (cycle 40)
+Tjoint_mean_K,27.865715126216802,results/L5/per_cycle.csv:41 (cycle 40)
+sens_amp_max_rel,0.003962704669913553,results/L5/per_cycle_sensitivity.csv:6 vs per_cycle.csv:41
+sens_phase_max_deg,0.0329761079804598,results/L5/per_cycle_sensitivity.csv:6 vs per_cycle.csv:41
+sens_cycles,5,results/L5/per_cycle_sensitivity.csv:2-6
+crash_count,0,results/L5/log.*:all lines of all logs (base and sens); 11 trapFpe banner lines skipped
+allclean_leftover,0,results/L5/log.allclean-check:empty file

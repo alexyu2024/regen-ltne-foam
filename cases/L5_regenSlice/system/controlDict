@@ -1,0 +1,53 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  regen-ltne-foam, OpenFOAM v2512
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// T = 1/23 s; dt = T/2400 (params_L5.yaml: dt_s 1.8115942e-5, 2400 steps per cycle)
+application     ltneFoam;
+startFrom       latestTime;
+startTime       0;
+stopAt          endTime;
+endTime         0.0434782608695652;     // set by Allrun / Allrun.continue (whole cycles)
+deltaT          1.81159420289855e-05;
+writeControl    timeStep;
+writeInterval   24000;                  // every 10 cycles
+purgeWrite      2;
+writeFormat     ascii;
+writePrecision  14;
+writeCompression off;
+timeFormat      general;
+timePrecision   14;
+runTimeModifiable false;
+adjustTimeStep  no;
+
+DebugSwitches
+{
+    SolverPerformance   0;
+}
+
+functions
+{
+    // cycle-mean T and Ts, restarted every cycle: at a write time (a whole number of
+    // cycles) the mean is over the last cycle
+    cycleMean
+    {
+        type            fieldAverage;
+        libs            (fieldFunctionObjects);
+        writeControl    writeTime;
+        periodicRestart true;
+        restartPeriod   0.0434782608695652;
+        fields
+        (
+            T  { mean on; prime2Mean off; base time; }
+            Ts { mean on; prime2Mean off; base time; }
+        );
+    }
+}

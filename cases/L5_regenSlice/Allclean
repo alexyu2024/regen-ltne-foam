@@ -1,0 +1,7 @@
+#!/bin/sh
+cd "${0%/*}" || exit 1
+. ${WM_PROJECT_DIR:?}/bin/tools/CleanFunctions
+cleanCase0
+rm -rf 0.orig constant system/blockMeshDict system/topoSetDict log.* cellCentresZ.txt sens per_cycle.csv
+# Allrun / Allrun.continue set endTime; restore the committed value
+sed -i "s/^endTime .*/endTime         0.0434782608695652;     \/\/ set by Allrun \/ Allrun.continue (whole cycles)/" system/controlDict

@@ -9,6 +9,19 @@ on:
   workflow_dispatch:
 
 jobs:
+  citation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate CITATION.cff
+        run: |
+          python3 -m venv /tmp/cff
+          /tmp/cff/bin/pip install -q --upgrade pip setuptools wheel
+          /tmp/cff/bin/pip install -q cffconvert==2.0.0
+          /tmp/cff/bin/cffconvert --validate -i CITATION.cff
+
   verify:
     runs-on: ubuntu-24.04
     timeout-minutes: 60

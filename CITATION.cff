@@ -1,0 +1,22 @@
+# Citation metadata (Citation File Format 1.2.0). The DOI is added when the first verified
+# release is archived on Zenodo; until then the doi line below stays commented out, because
+# an empty doi value does not validate against the CFF schema.
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata from this file."
+type: software
+title: "regen-ltne-foam: ltneFoam, an OpenFOAM solver for oscillating helium flow in porous regenerators with local thermal non-equilibrium"
+version: 0.0.0-unreleased
+license: GPL-3.0-or-later
+repository-code: "https://github.com/alexyu2024/regen-ltne-foam"
+# doi:
+authors:
+  - family-names: Yu
+    given-names: Qiming
+    affiliation: University of Southampton
+keywords:
+  - OpenFOAM
+  - porous media
+  - local thermal non-equilibrium
+  - regenerator
+  - oscillating flow
+  - cryocooler

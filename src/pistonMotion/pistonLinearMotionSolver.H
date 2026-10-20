@@ -29,6 +29,7 @@ Usage
         {
             piston       0;         // axial coordinate of the face at rest
             fixed        0.04;      // axial coordinate of the fixed plane
+            rampTime    0.0434783;  // optional: d(t) - d(0) exp(-t/rampTime)
             displacement
             {
                 type        sine;
@@ -65,6 +66,10 @@ class pistonLinearMotionSolver
 
     //- Piston displacements d(t) along the axis
     PtrList<Function1<scalar>> displacement_;
+
+    //- Optional start-up time constants: the applied displacement is
+    //  d(t) - d(0) exp(-t/rampTime), so the mesh starts at the mean position
+    scalarList rampTime_;
 
 public:
 
