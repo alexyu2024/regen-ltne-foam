@@ -435,3 +435,41 @@ Both are reported for the last cycle of every run; neither has a bar here.
 | L6.23 | closure4_G3_W | report | 0 | four-term closure, last cycle of G3, W |
 | L6.24 | closure6_G3_W | report | 0 | six-term closure, last cycle of G3, W |
 | L6.25 | allclean_leftover | == | 0 | files under the case directory that `git status --porcelain --ignored` lists after `Allclean` |
+
+## L5D Decay ratio of the slow matrix thermal relaxation (L5 slice; leader request 2026-10-20)
+
+Committed before the run. This is a measurement reported as is: it has no pass/fail bar on r. Only the crash scan
+and Allclean have bars.
+
+- **Run**: the L5 case unchanged (`cases/L5_regenSlice`: mesh, dt, inputs and start-up, i.e. the L6 G2 run), from
+  the file's initial state at t = 0, in 50-cycle chunks.
+- **Quantity**: the cycle-mean gas temperature at the 500#/635# joint, T_k (the L5 `Tjoint_mean`). It follows the
+  matrix's slow thermal state. H_joint and H_hot (cycle-mean <H>, L5 definition) are evaluated the same way and
+  reported alongside.
+- **Per-cycle decay ratio**: d_k = T_k - T_(k-1) and r_k = d_k / d_(k-1).
+- **Stopping rule**:
+  - stop at the first chunk end with k >= 200 at which the mean of r_k over cycles k-49..k differs from its mean
+    over k-99..k-50 by less than 1e-4;
+  - otherwise stop at 1500 cycles, and report r as not yet stationary.
+- **Reported values**:
+  - **r_fit**: exp of the least-squares slope of ln|d_k| against k over the last 100 cycles. The window mean of r_k
+    over the last 50 cycles is reported beside it.
+  - **Time constant**: tau = -1 / ln(r_fit) cycles, and tau / f in seconds.
+  - **Extrapolated periodic limit**: T_inf = T_k + d_k r_fit / (1 - r_fit).
+  - **H_joint and H_hot**: the same r_fit.
+  - **Full series**: k, T_k, d_k and r_k for every cycle, in `decay.csv`.
+
+| id | metric | op | bar | description |
+|----|--------|----|-----|-------------|
+| L5D.1 | cycles_run | report | 0 | cycles run |
+| L5D.2 | r_fit_Tjoint | report | 0 | decay ratio per cycle, T_joint, last 100 cycles |
+| L5D.3 | r_mean50_Tjoint | report | 0 | mean of r_k over the last 50 cycles, T_joint |
+| L5D.4 | r_window_change | report | 0 | change of the 50-cycle mean of r_k between the last two windows (stopping test) |
+| L5D.5 | tau_cycles | report | 0 | time constant, cycles |
+| L5D.6 | tau_s | report | 0 | time constant, s |
+| L5D.7 | Tjoint_inf_K | report | 0 | extrapolated periodic-limit T_joint, K |
+| L5D.8 | Tjoint_last_K | report | 0 | T_joint on the last cycle, K |
+| L5D.9 | r_fit_H_joint | report | 0 | decay ratio per cycle, H_joint, last 100 cycles |
+| L5D.10 | r_fit_H_hot | report | 0 | decay ratio per cycle, H_hot, last 100 cycles |
+| L5D.11 | crash_count | == | 0 | crash patterns over all logs (as L5, trapFpe banner excepted) |
+| L5D.12 | allclean_leftover | == | 0 | files left under the case directory after `Allclean` |
