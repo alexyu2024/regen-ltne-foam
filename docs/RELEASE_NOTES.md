@@ -1,5 +1,13 @@
 # Release notes
 
+## Unreleased
+
+- **L5D: decay ratio of the slow matrix thermal relaxation of the L5 slice**, measured over 600 cycles (no bar):
+  - r = 0.99670 per cycle for the cycle-mean joint temperature, a time constant of 302 cycles (13.2 s);
+  - the L5 state at 40 cycles is about 0.8 K above the extrapolated periodic limit at the joint (27.04 K).
+
+  See `results/L5D/README.md`.
+
 ## v1.0.1
 
 A maintenance release. The solver numerics, the cases and all recorded results are unchanged from v1.0.0.

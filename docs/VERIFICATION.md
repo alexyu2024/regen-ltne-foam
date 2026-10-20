@@ -436,7 +436,7 @@ Both are reported for the last cycle of every run; neither has a bar here.
 | L6.24 | closure6_G3_W | report | 0 | six-term closure, last cycle of G3, W |
 | L6.25 | allclean_leftover | == | 0 | files under the case directory that `git status --porcelain --ignored` lists after `Allclean` |
 
-## L5D Decay ratio of the slow matrix thermal relaxation (L5 slice; leader request 2026-10-20)
+## L5D Decay ratio of the slow matrix thermal relaxation (L5 slice; the author's request, 2026-10-20)
 
 Committed before the run. This is a measurement reported as is: it has no pass/fail bar on r. Only the crash scan
 and Allclean have bars.

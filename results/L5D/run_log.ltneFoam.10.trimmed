@@ -1,0 +1,300 @@
+      1  /*---------------------------------------------------------------------------*\
+      2  | =========                 |                                                 |
+      3  | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+      4  |  \\    /   O peration     | Version:  2512                                  |
+      5  |   \\  /    A nd           | Website:  www.openfoam.com                      |
+      6  |    \\/     M anipulation  |                                                 |
+      7  \*---------------------------------------------------------------------------*/
+      8  Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+      9  Arch   : "LSB;label=32;scalar=64"
+     10  Exec   : ltneFoam
+     11  Date   : Oct 20 2026
+     12  Time   : 13:06:36
+     13  Host   : runnervm8k3b6
+     14  PID    : 6292
+     15  I/O    : uncollated
+     16  Case   : /home/runner/work/regen-ltne-foam/regen-ltne-foam/cases/L5D_decayRatio/run
+     17  nProcs : 1
+     18  trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+     19  memory pool : not available
+     20  fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+     21  allowSystemOperations : Allowing user-supplied system call operations
+     22  // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+     23  Create time
+     24  Overriding DebugSwitches according to controlDict
+     25      SolverPerformance 0;
+     26  Create mesh for time = 21.73913043486063
+     27  Selecting dynamicFvMesh dynamicMotionSolverFvMesh
+     28  Selecting motion solver: pistonLinear
+     29  Applying motion to entire mesh
+     30  pistonLinear: hotPiston face at -0.017, fixed plane at -0.005
+     31  pistonLinear: coldPiston face at 0.061, fixed plane at 0.057
+     32  PIMPLE: no residual control data found. Calculations will employ 3 corrector loops
+     33  Reading thermophysical properties
+     34  Selecting thermodynamics package 
+     35  {
+     36      type            heRhoThermo;
+     37      mixture         pureMixture;
+     38      transport       tabulated;
+     39      thermo          hTabulated;
+     40      equationOfState perfectGas;
+     41      specie          specie;
+     42      energy          sensibleEnthalpy;
+     43  }
+     44  Reading field U
+     45  Reading/calculating face flux field phi
+     46  Creating turbulence model
+     47  Selecting turbulence model type laminar
+     48  Selecting laminar stress model Stokes
+     49  Creating field dpdt for moving meshes
+     50  Creating field kinetic energy K
+     51  Creating finite-volume options from "constant/fvOptions"
+     52  Selecting finite volume options type explicitPorositySource
+     53      Source: dragHotHx
+     54      State: active
+     55      - selecting cells using cellZones (hot_hx)
+     56      - selected 10 cell(s) with volume 3.0787500006563e-06
+     57  Porosity region dragHotHx:
+     58      selecting model: DarcyForchheimer
+     59      creating porous zone: hot_hx
+     60      origin: (0 0 0) e1: (1 0 0) e3: (0 0 1)
+     61      local bounds: (0.02481431039 0.02481431039 0.005)
+     62  Selecting finite volume options type explicitPorositySource
+     63      Source: drag500
+     64      State: active
+     65      - selecting cells using cellZones (matrix_500)
+     66      - selected 60 cell(s) with volume 1.6009500003413e-05
+     67  Porosity region drag500:
+     68      selecting model: DarcyForchheimer
+     69      creating porous zone: matrix_500
+     70      origin: (0 0 0) e1: (1 0 0) e3: (0 0 1)
+     71      local bounds: (0.02481431039 0.02481431039 0.026)
+     72  Selecting finite volume options type explicitPorositySource
+     73      Source: drag635
+     74      State: active
+     75      - selecting cells using cellZones (matrix_635)
+     76      - selected 60 cell(s) with volume 1.6009500003413e-05
+     77  Porosity region drag635:
+     78      selecting model: DarcyForchheimer
+     79      creating porous zone: matrix_635
+     80      origin: (0 0 0) e1: (1 0 0) e3: (0 0 1)
+     81      local bounds: (0.02481431039 0.02481431039 0.026)
+     82  Selecting finite volume options type explicitPorositySource
+     83      Source: dragColdHx
+     84      State: active
+     85      - selecting cells using cellZones (cold_hx)
+     86      - selected 10 cell(s) with volume 3.0787500006563e-06
+     87  Porosity region dragColdHx:
+     88      selecting model: DarcyForchheimer
+     89      creating porous zone: cold_hx
+     90      origin: (0 0 0) e1: (1 0 0) e3: (0 0 1)
+     91      local bounds: (0.02481431039 0.02481431039 0.005)
+     92  Reading porous-medium fields
+     93  LTNE solid matrix: rhoS = 7990, CpS = 1, kS = 1, hsf = 0
+     94  LTNE zone hot_hx: porosity 0.7, asf 100000, hsfModel wakao, fixed Ts
+     95  LTNE zone matrix_500: porosity 0.6289, asf 61850, hsfModel screenGedeonWood
+     96  LTNE zone matrix_635: porosity 0.6073, asf 78540, hsfModel screenGedeonWood
+     97  LTNE zone cold_hx: porosity 0.7, asf 100000, hsfModel wakao, fixed Ts
+     98  Reading field Ts
+     99  Porous drag (on faces) in zone hot_hx: d = 100000, f = 1e-05
+    100  Porous drag (on faces) in zone matrix_500: d = 61997500000, f = 119999
+    101  Porous drag (on faces) in zone matrix_635: d = 111023000000, f = 173441
+    102  Porous drag (on faces) in zone cold_hx: d = 100000, f = 1e-05
+    103  Constructing face momentum rhoUf
+    104  Starting time loop
+    105  fieldAverage cycleMean:
+    106      Restart period 0.043478260869565 - next restart at 21.782608695652
+    107      Restarting averaging for fields:
+    108          T: iters = 2400 time = 0.043478260869567
+    109          Ts: iters = 2400 time = 0.043478260869567
+    110  fieldAverage cycleMean:
+    111      Reading/initialising field TMean
+    112      Reading/initialising field TsMean
+    113      Restarting averaging at time 21.782626811675
+    114  fieldAverage cycleMean:
+    115      Reading/initialising field TMean
+    116      Reading/initialising field TsMean
+    117      Restarting averaging at time 21.826105072547
+    118  fieldAverage cycleMean:
+    119      Reading/initialising field TMean
+    120      Reading/initialising field TsMean
+    121      Restarting averaging at time 21.869583333419
+    122  fieldAverage cycleMean:
+    123      Reading/initialising field TMean
+    124      Reading/initialising field TsMean
+    125      Restarting averaging at time 21.913061594291
+    126  fieldAverage cycleMean:
+    127      Reading/initialising field TMean
+    128      Reading/initialising field TsMean
+    129      Restarting averaging at time 21.956539855163
+    130  fieldAverage cycleMean:
+    131      Reading/initialising field TMean
+    132      Reading/initialising field TsMean
+    133      Restarting averaging at time 22.000018116035
+    134  fieldAverage cycleMean:
+    135      Reading/initialising field TMean
+    136      Reading/initialising field TsMean
+    137      Restarting averaging at time 22.043496376908
+    138  fieldAverage cycleMean:
+    139      Reading/initialising field TMean
+    140      Reading/initialising field TsMean
+    141      Restarting averaging at time 22.08697463778
+    142  fieldAverage cycleMean:
+    143      Reading/initialising field TMean
+    144      Reading/initialising field TsMean
+    145      Restarting averaging at time 22.130452898652
+    146  fieldAverage cycleMean:
+    147      Reading/initialising field TMean
+    148      Reading/initialising field TsMean
+    149      Restarting averaging at time 22.173931159524
+    150  fieldAverage cycleMean:
+    151      Reading/initialising field TMean
+    152      Reading/initialising field TsMean
+    153      Restarting averaging at time 22.217409420396
+    154  fieldAverage cycleMean:
+    155      Reading/initialising field TMean
+    156      Reading/initialising field TsMean
+    157      Restarting averaging at time 22.260887681268
+    158  fieldAverage cycleMean:
+    159      Reading/initialising field TMean
+    160      Reading/initialising field TsMean
+    161      Restarting averaging at time 22.30436594214
+    162  fieldAverage cycleMean:
+    163      Reading/initialising field TMean
+    164      Reading/initialising field TsMean
+    165      Restarting averaging at time 22.347844203012
+    166  fieldAverage cycleMean:
+    167      Reading/initialising field TMean
+    168      Reading/initialising field TsMean
+    169      Restarting averaging at time 22.391322463884
+    170  fieldAverage cycleMean:
+    171      Reading/initialising field TMean
+    172      Reading/initialising field TsMean
+    173      Restarting averaging at time 22.434800724757
+    174  fieldAverage cycleMean:
+    175      Reading/initialising field TMean
+    176      Reading/initialising field TsMean
+    177      Restarting averaging at time 22.478278985629
+    178  fieldAverage cycleMean:
+    179      Reading/initialising field TMean
+    180      Reading/initialising field TsMean
+    181      Restarting averaging at time 22.521757246501
+    182  fieldAverage cycleMean:
+    183      Reading/initialising field TMean
+    184      Reading/initialising field TsMean
+    185      Restarting averaging at time 22.565235507373
+    186  fieldAverage cycleMean:
+    187      Reading/initialising field TMean
+    188      Reading/initialising field TsMean
+    189      Restarting averaging at time 22.608713768245
+    190  fieldAverage cycleMean:
+    191      Reading/initialising field TMean
+    192      Reading/initialising field TsMean
+    193      Restarting averaging at time 22.652192029117
+    194  fieldAverage cycleMean:
+    195      Reading/initialising field TMean
+    196      Reading/initialising field TsMean
+    197      Restarting averaging at time 22.695670289989
+    198  fieldAverage cycleMean:
+    199      Reading/initialising field TMean
+    200      Reading/initialising field TsMean
+    210  fieldAverage cycleMean:
+    211      Reading/initialising field TMean
+    212      Reading/initialising field TsMean
+    213      Restarting averaging at time 22.869583333478
+    214  fieldAverage cycleMean:
+    215      Reading/initialising field TMean
+    216      Reading/initialising field TsMean
+    217      Restarting averaging at time 22.91306159435
+    218  fieldAverage cycleMean:
+    219      Reading/initialising field TMean
+    220      Reading/initialising field TsMean
+    221      Restarting averaging at time 22.956539855222
+    222  fieldAverage cycleMean:
+    223      Reading/initialising field TMean
+    224      Reading/initialising field TsMean
+    225      Restarting averaging at time 23.000018116094
+    226  fieldAverage cycleMean:
+    227      Reading/initialising field TMean
+    228      Reading/initialising field TsMean
+    229      Restarting averaging at time 23.043496376966
+    230  fieldAverage cycleMean:
+    231      Reading/initialising field TMean
+    232      Reading/initialising field TsMean
+    233      Restarting averaging at time 23.086974637838
+    234  fieldAverage cycleMean:
+    235      Reading/initialising field TMean
+    236      Reading/initialising field TsMean
+    237      Restarting averaging at time 23.130452898711
+    238  fieldAverage cycleMean:
+    239      Reading/initialising field TMean
+    240      Reading/initialising field TsMean
+    241      Restarting averaging at time 23.173931159583
+    242  fieldAverage cycleMean:
+    243      Reading/initialising field TMean
+    244      Reading/initialising field TsMean
+    245      Restarting averaging at time 23.217409420455
+    246  fieldAverage cycleMean:
+    247      Reading/initialising field TMean
+    248      Reading/initialising field TsMean
+    249      Restarting averaging at time 23.260887681327
+    250  fieldAverage cycleMean:
+    251      Reading/initialising field TMean
+    252      Reading/initialising field TsMean
+    253      Restarting averaging at time 23.304365942199
+    254  fieldAverage cycleMean:
+    255      Reading/initialising field TMean
+    256      Reading/initialising field TsMean
+    257      Restarting averaging at time 23.347844203071
+    258  fieldAverage cycleMean:
+    259      Reading/initialising field TMean
+    260      Reading/initialising field TsMean
+    261      Restarting averaging at time 23.391322463943
+    262  fieldAverage cycleMean:
+    263      Reading/initialising field TMean
+    264      Reading/initialising field TsMean
+    265      Restarting averaging at time 23.434800724815
+    266  fieldAverage cycleMean:
+    267      Reading/initialising field TMean
+    268      Reading/initialising field TsMean
+    269      Restarting averaging at time 23.478278985687
+    270  fieldAverage cycleMean:
+    271      Reading/initialising field TMean
+    272      Reading/initialising field TsMean
+    273      Restarting averaging at time 23.52175724656
+    274  fieldAverage cycleMean:
+    275      Reading/initialising field TMean
+    276      Reading/initialising field TsMean
+    277      Restarting averaging at time 23.565235507432
+    278  fieldAverage cycleMean:
+    279      Reading/initialising field TMean
+    280      Reading/initialising field TsMean
+    281      Restarting averaging at time 23.608713768304
+    282  fieldAverage cycleMean:
+    283      Reading/initialising field TMean
+    284      Reading/initialising field TsMean
+    285      Restarting averaging at time 23.652192029176
+    286  fieldAverage cycleMean:
+    287      Reading/initialising field TMean
+    288      Reading/initialising field TsMean
+    289      Restarting averaging at time 23.695670290048
+    290  fieldAverage cycleMean:
+    291      Reading/initialising field TMean
+    292      Reading/initialising field TsMean
+    293      Restarting averaging at time 23.73914855092
+    294  fieldAverage cycleMean:
+    295      Reading/initialising field TMean
+    296      Reading/initialising field TsMean
+    297      Restarting averaging at time 23.782626811792
+    298  fieldAverage cycleMean:
+    299      Reading/initialising field TMean
+    300      Reading/initialising field TsMean
+    301      Restarting averaging at time 23.826105072664
+    302  fieldAverage cycleMean:
+    303      Reading/initialising field TMean
+    304      Reading/initialising field TsMean
+    305      Restarting averaging at time 23.869583333537
+    306  fieldAverage cycleMean:
+    307      Reading/initialising field TMean
+    308      Reading/initialising field TsMean
+    309  End
