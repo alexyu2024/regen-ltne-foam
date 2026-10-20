@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Write the L5 case dictionaries and initial fields from params_L5.yaml (values used verbatim).
 
-Usage: mkCase.py <case dir> [--matrix-refine N]
-The matrix cells are refined N times (sensitivity check); everything else is unchanged.
+Usage: mkCase.py <case dir> [--matrix-refine N] [--grid-refine F]
+--matrix-refine N: the matrix cells are refined N times (L5 sensitivity check); everything else is unchanged.
+--grid-refine F: every block's cell count is multiplied by F (L6 grid study; F = 0.5, 1, 2); the result must be
+an integer for every block.
 """
 import math, os, sys
 import yaml
@@ -11,6 +13,7 @@ here = os.path.dirname(os.path.abspath(__file__))
 P = yaml.safe_load(open(os.path.join(here, 'params_L5.yaml')))
 case = sys.argv[1]
 refine = int(sys.argv[sys.argv.index('--matrix-refine') + 1]) if '--matrix-refine' in sys.argv else 1
+grid = float(sys.argv[sys.argv.index('--grid-refine') + 1]) if '--grid-refine' in sys.argv else 1.0
 
 HDR = """/*--------------------------------*- C++ -*----------------------------------*\\
   regen-ltne-foam, OpenFOAM v2512 - written by cases/L5_regenSlice/mkCase.py
@@ -47,6 +50,11 @@ Tcold = Z['cold_hx']['solid_T_fixed_K']
 order = ['hot_chamber', 'hot_hx', 'matrix_500', 'matrix_635', 'cold_hx', 'cold_chamber']
 ncells = {'hot_chamber': 24, 'hot_hx': 10, 'matrix_500': 60 * refine, 'matrix_635': 60 * refine,
           'cold_hx': 10, 'cold_chamber': 8}
+for n in ncells:
+    c = ncells[n] * grid
+    if abs(c - round(c)) > 1e-9:
+        sys.exit(f'mkCase: --grid-refine {grid} gives a non-integer cell count in {n}')
+    ncells[n] = int(round(c))
 zlev = [Z[order[0]]['z'][0]] + [Z[n]['z'][1] for n in order]
 verts = []
 for z in zlev:
@@ -334,4 +342,4 @@ write('0.orig/U', 'volVectorField', body('[0 1 -1 0 0 0 0]', 'uniform (0 0 0)',
 # cell centres of the matrix (for results.py)
 with open(os.path.join(case, 'cellCentresZ.txt'), 'w') as fz:
     fz.write('\n'.join(f'{z:.9f}' for z in zc) + '\n')
-print(f'mkCase: {len(zc)} cells, matrix refine {refine}, T = {T:.12g} s')
+print(f'mkCase: {len(zc)} cells, matrix refine {refine}, grid refine {grid:g}, T = {T:.12g} s')

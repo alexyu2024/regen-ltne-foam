@@ -59,10 +59,12 @@ Or by hand: `cases/<level>_*/Allrun`, `cases/<level>_*/Allclean`. `tools/verify.
 | L3 LTNE relaxation | `cases/L3_ltneRelax` | PASS (10/10, merged) |
 | L4 LTNE with flow | `cases/L4_singleBlow` | PASS (6/6, merged; first run crashed on a k_s = 0 bug, `results/L4_run1`) |
 | L5 regenerator slice | `cases/L5_regenSlice` | 11/12 PASS as preregistered (L5.7 FAIL); supplementary check L5.7a PASS (Amendment A1) (`results/L5`); B1-B4 await the leader's Fluent comparison; PR not merged |
+| L6 verification of L5 (grid, time step, periodicity) | `cases/L6_regenConvergence` | 17/21 PASS as preregistered: periodicity, GCI_fine < 3 % and dt/2 < 1 % pass; the apparent-order check fails for 4 of 5 QoIs (`results/L6`); PR not merged |
 
 Scope:
 - L0-L4 are verified against exact or analytical solutions (L0 is the build and smoke test).
 - L5 is a check of numerical self-consistency: energy closure, periodicity, and grid and time-step sensitivity.
+- L6 is a grid and time-step convergence study of the L5 model (a verification of the numerics, not of the model).
 - The code-to-code comparison with Fluent (bars B1-B4) has not been done yet, and nothing in this repository has
   been validated against experiments.
 - The L5 energy-closure checks (B5 as L5.7, and L5.7a) test the closure of the model's own energy balance. They

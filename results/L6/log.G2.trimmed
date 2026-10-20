@@ -1,0 +1,13 @@
+      1  Restore 0/ from 0.orig/
+      2  Running blockMesh on /home/runner/work/regen-ltne-foam/regen-ltne-foam/cases/L6_regenConvergence/G2
+      3  Running topoSet on /home/runner/work/regen-ltne-foam/regen-ltne-foam/cases/L6_regenConvergence/G2
+      4  summarise G2: 0 new cycles
+      5  periodic: G2 not yet, cycles 0, max change None
+      6  summarise G2: 10 new cycles
+      7  periodic: G2 not yet, cycles 10, max change 0.23290720708477589
+      8  summarise G2: 10 new cycles
+      9  periodic: G2 not yet, cycles 20, max change 0.0019064633377911112
+     10  summarise G2: 10 new cycles
+     11  periodic: G2 not yet, cycles 30, max change 0.000999911827426431
+     12  summarise G2: 10 new cycles
+     13  periodic: G2 at cycle 40, max change 6.316e-04

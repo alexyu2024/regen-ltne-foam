@@ -344,3 +344,94 @@ supplementary check.
 **L5.10 counting error.** "(6 values)" in the L5.10 description is a counting error. The sensitivity definition
 above lists five amplitudes: |p| and |mdot| at both faces, and the dp amplitude. `results.py` has always used those
 five. No quantity was added and nothing was re-run.
+
+## L6 Verification of the L5 regenerator slice (leader-gen8 definition, docs/TASK.md "L6")
+
+Committed before any L6 run, including debugging runs. The model, inputs and numerics are the L5 case
+(`cases/L5_regenSlice`, `params_L5.yaml`, Huang 2020 public parameters) with only the mesh and the time step varied.
+The L5.7 bar and every L5 row are unchanged.
+
+Runs (each starts from the file's initial state at t = 0, with the L5 start-up):
+
+| run | cells: hot chamber, hot HX, matrix 500#, matrix 635#, cold HX, cold chamber | matrix dx | dt (steps per cycle) |
+|---|---|---|---|
+| G1 coarse | 12, 5, 30, 30, 5, 4 | 0.8667 mm | 1.8115942e-5 s (2400) |
+| G2 medium (= L5 mesh) | 24, 10, 60, 60, 10, 8 | 0.4333 mm | 1.8115942e-5 s (2400) |
+| G3 fine | 48, 20, 120, 120, 20, 16 | 0.2167 mm | 1.8115942e-5 s (2400) |
+| T2 (G2 mesh, dt/2) | 24, 10, 60, 60, 10, 8 | 0.4333 mm | 9.0579710e-6 s (4800) |
+
+Every block is refined by the same factor, so the refinement ratio is r = 2 everywhere (>= 1.3). The face zones at
+z = 0, 0.026 and 0.052 m are block boundaries on all grids.
+
+Characteristic numbers per run, stated before the runs. The G2 values are those in the L5 case README; the other
+runs scale with dx and dt. Hot face (500#, 80 K) / cold face (635#, 22 K):
+
+| run | NTU per matrix cell | acoustic CFL c dt / dx | convective CFL (u/eps) dt / dx |
+|---|---|---|---|
+| G1 | 15.7 / 14.3 | 11 / 5.8 | 0.026 / 0.009 |
+| G2 | 7.8 / 7.2 | 22 / 11.5 | 0.051 / 0.018 |
+| G3 | 3.9 / 3.6 | 44 / 23 | 0.10 / 0.036 |
+| T2 | 7.8 / 7.2 | 11 / 5.8 | 0.026 / 0.009 |
+
+QoIs, each the cycle average over one cycle (cycle k spans [(k-1) T, k T], T = 1/23 s):
+- H_hot, H_joint, H_cold: the net enthalpy flow <H> at the matrix hot face, the joint and the matrix cold face (the
+  L5 definition of H).
+- Qgs_abs: the gas-solid heat exchange in the matrix, as the cycle mean of sum over the matrix cells of
+  |hA (Ts - T)| V, in W. The absolute value is used because the net cycle mean of hA (Ts - T) V is close to zero in
+  a periodic state (it balances the small axial solid conduction), so a relative criterion on it would be
+  ill-posed. The net value, Qgs_net, is reported alongside but has no bar.
+- dp_amp: the first-harmonic amplitude of p(hot face) - p(cold face), in Pa (the L5 definition).
+
+Periodic steady state (criterion 2):
+- Each run proceeds in 10-cycle chunks.
+- It is periodic at the first check with at least 40 cycles (the L5 minimum) at which every QoI changed by less than
+  0.1 % (|q_k - q_(k-1)| / |q_k| < 0.001) over each of the last 5 consecutive cycle pairs.
+- The reported cycle count is that cycle k.
+- A run that is not periodic by cycle 300 stops, its row is FAIL, and its last cycle is still used below.
+
+Grid convergence (criterion 3), after Celik et al. (2008), J. Fluids Eng. 130, 078001:
+- phi1, phi2 and phi3 are the QoI on G3, G2 and G1 (fine to coarse); r = 2; e21 = phi2 - phi1, e32 = phi3 - phi2.
+- Apparent order: p = |ln|e32 / e21|| / ln 2, which with a constant r needs no iteration.
+- GCI_fine = 1.25 |(phi1 - phi2) / phi1| / (2^p - 1).
+- Formal order 2 in space: linear interpolation and gradients; limitedLinear (TVD) convection for h and U, which is
+  second order away from local extrema. Time is Euler (first order) and dt is the same on all three grids.
+- Pass for each QoI: GCI_fine < 3 % and |p - 2| <= 0.5.
+- If e32 / e21 < 0 (oscillatory convergence), p and GCI are still computed as above and the case is flagged in the
+  results README.
+- A value that cannot be computed (e21 = 0 or e32 = 0) is FAIL.
+
+Time-step convergence (criterion 4): the relative change |q(T2) - q(G2)| / |q(T2)| for each QoI, pass < 1 %.
+
+Energy ledger (criterion 5), per cycle for every run, in `per_cycle_<run>.csv`:
+- four-term closure = <W_hot> + <W_cold> + <Q_hot HX -> gas> + <Q_cold HX -> gas> (the registered L5.7 form);
+- six-term closure = the four terms + <Q_hot HX solid -> matrix solid> + <Q_cold HX solid -> matrix solid>
+  (L5.7a, Amendment A1).
+Both are reported for the last cycle of every run; neither has a bar here.
+
+| id | metric | op | bar | description |
+|----|--------|----|-----|-------------|
+| L6.1 | cycles_G1 | <= | 300 | G1: cycle count at which the periodic criterion holds |
+| L6.2 | cycles_G2 | <= | 300 | G2: cycle count at which the periodic criterion holds |
+| L6.3 | cycles_G3 | <= | 300 | G3: cycle count at which the periodic criterion holds |
+| L6.4 | cycles_T2 | <= | 300 | T2: cycle count at which the periodic criterion holds |
+| L6.5 | gci_H_hot | < | 0.03 | GCI_fine of H_hot |
+| L6.6 | gci_H_joint | < | 0.03 | GCI_fine of H_joint |
+| L6.7 | gci_H_cold | < | 0.03 | GCI_fine of H_cold |
+| L6.8 | gci_Qgs_abs | < | 0.03 | GCI_fine of Qgs_abs |
+| L6.9 | gci_dp_amp | < | 0.03 | GCI_fine of dp_amp |
+| L6.10 | p_err_H_hot | <= | 0.5 | abs(apparent order - 2), H_hot |
+| L6.11 | p_err_H_joint | <= | 0.5 | abs(apparent order - 2), H_joint |
+| L6.12 | p_err_H_cold | <= | 0.5 | abs(apparent order - 2), H_cold |
+| L6.13 | p_err_Qgs_abs | <= | 0.5 | abs(apparent order - 2), Qgs_abs |
+| L6.14 | p_err_dp_amp | <= | 0.5 | abs(apparent order - 2), dp_amp |
+| L6.15 | dt_rel_H_hot | < | 0.01 | time step: relative change of H_hot, G2 vs T2 |
+| L6.16 | dt_rel_H_joint | < | 0.01 | time step: relative change of H_joint, G2 vs T2 |
+| L6.17 | dt_rel_H_cold | < | 0.01 | time step: relative change of H_cold, G2 vs T2 |
+| L6.18 | dt_rel_Qgs_abs | < | 0.01 | time step: relative change of Qgs_abs, G2 vs T2 |
+| L6.19 | dt_rel_dp_amp | < | 0.01 | time step: relative change of dp_amp, G2 vs T2 |
+| L6.20 | crash_count | == | 0 | log lines matching `FOAM FATAL`, `nan`, `inf`, `Floating point exception` or `Segmentation fault` over all logs of all runs (the `trapFpe: Floating point exception trapping enabled` start-up banner excepted, as in L5) |
+| L6.21 | closure4_G2_W | report | 0 | four-term closure, last cycle of G2, W |
+| L6.22 | closure6_G2_W | report | 0 | six-term closure, last cycle of G2, W |
+| L6.23 | closure4_G3_W | report | 0 | four-term closure, last cycle of G3, W |
+| L6.24 | closure6_G3_W | report | 0 | six-term closure, last cycle of G3, W |
+| L6.25 | allclean_leftover | == | 0 | files under the case directory that `git status --porcelain --ignored` lists after `Allclean` |

@@ -1,0 +1,26 @@
+metric,value,source
+cycles_G1,70,results/L6/per_cycle_G1.csv:66-71 (cycles 65-70)
+cycles_G2,40,results/L6/per_cycle_G2.csv:36-41 (cycles 35-40)
+cycles_G3,40,results/L6/per_cycle_G3.csv:36-41 (cycles 35-40)
+cycles_T2,40,results/L6/per_cycle_T2.csv:36-41 (cycles 35-40)
+gci_H_hot,0.011697717743593744,"results/L6/gci.csv:2 (per_cycle_G3.csv:41, per_cycle_G2.csv:41, per_cycle_G1.csv:71)"
+p_err_H_hot,0.2916664186891149,"results/L6/gci.csv:2 (per_cycle_G3.csv:41, per_cycle_G2.csv:41, per_cycle_G1.csv:71)"
+dt_rel_H_hot,0.001861078930622462,results/L6/gci.csv:2 (per_cycle_T2.csv:41 vs per_cycle_G2.csv:41)
+gci_H_joint,6.989879028503001e-07,"results/L6/gci.csv:3 (per_cycle_G3.csv:41, per_cycle_G2.csv:41, per_cycle_G1.csv:71)"
+p_err_H_joint,2.6470789136868014,"results/L6/gci.csv:3 (per_cycle_G3.csv:41, per_cycle_G2.csv:41, per_cycle_G1.csv:71)"
+dt_rel_H_joint,0.0001099179221239665,results/L6/gci.csv:3 (per_cycle_T2.csv:41 vs per_cycle_G2.csv:41)
+gci_H_cold,7.633103964207516e-05,"results/L6/gci.csv:4 (per_cycle_G3.csv:41, per_cycle_G2.csv:41, per_cycle_G1.csv:71)"
+p_err_H_cold,0.9384520272046459,"results/L6/gci.csv:4 (per_cycle_G3.csv:41, per_cycle_G2.csv:41, per_cycle_G1.csv:71)"
+dt_rel_H_cold,0.0017704109893429496,results/L6/gci.csv:4 (per_cycle_T2.csv:41 vs per_cycle_G2.csv:41)
+gci_Qgs_abs,0.00895765788285963,"results/L6/gci.csv:5 (per_cycle_G3.csv:41, per_cycle_G2.csv:41, per_cycle_G1.csv:71)"
+p_err_Qgs_abs,1.7579189132426132,"results/L6/gci.csv:5 (per_cycle_G3.csv:41, per_cycle_G2.csv:41, per_cycle_G1.csv:71)"
+dt_rel_Qgs_abs,0.0005952349424372052,results/L6/gci.csv:5 (per_cycle_T2.csv:41 vs per_cycle_G2.csv:41)
+gci_dp_amp,0.006550558668613017,"results/L6/gci.csv:6 (per_cycle_G3.csv:41, per_cycle_G2.csv:41, per_cycle_G1.csv:71)"
+p_err_dp_amp,1.3833418985143875,"results/L6/gci.csv:6 (per_cycle_G3.csv:41, per_cycle_G2.csv:41, per_cycle_G1.csv:71)"
+dt_rel_dp_amp,5.1948468358761094e-05,results/L6/gci.csv:6 (per_cycle_T2.csv:41 vs per_cycle_G2.csv:41)
+closure4_G2_W,-0.39653103830555936,results/L6/per_cycle_G2.csv:41
+closure6_G2_W,0.020348916425388656,results/L6/per_cycle_G2.csv:41
+closure4_G3_W,-0.5837685519534406,results/L6/per_cycle_G3.csv:41
+closure6_G3_W,-0.02666457175622873,results/L6/per_cycle_G3.csv:41
+crash_count,0,results/L6/log.*:all lines of all logs of all runs; 27 trapFpe banner lines skipped
+allclean_leftover,0,results/L6/log.allclean-check:empty file

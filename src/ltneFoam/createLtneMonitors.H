@@ -10,7 +10,10 @@
 //   per fixedTs zone: heat rate from the fixed solid into the gas,
 //     Qgas = hA (Ts - T) V, and by solid conduction into the adjacent solid,
 //     Qsolid = kSf (Ts_fixed - Ts_neighbour) deltaCoeff |Sf| (same discrete
-//     term as the solid equation).
+//     term as the solid equation);
+//   gas-solid exchange over the cells outside the fixedTs zones (the
+//     matrix): matrix_Qgs = sum hA (Ts - T) V (solid to gas) and
+//     matrix_Qgs_abs = sum |hA (Ts - T)| V.
 const bool monitorsActive = ltneProperties.found("monitors");
 vector monitorAxis(0, 0, 1);
 wordList monitorFaceZones, monitorPatches;
@@ -64,6 +67,7 @@ if (monitorsActive)
         {
             monitorFile() << ' ' << zn << "_Qgas " << zn << "_Qsolid";
         }
+        monitorFile() << " matrix_Qgs matrix_Qgs_abs";
         monitorFile() << endl;
     }
 }
