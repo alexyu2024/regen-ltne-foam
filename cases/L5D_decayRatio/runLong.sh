@@ -21,6 +21,10 @@ if [ ! -d run/constant/polyMesh ]; then
     (cd run && restore0Dir > /dev/null && runApplication blockMesh && runApplication topoSet) || exit 1
 fi
 
+# Long runs: OpenFOAM lengthens time names beyond 14 digits after ~50 cycles (2.173913043476394) and a
+# restart at timePrecision 14 then looks for 2.1739130434764; 17 digits keeps the names readable on restart
+sed -i 's/^timePrecision .*/timePrecision   17;/' run/system/controlDict
+
 while :; do
     python3 $L5/results.py summarise run 2400 || exit 1
     dirs=$(ls -d run/postProcessing/ltneDiagnostics/*/ 2>/dev/null | sort -t/ -k4 -g)
