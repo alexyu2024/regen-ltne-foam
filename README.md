@@ -1,5 +1,7 @@
 # regen-ltne-foam
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23499222.svg)](https://doi.org/10.5281/zenodo.23499222)
+
 `ltneFoam`: an OpenFOAM solver for compressible, oscillating (piston-driven) helium flow through porous media with
 local thermal non-equilibrium (LTNE). It is `rhoPimpleFoam` plus porosity-weighted storage terms, a solid-matrix
 energy equation coupled to the gas by `h_sf a_sf (T_s - T_g)`, and a prescribed piston motion. Darcy-Forchheimer
@@ -83,11 +85,12 @@ Machine-readable metadata: [CITATION.cff](CITATION.cff) (GitHub's "Cite this rep
              regenerators with local thermal non-equilibrium},
   version = {1.0.0},
   license = {GPL-3.0-or-later},
+  doi     = {10.5281/zenodo.23499222},
   url     = {https://github.com/alexyu2024/regen-ltne-foam}
 }
 ```
 
-A DOI will be added here and in `CITATION.cff` at the first verified release.
+DOI (Zenodo archive of release v1.0.0): [10.5281/zenodo.23499222](https://doi.org/10.5281/zenodo.23499222).
 
 ## License and rights
 

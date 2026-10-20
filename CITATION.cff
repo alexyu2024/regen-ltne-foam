@@ -1,6 +1,4 @@
-# Citation metadata (Citation File Format 1.2.0). The DOI is added when the first verified
-# release is archived on Zenodo; until then the doi line below stays commented out, because
-# an empty doi value does not validate against the CFF schema.
+# Citation metadata (Citation File Format 1.2.0). The DOI is the Zenodo archive of release v1.0.0.
 cff-version: 1.2.0
 message: "If you use this software, please cite it using the metadata from this file."
 type: software
@@ -8,7 +6,7 @@ title: "regen-ltne-foam: ltneFoam, an OpenFOAM solver for oscillating helium flo
 version: 1.0.0
 license: GPL-3.0-or-later
 repository-code: "https://github.com/alexyu2024/regen-ltne-foam"
-# doi:
+doi: 10.5281/zenodo.23499222
 authors:
   - family-names: Yu
     given-names: Qiming
