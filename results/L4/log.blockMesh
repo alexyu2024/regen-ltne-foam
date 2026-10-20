@@ -13,7 +13,7 @@ Time   : 22:11:59
 Host   : vm
 PID    : 2454
 I/O    : uncollated
-Case   : /tmp/claude-0/-home-user-regen-ltne-foam/dc12042d-894c-5db9-b3c9-0425e1896857/scratchpad/clone/cases/L4_singleBlow
+Case   : <clone>/cases/L4_singleBlow
 nProcs : 1
 trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
 memory pool : not available

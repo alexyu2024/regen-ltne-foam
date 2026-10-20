@@ -13,7 +13,7 @@ Time   : 21:50:45
 Host   : vm
 PID    : 1144
 I/O    : uncollated
-Case   : /tmp/claude-0/-home-user-regen-ltne-foam/dc12042d-894c-5db9-b3c9-0425e1896857/scratchpad/clone/cases/L3_ltneRelax/run_b
+Case   : <clone>/cases/L3_ltneRelax/run_b
 nProcs : 1
 trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
 memory pool : not available

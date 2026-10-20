@@ -1,4 +1,4 @@
-# L5 oscillating regenerator slice (Huang 2020, leader's parameter file)
+# L5 oscillating regenerator slice (Huang 2020, the author's parameter file)
 
 This is a 1-D axial column holding, from hot to cold: the hot chamber, the hot HX, the 500# and 635# stainless
 screen matrix, the cold HX and the cold chamber. Helium at 0.75 MPa is driven by two pistons at 23 Hz. Every input
@@ -56,14 +56,14 @@ The mapping is as follows:
 - **Drag**: the file's 1/alpha and C2 (the latter fixed at the reference state) enter as Darcy-Forchheimer
   `explicitPorositySource` terms per zone, on the superficial velocity.
 
-## Interpretations (confirmed by the leader before the runs)
+## Interpretations (confirmed by the author (Qiming Yu) before the runs)
 
 - **Start-up.** Each piston follows x(t) = |x| [cos(omega t + Ph) - cos(Ph) exp(-t/T)], with T = 1/23 s. The mesh
   therefore starts at the mean position and the start is velocity-continuous. This is implemented as the
   `rampTime` option of `pistonLinear` (the Function1 value minus its t = 0 value times exp(-t/rampTime)). The
   Fluent twin uses the same formula.
 - **Sensitivity bar.** The < 1 % bar is applied relative to amplitudes and as 0.5 deg absolute to phases.
-## Interpretation not yet confirmed (flagged in the PR)
+## Interpretation not yet confirmed
 
 - **Cold piston direction.** The file says x = displacement toward the matrix, with
   U_p = A dxi/dt, and that "the cold piston ABSORBS the machine's +z flow: sign -". This case takes the cold

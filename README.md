@@ -1,11 +1,13 @@
 # regen-ltne-foam
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23499222.svg)](https://doi.org/10.5281/zenodo.23499222)
+
 `ltneFoam`: an OpenFOAM solver for compressible, oscillating (piston-driven) helium flow through porous media with
 local thermal non-equilibrium (LTNE). It is `rhoPimpleFoam` plus porosity-weighted storage terms, a solid-matrix
 energy equation coupled to the gas by `h_sf a_sf (T_s - T_g)`, and a prescribed piston motion. Darcy-Forchheimer
 drag coefficients are read from the standard `explicitPorositySource` entries and balanced on faces in the pressure
 equation, with the cell velocity reconstructed from face fluxes (`docs/L2_FIX_DESIGN.md`). Reference model: Tew et al. 2006, NASA/TM (Fluent porous-media LTNE).
-Task: `docs/TASK.md`. Acceptance bars: `docs/VERIFICATION.md`.
+Acceptance bars: `docs/VERIFICATION.md`. Release notes: `docs/RELEASE_NOTES.md`. New cases: `docs/NEW_CASE.md`.
 
 ## Distribution: OpenFOAM v2512 (openfoam.com, OpenCFD/ESI), apt package `openfoam2512-dev` 2512.0-2
 
@@ -13,7 +15,7 @@ Task: `docs/TASK.md`. Acceptance bars: `docs/VERIFICATION.md`.
   diff against a standard solver (`src/ltneFoam`). In openfoam.org v11+ the solvers are modules of `foamRun`, and the
   API changes between yearly versions.
 - The Darcy-Forchheimer model (`d` = 1/permeability, `f` = C2) takes the same coefficients as Fluent's porous zone,
-  which helps the leader's comparison with the Fluent results.
+  which helps a comparison with Fluent results.
 - Official binary packages for Ubuntu 22.04/24.04 with a pinned version make `tools/install.sh` reproducible, and
   one six-monthly release is supported for years.
 
@@ -41,6 +43,17 @@ error). Solid properties are constant.
 `tools/install.sh` adds the openfoam.com apt repository, installs `openfoam2512-dev=2512.0-2` and runs
 `src/Allwmake`.
 
+## macOS and Windows: Docker
+
+`docker/Dockerfile` is Ubuntu 24.04 with the same OpenFOAM package (`openfoam2512-dev=2512.0-2`). The image was
+tested natively on arm64 (Apple silicon); CI runs the same package on x86-64 without Docker. `docker/run.sh` builds the image on first use, mounts the
+repository, compiles the solver and runs one level:
+
+    docker/run.sh L3                # results in out/L3; any level: L0-L4 (minutes), L5, L6 (hours)
+
+On Windows, run it from a WSL2 shell with Docker Desktop. Measured natively on Apple silicon (arm64), one core: L0
+8/8, L3 10/10, L4 6/6, and L5 11/12 + L5.7a, identical to CI, at about 15 s per L5 cycle.
+
 ## Run a level
 
     tools/run_level.sh L0 results/L0    # Allclean, Allrun, extract metrics, Allclean, check bars
@@ -48,6 +61,7 @@ error). Solid properties are constant.
 Or by hand: `cases/<level>_*/Allrun`, `cases/<level>_*/Allclean`. `tools/verify.py` compares
 `<outdir>/results.csv` (every value with its file and line) with the bars and writes `<outdir>/STATUS.md`. CI
 (`.github/workflows/verify.yml`) does the same on every pull request for each level in `tools/ci_levels.txt`.
+The long levels (L5, L6) run with `cases/<level>_*/runLong.sh <outdir>`, or through `.github/workflows/run-case.yml`.
 
 ## Status
 
@@ -58,8 +72,8 @@ Or by hand: `cases/<level>_*/Allrun`, `cases/<level>_*/Allclean`. `tools/verify.
 | L2 porous plug, steady | `cases/L2_porousPlug` | PASS (16/16 after the face-consistent drag fix, merged; first run FAIL 12/16 in `results/L2_run1`) |
 | L3 LTNE relaxation | `cases/L3_ltneRelax` | PASS (10/10, merged) |
 | L4 LTNE with flow | `cases/L4_singleBlow` | PASS (6/6, merged; first run crashed on a k_s = 0 bug, `results/L4_run1`) |
-| L5 regenerator slice | `cases/L5_regenSlice` | 11/12 PASS as preregistered (L5.7 FAIL); supplementary check L5.7a PASS (Amendment A1) (`results/L5`); B1-B4 await the leader's Fluent comparison; PR not merged |
-| L6 verification of L5 (grid, time step, periodicity) | `cases/L6_regenConvergence` | 17/21 PASS as preregistered: periodicity, GCI_fine < 3 % and dt/2 < 1 % pass; the apparent-order check fails for 4 of 5 QoIs (`results/L6`); PR not merged |
+| L5 regenerator slice | `cases/L5_regenSlice` | 11/12 PASS as preregistered (L5.7 FAIL); supplementary check L5.7a PASS (Amendment A1) (`results/L5`); the code-to-code comparison with ANSYS Fluent (B1-B4) is not part of this release |
+| L6 verification of L5 (grid, time step, periodicity) | `cases/L6_regenConvergence` | 17/21 PASS as preregistered: periodicity, GCI_fine < 3 % and dt/2 < 1 % pass; the apparent-order check fails for 4 of 5 QoIs (`results/L6`) |
 
 Scope:
 - L0-L4 are verified against exact or analytical solutions (L0 is the build and smoke test).
@@ -81,13 +95,14 @@ Machine-readable metadata: [CITATION.cff](CITATION.cff) (GitHub's "Cite this rep
   author  = {Yu, Qiming},
   title   = {regen-ltne-foam: ltneFoam, an OpenFOAM solver for oscillating helium flow in porous
              regenerators with local thermal non-equilibrium},
-  version = {0.0.0-unreleased},
+  version = {1.0.1},
   license = {GPL-3.0-or-later},
+  doi     = {10.5281/zenodo.23499222},
   url     = {https://github.com/alexyu2024/regen-ltne-foam}
 }
 ```
 
-A DOI will be added here and in `CITATION.cff` at the first verified release.
+DOI (Zenodo archive of release v1.0.0): [10.5281/zenodo.23499222](https://doi.org/10.5281/zenodo.23499222).
 
 ## License and rights
 
@@ -105,10 +120,32 @@ OpenFOAM software via www.openfoam.com, and owner of the OPENFOAM(R) and OpenCFD
 `ltneFoam` is an independent solver built on the OpenFOAM(R) libraries (ESI / openfoam.com
 distribution).
 
-The solver was developed with AI assistance (Anthropic Claude) under the author's direction;
-every acceptance level is backed by the recorded runs and the CI in this repository. Here "backed" means
-each level was checked against its own bars in `docs/VERIFICATION.md`, within the scope stated under Status. It
-does not mean that L5 has been verified against Fluent, or that anything has been validated against experiments.
-The
-verification cases use published, public-domain benchmarks only. If you use this solver in
-academic work, please cite this repository (a paper reference will be added when available).
+### Authorship, Scientific Leadership & AI Disclosure
+
+**Scientific Direction & Principal Investigator:** Qiming Yu (Enterprise Research Fellow, University of Southampton)
+- **Conception & Physics:** Conceived the project and defined the scientific objective (an open-source LTNE
+  regenerator solver succeeding previous Fluent formulations). Selected the governing thermal non-equilibrium
+  transport model (reference model: Tew et al. 2006, the Fluent porous-media LTNE formulation) and the regenerator
+  problem and its parameters (Huang et al. 2020).
+- **Verification Architecture:** Architected the graded verification methodology (L0-L6), required every
+  acceptance threshold to be fixed before the simulation runs to ensure falsification integrity, set the L5 and L6
+  thresholds and accepted those of L0-L4, and established the energy-ledger / GCI assessment framework.
+- **Scientific Rulings:** Specified the physical closure models (`cases/L5_regenSlice/params_L5.yaml`) and
+  adjudicated all numerical closure proposals and technical ambiguities across pull requests (including the
+  face-consistent Darcy-Forchheimer treatment in `docs/L2_FIX_DESIGN.md`). Holds sole scientific responsibility for
+  the codebase and its physical validity.
+
+**AI Implementation Assistance:** Anthropic Claude (Claude Code)
+- Operating under the author's continuous direction, mathematical specification and code review, Claude acted as
+  an agentic co-development tool to draft and implement the OpenFOAM C++ solver, the benchmark set-ups, the
+  acceptance-bar drafts and the CI automation scripts.
+- Claude assisted in diagnosing run failures and proposed and implemented numerical treatments (e.g. the
+  flux-reconstructed velocity, the L4 Schumann test-case proposal and the ledger scripts). All contributions are
+  auditable through the commit history and pull requests.
+- All implementations were reviewed and accepted by the author. L0-L4 are re-checked by CI against published
+  closed-form benchmarks. L5 and L6 are recorded self-consistency and convergence runs, with their outcomes,
+  including the recorded FAILs, under Status (see `docs/VERIFICATION.md`). This does not mean that L5 has been
+  verified against Fluent, or that anything has been validated against experiments.
+
+The verification cases use published, public-domain data only. If you use this solver in academic work, please
+cite this repository (a paper reference will be added when available).
