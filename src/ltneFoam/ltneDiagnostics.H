@@ -15,6 +15,14 @@
     {
         forAll(mesh.boundary(), patchi)
         {
+            // Processor faces are internal to the domain: they do not exist in
+            // the serial case and their number differs per rank (1 on the end
+            // ranks, 2 on the interior ones), which would desynchronise gSum.
+            const word& patchType = mesh.boundaryMesh()[patchi].type();
+            if (patchType == "processor" || patchType == "processorCyclic")
+            {
+                continue;
+            }
             boundaryWork -=
                 runTime.deltaTValue()
                *gSum
@@ -44,25 +52,63 @@
         solidEnergyTotal = fvc::domainIntegrate(solidMask*CS*Ts).value();
     }
 
+    // Global reductions: every rank must take part, so they are evaluated
+    // outside the master-only block that writes the row.
+    const scalar gasMass = fvc::domainIntegrate(eps*rho).value();
+    const scalar gasInternal = fvc::domainIntegrate(eps*rho*eGas).value();
+    const scalar gasKinetic = fvc::domainIntegrate(rho*K).value();
+    const scalar pAverage = fvc::domainIntegrate(eps*p).value()/gasVolume;
+
     if (Pstream::master())
     {
         diagFile()
             << runTime.value()
-            << ' ' << fvc::domainIntegrate(eps*rho).value()
-            << ' ' << fvc::domainIntegrate(eps*rho*eGas).value()
-            << ' ' << fvc::domainIntegrate(rho*K).value()
+            << ' ' << gasMass
+            << ' ' << gasInternal
+            << ' ' << gasKinetic
             << ' '
             << (solidActive ? solidEnergyTotal : 0)
             << ' ' << gasVolume
-            << ' ' << fvc::domainIntegrate(eps*p).value()/gasVolume
+            << ' ' << pAverage
             << ' ' << boundaryWork;
     }
 
-    for (const cellZone& zone : mesh.cellZones())
+    // Cell-zone volumes. decomposePar may drop a zone on a processor that owns
+    // none of its cells and may reorder the zones per processor, so the list is
+    // rebuilt as a name-keyed union (master's names first, which keeps the
+    // column order of the header written in createLtneFields.H) and the
+    // reductions are unconditional: reducing an empty local field does not
+    // reliably take part in the collective and deadlocks the ranks.
+    wordList diagZoneNames;
     {
-        const scalarField zoneV(mesh.V().field(), zone);
-        const scalar vMin = gMin(zoneV);
-        const scalar vMax = gMax(zoneV);
+        const wordList localNames(mesh.cellZones().names());
+        List<wordList> allNames(Pstream::nProcs());
+        allNames[Pstream::myProcNo()] = localNames;
+        Pstream::gatherList(allNames);
+        Pstream::scatterList(allNames);
+        for (const wordList& names : allNames)
+        {
+            for (const word& name : names)
+            {
+                if (findIndex(diagZoneNames, name) < 0)
+                {
+                    diagZoneNames.append(name);
+                }
+            }
+        }
+    }
+    for (const word& zoneName : diagZoneNames)
+    {
+        const label zonei = mesh.cellZones().findZoneID(zoneName);
+        const labelList zoneCells
+        (
+            zonei >= 0 ? mesh.cellZones()[zonei] : labelList()
+        );
+        const scalarField zoneV(mesh.V().field(), zoneCells);
+        scalar vMin = zoneV.empty() ? VGREAT : min(zoneV);
+        scalar vMax = zoneV.empty() ? -VGREAT : max(zoneV);
+        reduce(vMin, minOp<scalar>());
+        reduce(vMax, maxOp<scalar>());
         if (Pstream::master())
         {
             diagFile() << ' ' << vMin << ' ' << vMax;
