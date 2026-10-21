@@ -9,6 +9,19 @@ drag coefficients are read from the standard `explicitPorositySource` entries an
 equation, with the cell velocity reconstructed from face fluxes (`docs/L2_FIX_DESIGN.md`). Reference model: Tew et al. 2006, NASA/TM (Fluent porous-media LTNE).
 Acceptance bars: `docs/VERIFICATION.md`. Release notes: `docs/RELEASE_NOTES.md`. New cases: `docs/NEW_CASE.md`.
 
+## Results at a glance
+
+![Gas temperature, matrix temperature and gas-minus-matrix difference](docs/figures/ltne_gas_matrix.png)
+
+Gas temperature, matrix temperature and their difference in a wire-mesh regenerator, end of cycle 80 of a 2-D
+axisymmetric wedge variant of the L5 slice (mirrored about the axis for display; the wedge case is not yet in this
+repository). The gas-minus-matrix field is what an LTNE model resolves and a single-temperature porous model cannot.
+
+![Cycle-mean axial gas temperature against a commercial CFD reference](docs/figures/axial_profile_vs_reference.png)
+
+Cycle-mean axial gas temperature from `ltneFoam` (L5 slice set to the reference geometry, cycle 40) against a 2-D
+axisymmetric commercial CFD reference of the same regenerator.
+
 ## Distribution: OpenFOAM v2512 (openfoam.com, OpenCFD/ESI), apt package `openfoam2512-dev` 2512.0-2
 
 - `rhoPimpleFoam` is still a classic, self-contained application in this distribution, so the solver is a short
