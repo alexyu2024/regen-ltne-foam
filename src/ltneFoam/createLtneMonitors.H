@@ -15,6 +15,11 @@
 //     matrix): matrix_Qgs = sum hA (Ts - T) V (solid to gas) and
 //     matrix_Qgs_abs = sum |hA (Ts - T)| V.
 const bool monitorsActive = ltneProperties.found("monitors");
+// Optional: the ideal-gas Cp that makes he + Cp Tstd the enthalpy relative to
+// 0 K for a real-gas thermo (ltneRealGas: the table's cp0). Absent (default):
+// the thermo's Cp, exact for constant-Cp ideal gases.
+const scalar enthalpyReferenceCp =
+    ltneProperties.getOrDefault<scalar>("enthalpyReferenceCp", -1);
 vector monitorAxis(0, 0, 1);
 wordList monitorFaceZones, monitorPatches;
 autoPtr<OFstream> monitorFile;

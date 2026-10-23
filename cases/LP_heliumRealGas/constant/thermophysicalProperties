@@ -1,0 +1,24 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  regen-ltne-foam, LP real-gas helium property check
+\*---------------------------------------------------------------------------*/
+FoamFile { version 2.0; format ascii; class dictionary; object thermophysicalProperties; }
+// Real-gas helium (optional model, library ltneRealGas): density, enthalpy, c_p, c_v, entropy, viscosity and
+// conductivity from the CoolProp T-p table; hConst holds the ideal-gas part, Cp = cp0 = 2.5 R of the table.
+thermoType
+{
+    type            heRhoThermo;
+    mixture         pureMixture;
+    transport       tabulated2D;
+    thermo          hConst;
+    equationOfState tabulatedRealGas;
+    specie          specie;
+    energy          sensibleEnthalpy;
+}
+
+mixture
+{
+    specie          { molWeight 4.002602; }
+    thermodynamics  { Cp 5193.15922; Hf 0; }
+    equationOfState { file "<constant>/helium_CoolProp.dat"; }
+    transport       { file "<constant>/helium_CoolProp.dat"; }
+}

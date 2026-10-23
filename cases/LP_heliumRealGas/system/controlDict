@@ -1,0 +1,13 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  regen-ltne-foam, LP real-gas helium property check
+\*---------------------------------------------------------------------------*/
+FoamFile { version 2.0; format ascii; class dictionary; object controlDict; }
+application     realGasPropsCheck;
+libs            (ltneRealGas);
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         0;
+deltaT          1;
+writeControl    timeStep;
+writeInterval   1;

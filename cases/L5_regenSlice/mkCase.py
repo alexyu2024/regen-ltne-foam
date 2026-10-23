@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 """Write the L5 case dictionaries and initial fields from params_L5.yaml (values used verbatim).
 
-Usage: mkCase.py <case dir> [--matrix-refine N] [--grid-refine F]
+Usage: mkCase.py <case dir> [--matrix-refine N] [--grid-refine F] [--gas ideal|real]
 --matrix-refine N: the matrix cells are refined N times (L5 sensitivity check); everything else is unchanged.
 --grid-refine F: every block's cell count is multiplied by F (L6 grid study; F = 0.5, 1, 2); the result must be
 an integer for every block.
+--gas real: real-gas helium (library ltneRealGas, CoolProp T-p table src/ltneRealGas/tables/helium_CoolProp.dat)
+instead of the default ideal gas of params_L5.yaml. The table's molar mass and ideal-gas cp0 replace the file's R and
+cp; the table is copied into <case>/constant and ltneRealGas is added to the libs of <case>/system/controlDict.
 """
-import math, os, sys
+import math, os, re, shutil, sys
 import yaml
 
 here = os.path.dirname(os.path.abspath(__file__))
@@ -14,6 +17,10 @@ P = yaml.safe_load(open(os.path.join(here, 'params_L5.yaml')))
 case = sys.argv[1]
 refine = int(sys.argv[sys.argv.index('--matrix-refine') + 1]) if '--matrix-refine' in sys.argv else 1
 grid = float(sys.argv[sys.argv.index('--grid-refine') + 1]) if '--grid-refine' in sys.argv else 1.0
+gasModel = sys.argv[sys.argv.index('--gas') + 1] if '--gas' in sys.argv else 'ideal'
+if gasModel not in ('ideal', 'real'):
+    sys.exit(f'mkCase: --gas {gasModel}: use ideal or real')
+REAL_GAS_TABLE = os.path.join(here, '..', '..', 'src', 'ltneRealGas', 'tables', 'helium_CoolProp.dat')
 
 HDR = """/*--------------------------------*- C++ -*----------------------------------*\\
   regen-ltne-foam, OpenFOAM v2512 - written by cases/L5_regenSlice/mkCase.py
@@ -166,6 +173,44 @@ mixture
     }}
 }}
 """)
+enthalpyRef = ''
+if gasModel == 'real':
+    head = open(REAL_GAS_TABLE).read(4000)
+    Wtab = float(re.search(r'^molWeight\s+([0-9.eE+-]+);', head, re.M).group(1))
+    cp0 = float(re.search(r'^cp0\s+([0-9.eE+-]+);', head, re.M).group(1))
+    os.makedirs(os.path.join(case, 'constant'), exist_ok=True)
+    shutil.copy(REAL_GAS_TABLE, os.path.join(case, 'constant', 'helium_CoolProp.dat'))
+    write('constant/thermophysicalProperties', 'dictionary', f"""// Helium, real gas (library ltneRealGas): rho, h, cp, cv, s, mu and kappa from the CoolProp T-p table
+// constant/helium_CoolProp.dat (tools/heliumRealGas/genHeliumTable.py); hConst holds the ideal-gas part,
+// Cp = cp0 = 2.5 R and molWeight from the table (not params_L5.yaml's R and cp)
+thermoType
+{{
+    type            heRhoThermo;
+    mixture         pureMixture;
+    transport       tabulated2D;
+    thermo          hConst;
+    equationOfState tabulatedRealGas;
+    specie          specie;
+    energy          sensibleEnthalpy;
+}}
+
+dpdt yes;
+
+mixture
+{{
+    specie          {{ molWeight {Wtab:.10g}; }}
+    thermodynamics  {{ Cp {cp0:.10g}; Hf 0; }}
+    equationOfState {{ file "<constant>/helium_CoolProp.dat"; }}
+    transport       {{ file "<constant>/helium_CoolProp.dat"; }}
+}}
+""")
+    enthalpyRef = f'enthalpyReferenceCp {cp0:.10g};   // ideal-gas part, for the H monitors (real gas)\n'
+    cd = os.path.join(case, 'system', 'controlDict')
+    if os.path.exists(cd):
+        txt = open(cd).read()
+        if 'ltneRealGas' not in txt:
+            txt = re.sub(r'^(application\s+\S+;\n)', r'\1libs            (ltneRealGas);\n', txt, count=1, flags=re.M)
+            open(cd, 'w').write(txt)
 write('constant/turbulenceProperties', 'dictionary', 'simulationType  laminar;\n')
 
 # ---- porous zones, solid model, monitors ----------------------------------
@@ -193,7 +238,7 @@ def hx(T):
 
 
 write('constant/ltneProperties', 'dictionary', f"""active          true;
-solidModel      stainlessDeltaEC;   // cp_ss(T), k_ss(T): DeltaEC Users Guide 13.5
+{enthalpyRef}solidModel      stainlessDeltaEC;   // cp_ss(T), k_ss(T): DeltaEC Users Guide 13.5
 rhoS            7990;               // held constant (params_L5.yaml allows it)
 
 zones
@@ -342,4 +387,4 @@ write('0.orig/U', 'volVectorField', body('[0 1 -1 0 0 0 0]', 'uniform (0 0 0)',
 # cell centres of the matrix (for results.py)
 with open(os.path.join(case, 'cellCentresZ.txt'), 'w') as fz:
     fz.write('\n'.join(f'{z:.9f}' for z in zc) + '\n')
-print(f'mkCase: {len(zc)} cells, matrix refine {refine}, grid refine {grid:g}, T = {T:.12g} s')
+print(f'mkCase: {len(zc)} cells, matrix refine {refine}, grid refine {grid:g}, gas {gasModel}, T = {T:.12g} s')

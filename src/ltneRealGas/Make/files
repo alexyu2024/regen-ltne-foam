@@ -1,0 +1,4 @@
+realGasTable.C
+realGasThermos.C
+
+LIB = $(FOAM_USER_LIBBIN)/libltneRealGas

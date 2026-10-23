@@ -1,6 +1,9 @@
 #!/bin/sh
-# Build ltneFoam into $FOAM_USER_APPBIN and libltnePistonMotion into
+# Build ltneFoam and realGasPropsCheck into $FOAM_USER_APPBIN, and
+# libltnePistonMotion and libltneRealGas (optional real-gas helium thermo) into
 # $FOAM_USER_LIBBIN. Requires a sourced OpenFOAM v2512 environment.
 cd "${0%/*}" || exit 1
 wmake libso pistonMotion || exit 1
 wmake ltneFoam || exit 1
+wmake libso ltneRealGas || exit 1
+wmake realGasPropsCheck || exit 1
