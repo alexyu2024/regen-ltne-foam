@@ -574,3 +574,18 @@ same-phase state and for the cycle-mean fields.
 | L5P.25 | gm0_pass | report | 0 | (c) Graves-Morris m = 0: 1 if E, D, NR and M hold |
 | L5P.26 | gm3_total | report | 0 | (c) Graves-Morris m = 3: total cycles |
 | L5P.27 | gm3_pass | report | 0 | (c) Graves-Morris m = 3: 1 if E, D, NR and M hold |
+
+### L5P Amendment A1 (2026-10-23, before any method run and before any L5P number other than L5P.1 was read)
+
+The stopping rule of the methods is tightened. A method now stops iterating only when its proposed correction is at
+most 0.005 K in max norm **and** the residual Phi(x) - x at the current iterate is at most 1.5e-5 K in max norm
+(0.005 K x (1 - 0.997)). Everything else in the L5P registration is unchanged.
+
+Why: before any run on the solver, the three methods were run on a synthetic map
+(`cases/L5P_periodicState/pss/selftest.py`, 60 unknowns, multipliers 0.9967, 0.97, 0.9 and fast modes, a mild
+quadratic nonlinearity). With the correction-only rule, every method stopped 0.07-0.7 away from the fixed point.
+Early on the correction is small because the slow subspace has not been found yet: the initial differences are
+dominated by faster modes, and one subspace iteration per Newton step improves the basis only by about
+lambda_2/lambda_1 = 0.97 per step. With the residual rule added, all seven configurations end within 0.004 of the
+fixed point on the synthetic map. These synthetic numbers say nothing about the solver; they are recorded only as
+the reason for the change.
