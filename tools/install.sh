@@ -12,7 +12,7 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 apt-get update
-apt-get install -y curl ca-certificates python3 python3-yaml
+apt-get install -y curl ca-certificates python3 python3-yaml python3-numpy
 curl -fsSL https://dl.openfoam.com/add-debian-repo.sh | bash
 # The .deb files are served through SourceForge mirrors, which sometimes return an
 # HTML page instead of the package ("File has unexpected size"); retry.
