@@ -1,0 +1,1 @@
+cycle,n_steps,Tjoint_mean,H_hot,H_joint,H_cold,dp_amp,dp_ph,p_hot_amp,p_hot_ph,mdot_hot_amp,mdot_hot_ph,p_cold_amp,p_cold_ph,mdot_cold_amp,mdot_cold_ph,W_hot,W_cold,Qhot_gas,Qhot_solid,Qcold_gas,Qcold_solid,closure,Up_hot_amp,Up_hot_ph,Up_cold_amp,Up_cold_ph

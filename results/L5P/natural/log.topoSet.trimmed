@@ -1,0 +1,61 @@
+      1  /*---------------------------------------------------------------------------*\
+      2  | =========                 |                                                 |
+      3  | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+      4  |  \\    /   O peration     | Version:  2512                                  |
+      5  |   \\  /    A nd           | Website:  www.openfoam.com                      |
+      6  |    \\/     M anipulation  |                                                 |
+      7  \*---------------------------------------------------------------------------*/
+      8  Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+      9  Arch   : "LSB;label=32;scalar=64"
+     10  Exec   : topoSet
+     11  Date   : Oct 23 2026
+     12  Time   : 19:08:26
+     13  Host   : vm
+     14  PID    : 7402
+     15  I/O    : uncollated
+     16  Case   : /home/user/regen-ltne-foam/cases/L5P_periodicState/run_natural
+     17  nProcs : 1
+     18  trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+     19  memory pool : not available
+     20  fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+     21  allowSystemOperations : Allowing user-supplied system call operations
+     22  
+     23  // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+     24  Create time
+     25  
+     26  Overriding DebugSwitches according to controlDict
+     27      SolverPerformance 0;
+     28  
+     29  Create polyMesh for time = 0
+     30  
+     31  Reading topoSetDict
+     32  
+     33  Time = 0
+     34      mesh not changed.
+     35  Created faceSet hotFaceSet
+     36      Applying source boxToFace
+     37      Adding faces with centre within boxes 1((-1 -1 -1e-07) (1 1 1e-07))
+     38      faceSet hotFaceSet now size 1
+     39  Created faceZoneSet hotFace
+     40      Applying source setToFaceZone
+     41      Adding all faces from face set: hotFaceSet ...
+     42      faceZoneSet hotFace now size 1
+     43  Created faceSet jointSet
+     44      Applying source boxToFace
+     45      Adding faces with centre within boxes 1((-1 -1 0.0259999) (1 1 0.0260001))
+     46      faceSet jointSet now size 1
+     47  Created faceZoneSet joint
+     48      Applying source setToFaceZone
+     49      Adding all faces from face set: jointSet ...
+     50      faceZoneSet joint now size 1
+     51  Created faceSet coldFaceSet
+     52      Applying source boxToFace
+     53      Adding faces with centre within boxes 1((-1 -1 0.0519999) (1 1 0.0520001))
+     54      faceSet coldFaceSet now size 1
+     55  Created faceZoneSet coldFace
+     56      Applying source setToFaceZone
+     57      Adding all faces from face set: coldFaceSet ...
+     58      faceZoneSet coldFace now size 1
+     59  
+     60  End
+     61  
