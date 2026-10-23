@@ -16,7 +16,7 @@ with a new state vector x (case.py: Ts on the matrix cells, T on all cells):
 Every call to run() is one cycle of the honest count; the caller (methods.py) counts them.
 """
 import concurrent.futures as cf
-import os, shutil, subprocess
+import os, re, shutil, subprocess
 
 import numpy as np
 
@@ -26,6 +26,9 @@ from .cycles import l5_results
 
 L5R = l5_results()
 
+# crash patterns of L5/L5D; the trapFpe start-up banner reports a setting and is skipped
+CRASH = re.compile(r'FOAM FATAL|\bnan\b|\binf\b|Floating point exception|Segmentation fault', re.IGNORECASE)
+BANNER = re.compile(r'^trapFpe: Floating point exception trapping enabled')
 LOG_FILTER = ['grep', '-v', '-E', r'^(Time = |PIMPLE: iteration|Courant Number|time step continuity|ExecutionTime|'
               r'fieldAverage cycleMean write:|    Calculating averages|    Writing average fields)|^$']
 
@@ -76,6 +79,7 @@ class CycleMap:
         self.count = 0          # cycles run through this map (the honest count)
         self.log = []           # (count, tag, start time, max|x_in - x_start|, dp shift)
         self.pool = cf.ThreadPoolExecutor(max_workers=workers)
+        self.crash_hits, self.banners, self.log_lines = [], 0, 0   # crash scan over every evaluation's log
         os.makedirs(work, exist_ok=True)
 
     def prepare(self, start, x, tag):
@@ -128,7 +132,13 @@ class CycleMap:
             p1.stdout.close()
             rc = p1.wait()
             p2.wait()
-        text = open(os.path.join(d, 'log.ltneFoam')).read()
+        text = open(os.path.join(d, 'log.ltneFoam'), errors='replace').read()
+        for i, l in enumerate(text.splitlines()):
+            self.log_lines += 1
+            if BANNER.match(l):
+                self.banners += 1
+            elif CRASH.search(l):
+                self.crash_hits.append(f'{os.path.basename(d)}/log.ltneFoam:{i + 1}')
         if rc != 0 or '\nEnd' not in text:
             raise RuntimeError(f'ltneFoam failed in {d} (exit {rc})')
         times = [t for t in foamio.time_dirs(d)]

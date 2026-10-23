@@ -1,0 +1,4 @@
+#!/bin/sh
+# Removes everything the L5P scripts generate in this directory (run directories, work, logs, caches)
+cd "${0%/*}" || exit 1
+rm -rf run_* work log.* pss/__pycache__

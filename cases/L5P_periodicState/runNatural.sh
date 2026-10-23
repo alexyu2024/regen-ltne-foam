@@ -6,6 +6,7 @@
 #   Runs (or continues) run_natural/ until <cycles> cycles are done. After each chunk it writes the tables to
 #   <outdir> and calls $L5P_HOOK <cycles done> if that is set (used to commit the tables). Every
 #   $L5P_RESTART_EVERY cycles (default 200) it writes the restart point <outdir>/restart/state.tgz.
+#   The run directory is $L5P_RUN (default run_natural).
 #   If run_natural/ is missing and <outdir>/restart/state.tgz exists, it continues from there.
 # Exit 0: done; other: failure.
 out=$(realpath -m "${1:?outdir}")
@@ -16,7 +17,7 @@ cd "${0%/*}" || exit 1
 here=$(pwd)
 . "${WM_PROJECT_DIR:?}/bin/tools/RunFunctions"
 L5=../L5_regenSlice
-run=run_natural
+run=${L5P_RUN:-run_natural}
 mkdir -p "$out/restart"
 
 ../../src/Allwmake > log.build 2>&1 || { echo "build failed"; exit 1; }

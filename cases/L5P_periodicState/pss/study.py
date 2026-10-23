@@ -100,6 +100,8 @@ def method(name, start_run, work, out):
     summary = {'name': name, 'status': status, 'method_and_verify_cycles': run.used(),
                'total': START_CYCLE + run.used(), 'verification_rounds': len(vrounds),
                'jump_mass_err_max': getattr(cmap, 'jump_mass_err', 0.0),
+               'crash_count': len(cmap.crash_hits), 'crash_hits': cmap.crash_hits[:20],
+               'log_lines_scanned': cmap.log_lines, 'trapFpe_banners_skipped': cmap.banners,
                'mass_err_max': max(abs(e['mass'] - s0.mass) / s0.mass for e in evals) if evals else None}
     json.dump(summary, open(os.path.join(out, f'{name}_summary.json'), 'w'), indent=1)
     print(json.dumps(summary))
@@ -153,7 +155,8 @@ def noise(start_run, work, out):
             rows.append(row)
     write_csv(os.path.join(out, 'noise.csv'), rows,
               ['test', 'eps_K', 'max_dx_K', 'max_dxmean_K', 'Mv_norm', 'vMv', 'rel_change', 'rel_change_mean'])
-    json.dump({'cycles': cmap.count, 'N4_floor': floor}, open(os.path.join(out, 'noise_summary.json'), 'w'))
+    json.dump({'cycles': cmap.count, 'N4_floor': floor, 'crash_count': len(cmap.crash_hits),
+               'crash_hits': cmap.crash_hits[:20], 'log_lines_scanned': cmap.log_lines}, open(os.path.join(out, 'noise_summary.json'), 'w'))
     print(open(os.path.join(out, 'noise.csv')).read())
 
 
