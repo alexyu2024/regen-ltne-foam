@@ -473,3 +473,41 @@ and Allclean have bars.
 | L5D.10 | r_fit_H_hot | report | 0 | decay ratio per cycle, H_hot, last 100 cycles |
 | L5D.11 | crash_count | == | 0 | crash patterns over all logs (as L5, trapFpe banner excepted) |
 | L5D.12 | allclean_leftover | == | 0 | files left under the case directory after `Allclean` |
+
+## LP Real-gas helium properties (ltneRealGas library; CoolProp table vs NIST)
+
+Committed before the check program was first run. The optional real-gas model (`src/ltneRealGas`) reads a T-p
+table generated from CoolProp 8.0.0 (`tools/heliumRealGas/genHeliumTable.py`) and interpolates bilinearly. The
+ideal-gas model stays the default; no existing case changes.
+
+- **Check program**: `realGasPropsCheck` builds OpenFOAM's own thermo object (`rhoThermo::New`) for the real-gas
+  selection. It evaluates the density with `rhoEoS(p, T)` and c_p with `Cp(p, T)` at the points of
+  `cases/LP_heliumRealGas/nist_helium.csv`.
+  - The NIST values are taken from the NIST Chemistry WebBook (SRD 69), retrieved 2026-10-23.
+  - Rows 1-3 are table nodes at 0.75 MPa: 22, 50 and 80 K.
+  - Rows 4-6 are cell centres, 22.125, 50.125 and 80.125 K at 0.7625 MPa, where bilinear interpolation error is
+    largest.
+- **Relative difference**: |model / NIST - 1|.
+- **Round trip**: the largest |T - T(h(T, p))| over the six points, computed with `he` and then `THE` (OpenFOAM's
+  Newton iteration from enthalpy to temperature, started 5 % off).
+- **Transport**: viscosity and conductivity are reported from the thermo fields at the case's cell state (50 K,
+  0.75 MPa), with no bar.
+
+| id | metric | op | bar | description |
+|----|--------|----|-----|-------------|
+| LP.1 | rho_rel_22 | <= | 0.001 | density, 22 K, 0.75 MPa (table node) |
+| LP.2 | rho_rel_50 | <= | 0.001 | density, 50 K, 0.75 MPa (table node) |
+| LP.3 | rho_rel_80 | <= | 0.001 | density, 80 K, 0.75 MPa (table node) |
+| LP.4 | cp_rel_22 | <= | 0.001 | c_p, 22 K, 0.75 MPa (table node) |
+| LP.5 | cp_rel_50 | <= | 0.001 | c_p, 50 K, 0.75 MPa (table node) |
+| LP.6 | cp_rel_80 | <= | 0.001 | c_p, 80 K, 0.75 MPa (table node) |
+| LP.7 | rho_rel_22c | <= | 0.001 | density, 22.125 K, 0.7625 MPa (cell centre) |
+| LP.8 | rho_rel_50c | <= | 0.001 | density, 50.125 K, 0.7625 MPa (cell centre) |
+| LP.9 | rho_rel_80c | <= | 0.001 | density, 80.125 K, 0.7625 MPa (cell centre) |
+| LP.10 | cp_rel_22c | <= | 0.001 | c_p, 22.125 K, 0.7625 MPa (cell centre) |
+| LP.11 | cp_rel_50c | <= | 0.001 | c_p, 50.125 K, 0.7625 MPa (cell centre) |
+| LP.12 | cp_rel_80c | <= | 0.001 | c_p, 80.125 K, 0.7625 MPa (cell centre) |
+| LP.13 | T_roundtrip_max_K | report | 0 | largest temperature error of h(T, p) -> T, K |
+| LP.14 | mu_rel_50 | report | 0 | viscosity at 50 K, 0.75 MPa, relative difference to NIST |
+| LP.15 | kappa_rel_50 | report | 0 | thermal conductivity at 50 K, 0.75 MPa, relative difference to NIST |
+| LP.16 | allclean_leftover | == | 0 | files under the case directory that `git status --porcelain --ignored` lists after `Allclean` |

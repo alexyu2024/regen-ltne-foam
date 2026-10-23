@@ -1,0 +1,7 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  regen-ltne-foam, LP real-gas helium property check
+\*---------------------------------------------------------------------------*/
+FoamFile { version 2.0; format ascii; class volScalarField; object p; }
+dimensions [1 -1 -2 0 0 0 0];
+internalField uniform 750000;
+boundaryField { walls { type zeroGradient; } }

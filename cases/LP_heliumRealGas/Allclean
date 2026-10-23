@@ -1,0 +1,5 @@
+#!/bin/sh
+cd "${0%/*}" || exit 1
+. ${WM_PROJECT_DIR:?}/bin/tools/CleanFunctions
+cleanCase0
+rm -rf constant/helium_CoolProp.dat constant/polyMesh propsCheck.dat log.*

@@ -130,9 +130,15 @@ if (monitorsActive)
     const surfaceScalarField Hf
     (
         // enthalpy relative to 0 K: he is sensible enthalpy relative to Tstd,
-        // so add Cp Tstd (constant-Cp gases)
+        // so add Cp Tstd (constant-Cp gases; for a real-gas thermo the
+        // ideal-gas part enthalpyReferenceCp)
         fvc::flux(phi, he, "div(phi,h)") + fvc::flux(phi, K, "div(phi,K)")
-      + phi*fvc::interpolate(thermo.Cp())*constant::standard::Tstd
+      + (
+            enthalpyReferenceCp > 0
+          ? phi*dimensionedScalar(dimSpecificHeatCapacity, enthalpyReferenceCp)
+           *constant::standard::Tstd
+          : phi*fvc::interpolate(thermo.Cp())*constant::standard::Tstd
+        )
       - fvc::interpolate(eps*turbulence->alphaEff())*fvc::snGrad(he)
        *mesh.magSf()
       - kSf*fvc::snGrad(Ts)*mesh.magSf()

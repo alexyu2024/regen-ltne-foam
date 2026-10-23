@@ -1,0 +1,12 @@
+# Helium reference values from the NIST Chemistry WebBook, SRD 69, "Thermophysical Properties of Fluid Systems"
+# (E.W. Lemmon, M.O. McLinden, D.G. Friend), retrieved 2026-10-23 with 7 digits, isobars:
+#   https://webbook.nist.gov/cgi/fluid.cgi?Action=Data&Wide=on&ID=C7440597&Type=IsoBar&Digits=7&P=0.75&THigh=80&TLow=22&TInc=1&RefState=DEF&TUnit=K&PUnit=MPa&DUnit=kg%2Fm3
+#   https://webbook.nist.gov/cgi/fluid.cgi?Action=Data&Wide=on&ID=C7440597&Type=IsoBar&Digits=7&P=0.7625&THigh=80.125&TLow=22.125&TInc=0.5&RefState=DEF&TUnit=K&PUnit=MPa&DUnit=kg%2Fm3
+# Units: T K, p Pa, rho kg/m3, cp J/kg/K, mu Pa s, kappa W/m/K. Rows 1-3 are table nodes, rows 4-6 cell centres.
+T,p,rho,cp,mu,kappa
+22,750000,16.41720,5502.858,4.043306e-6,0.02956995
+50,750000,7.107791,5251.366,6.484237e-6,0.04757624
+80,750000,4.457473,5214.930,8.597266e-6,0.06420043
+22.125,762500,16.58884,5504.021,4.060361e-6,0.02970021
+50.125,762500,7.206380,5251.988,6.496193e-6,0.04767091
+80.125,762500,4.523822,5215.205,8.607239e-6,0.06428060
