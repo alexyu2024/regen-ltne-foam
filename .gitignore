@@ -3,3 +3,5 @@ src/**/lnInclude
 __pycache__/
 ci-out/
 out/
+cases/*/run_natural/
+cases/*/run_*/
