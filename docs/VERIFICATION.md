@@ -473,3 +473,104 @@ and Allclean have bars.
 | L5D.10 | r_fit_H_hot | report | 0 | decay ratio per cycle, H_hot, last 100 cycles |
 | L5D.11 | crash_count | == | 0 | crash patterns over all logs (as L5, trapFpe banner excepted) |
 | L5D.12 | allclean_leftover | == | 0 | files left under the case directory after `Allclean` |
+
+## L5P Periodic steady state by cycle-map acceleration (L5 slice; the author's request, 2026-10-23)
+
+Committed before any L5P number was read: the natural reference run, the noise tests and the method runs.
+The one exception, agreed beforehand, is T_joint on cycle 40 of the natural run, read to check the local OpenFOAM
+build against L5 (27.865715 K, |difference| <= 1e-5 K). Design and method details: `docs/L5P_PERIODIC_STATE.md`.
+The solver, the L5 case and its inputs are unchanged; L5P only drives ltneFoam one cycle at a time.
+
+**Map.** x_(k+1) = Phi(x_k): one ltneFoam cycle from a cycle-boundary state (t = k T, the same phase every cycle).
+x = [Ts on the 120 matrix cells, T on all 172 cells], in K. After every jump (any x not produced by a cycle) the
+pressure field is shifted uniformly so that the gas mass equals the run's inventory M0, and rho is recomputed by
+the solver from p and T. U, phi, rhoUf and dpdt are carried from the last cycle-boundary state.
+
+**Quantities** q, each per cycle k (cycle-mean over the cycle unless stated):
+- Q_hot = Qhot_gas + Qhot_solid and Q_cold = Qcold_gas + Qcold_solid: heat from the hot and the cold HX into the
+  gas and the matrix solid, W (the L5 `per_cycle.csv` columns, Amendment A1 terms);
+- dT_seg1..4: cycle-mean matrix Ts difference across each quarter of the matrix (nodes z = 0, 0.013, 0.026, 0.039,
+  0.052 m; linear interpolation of the cell-centre values, end nodes = end cells), K;
+- Ts_seg1..4_mean: cycle-mean matrix Ts averaged over the cells of each quarter, K;
+- T_joint: the L5 `Tjoint_mean`, K;
+- p_mean: the gas-volume-weighted pressure at the cycle boundary, Pa (same phase every cycle).
+
+| q | tolerance tol_q | drift tolerance (1.5e-3 tol_q, per cycle) |
+|---|---|---|
+| Q_hot | 0.005 W | 7.5e-6 W |
+| Q_cold | 0.0005 W | 7.5e-7 W |
+| dT_seg1..4 | 0.02 K each | 3e-5 K |
+| Ts_seg1..4_mean | 0.02 K each | 3e-5 K |
+| T_joint | 0.02 K | 3e-5 K |
+| p_mean | 1e-3 p_ref | 1.5e-6 p_ref |
+
+The drift tolerance is 1.5e-3 tol_q: with the L5D decay ratio r = 0.9967, a drift of 1.5e-3 tol_q per cycle means a
+remaining distance of about 0.45 tol_q to the periodic state.
+
+**Reference.** The natural run: the L5 case from t = 0, cycle by cycle, to N_ref = 2400 cycles. It is accepted if, for
+every q, the remaining distance R_q = |q(N_ref) - q(N_ref - 50)| / 50 x r / (1 - r), with r = 0.99670, is at most
+0.2 tol_q. Otherwise it is extended by 400 cycles at a time, up to 4000, and the test repeated. q_ref = q(N_ref).
+
+**Verification test V(k)** of a state reached after cycle k: 50 further natural cycles k+1..k+50, then
+- E: |q_j - q_ref| <= tol_q for every q and every cycle j = k+11..k+50;
+- D: |slope| of the least-squares line of q over cycles k+31..k+50 <= the drift tolerance, for every q;
+- NR (no rebound): |slope over k+31..k+50| <= |slope over k+11..k+30| + 0.1 x drift tolerance, for every q;
+- M: |gas mass - M0| / M0 <= 1e-9 on every cycle boundary of the run, jump states included.
+Cycles k+1..k+10 let the fast modes excited by a jump decay; they are counted but not tested.
+
+**Honest count.** Every cycle ltneFoam runs is counted: the 40 cycles from t = 0 to the common start state, every
+map evaluation (finite-difference perturbations, rejected or capped steps), and every verification cycle.
+- Methods: total = 40 + method cycles + verification cycles. A method stops iterating when its proposed correction
+  is at most 0.005 K in max norm over x; it then runs V. If D and NR hold (the method evaluates them itself, without
+  the reference) the run ends and is scored with E, D, NR and M. If not, it continues iterating from the end of the
+  verification cycles. A method that has not ended within 600 cycles after cycle 40 is FAIL at 640.
+- Natural: k_nat = the smallest k >= 40 for which V(k) holds on the natural run itself; its total is k_nat + 50. The
+  first cycle from which it stays within E, k_nat + 11, is reported beside it.
+
+**Methods** (all start from the cycle-40 state; parameters fixed here):
+- (a) Newton-Picard / RPM (Lust et al. 1998), p = 1, 2, 3: each iteration evaluates Phi(x_k) and p finite-difference
+  products M V at x_k (perturbation 0.05 K in max norm), takes H = V^T M V, steps x_(k+1) = Phi(x_k) +
+  V [(I - H)^-1 - I] V^T (Phi(x_k) - x_k) and updates V = orth(M V) (one subspace iteration per Newton step, so the
+  slow subspace is re-estimated at the current state every iteration). Initial V: the orthonormalised differences of
+  p natural cycles from cycle 40. Corrections are scaled down to at most 2 K in max norm.
+- (b) Broyden Rank Reduction (van de Rotten et al. 2006) on g(x) = Phi(x) - x, B0 = -I, memory p = 3 and p = 6;
+  one map evaluation per iteration; steps capped at 2 K in max norm.
+- (c) Graves-Morris vector extrapolation (eq. 6 of Subraveti et al. 2024, Systems and Control Transactions 3:215,
+  the method of Subraveti, Karimi, Gazzani 2026), alternating with plain cycles: m plain cycles, then x_n, x_(n+1),
+  x_(n+2) and the extrapolated state; m = 0 (as published) and m = 3. No Jacobian. Capped at 2 K in max norm.
+
+**Noise of the map** (reported, no bar), from the cycle-40 state: N1 the same Phi(x) twice; N2 two cycles continuous
+against 1 + 1 with a restart; N3 Phi of x written back unchanged (mass shift and rho recomputation) against plain
+Phi; N4 finite-difference products M v for perturbations 1, 0.3, 0.1, 0.03, 0.01, 1e-3, 1e-4 and 1e-5 K (max norm),
+v along the first natural difference and along a fixed random direction (seed 0). Each is reported for the
+same-phase state and for the cycle-mean fields.
+
+| id | metric | op | bar | description |
+|----|--------|----|-----|-------------|
+| L5P.1 | c40_Tjoint_diff_K | <= | 1e-05 | build check: |T_joint(cycle 40) - 27.865715| on the natural run |
+| L5P.2 | ref_cycles | report | 0 | N_ref, cycles of the natural reference |
+| L5P.3 | ref_remaining_max_frac | <= | 0.2 | max over q of R_q / tol_q at N_ref |
+| L5P.4 | nat_k | report | 0 | natural: k_nat (V(k_nat) holds) |
+| L5P.5 | nat_total | report | 0 | natural: k_nat + 50 |
+| L5P.6 | nat_within_from | report | 0 | natural: k_nat + 11 |
+| L5P.7 | nat_mass_drift_max | <= | 1e-09 | natural: max over cycles of abs(M - M0) / M0 |
+| L5P.8 | noise_N1_K | report | 0 | N1: max abs difference of x, K |
+| L5P.9 | noise_N2_K | report | 0 | N2: max abs difference of x, K |
+| L5P.10 | noise_N3_K | report | 0 | N3: max abs difference of x, K |
+| L5P.11 | noise_N4_floor | report | 0 | N4: smallest relative change of M v between successive perturbations |
+| L5P.12 | crash_count | == | 0 | crash patterns over all logs (as L5, trapFpe banner excepted) |
+| L5P.13 | allclean_leftover | == | 0 | files left under the case directory after `Allclean` |
+| L5P.14 | np1_total | report | 0 | (a) p = 1: total cycles (honest count) |
+| L5P.15 | np1_pass | report | 0 | (a) p = 1: 1 if E, D, NR and M hold, else 0 |
+| L5P.16 | np2_total | report | 0 | (a) p = 2: total cycles |
+| L5P.17 | np2_pass | report | 0 | (a) p = 2: 1 if E, D, NR and M hold |
+| L5P.18 | np3_total | report | 0 | (a) p = 3: total cycles |
+| L5P.19 | np3_pass | report | 0 | (a) p = 3: 1 if E, D, NR and M hold |
+| L5P.20 | brr3_total | report | 0 | (b) BRR p = 3: total cycles |
+| L5P.21 | brr3_pass | report | 0 | (b) BRR p = 3: 1 if E, D, NR and M hold |
+| L5P.22 | brr6_total | report | 0 | (b) BRR p = 6: total cycles |
+| L5P.23 | brr6_pass | report | 0 | (b) BRR p = 6: 1 if E, D, NR and M hold |
+| L5P.24 | gm0_total | report | 0 | (c) Graves-Morris m = 0: total cycles |
+| L5P.25 | gm0_pass | report | 0 | (c) Graves-Morris m = 0: 1 if E, D, NR and M hold |
+| L5P.26 | gm3_total | report | 0 | (c) Graves-Morris m = 3: total cycles |
+| L5P.27 | gm3_pass | report | 0 | (c) Graves-Morris m = 3: 1 if E, D, NR and M hold |
