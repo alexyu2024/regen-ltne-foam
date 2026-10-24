@@ -27,6 +27,7 @@ only where noted below.
 | drive: piston displacement amplitude and phase | `params_L5.yaml`: `drive.hot_piston` and `cold_piston` (`displacement_amp_m`, `displacement_phase_deg`). The start-up ramp and the sign convention are in `mkCase.py`, `piston()` (see the L5 case README) |
 | initial temperatures | `params_L5.yaml`: `initial_conditions.T_matrix_profile_z_m__T_K` (interpolated onto cell centres) and the two HX temperatures |
 | time step | `system/controlDict`: `deltaT` (L5: one cycle / 2400) |
+| gas model | default ideal gas from `params_L5.yaml`; `mkCase.py <case> --gas real` selects real-gas helium (`src/ltneRealGas`, table valid for 15-95 K, 0.5-1.0 MPa) |
 
 ## Values tied to the 23 Hz template
 

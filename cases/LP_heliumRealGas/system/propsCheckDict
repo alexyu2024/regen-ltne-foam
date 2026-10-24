@@ -1,0 +1,14 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  regen-ltne-foam, LP real-gas helium property check
+\*---------------------------------------------------------------------------*/
+FoamFile { version 2.0; format ascii; class dictionary; object propsCheckDict; }
+// (T [K]  p [Pa]): the rows of nist_helium.csv, in the same order
+points
+(
+    (22 750000)
+    (50 750000)
+    (80 750000)
+    (22.125 762500)
+    (50.125 762500)
+    (80.125 762500)
+);

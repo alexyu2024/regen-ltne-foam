@@ -1,0 +1,42 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : realGasPropsCheck
+Date   : Oct 23 2026
+Time   : 19:11:13
+Host   : vm
+PID    : 5439
+I/O    : uncollated
+Case   : <clone>/cases/LP_heliumRealGas
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Selecting thermodynamics package 
+{
+    type            heRhoThermo;
+    mixture         pureMixture;
+    transport       tabulated2D;
+    thermo          hConst;
+    equationOfState tabulatedRealGas;
+    specie          specie;
+    energy          sensibleEnthalpy;
+}
+
+realGasTable: "<clone>/cases/LP_heliumRealGas/constant/helium_CoolProp.dat": T 15 to 95 K, p 500000 to 1e+06 Pa, 321 x 21
+realGasPropsCheck: tabulated2D<hConst<tabulatedRealGas<specie>>,sensibleEnthalpy>
+wrote "<clone>/cases/LP_heliumRealGas/propsCheck.dat"
+End
