@@ -54,4 +54,18 @@ if cell and abs(cell[1][0] - 50) < 1e-6 and abs(cell[1][1] - 750000) < 1e-3:
 else:
     r.add('mu_rel_50', None, 'propsCheck.dat', None)
     r.add('kappa_rel_50', None, 'propsCheck.dat', None)
+# LP.17/18: the four out-of-table runs
+stopped, wrote, srcs = 0, 0, []
+for d in ('oorLowT', 'oorHighT', 'oorLowP', 'oorHighP'):
+    log = os.path.join(HERE, 'log.' + d)
+    lines = open(log, errors='replace').read().splitlines() if os.path.exists(log) else []
+    status = [l for l in lines if l.startswith('exit status:')]
+    msg = [i + 1 for i, l in enumerate(lines) if 'is outside the table' in l]
+    if status and status[-1].split(':')[1].strip() != '0' and msg:
+        stopped += 1
+    if os.path.exists(os.path.join(HERE, d + '.dat')):
+        wrote += 1
+    srcs.append(f'log.{d}:{msg[0] if msg else "no message"}')
+r.add('out_of_range_stopped', stopped, 'log.oorLowT', ', '.join(srcs))
+r.add('out_of_range_values_written', wrote, 'log.oorLowT', 'oor*.dat present: ' + str(wrote))
 r.write()
