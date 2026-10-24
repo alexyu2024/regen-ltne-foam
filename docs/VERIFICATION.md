@@ -511,3 +511,14 @@ ideal-gas model stays the default; no existing case changes.
 | LP.14 | mu_rel_50 | report | 0 | viscosity at 50 K, 0.75 MPa, relative difference to NIST |
 | LP.15 | kappa_rel_50 | report | 0 | thermal conductivity at 50 K, 0.75 MPa, relative difference to NIST |
 | LP.16 | allclean_leftover | == | 0 | files under the case directory that `git status --porcelain --ignored` lists after `Allclean` |
+
+**LP addendum (2026-10-24, the author's request; added before the out-of-range check was first run).** A state outside
+the table, 15-95 K and 0.5-1.0 MPa, must stop the run with an error: never extrapolate, never clamp silently.
+`realGasPropsCheck -dict <file>` is run on four points just outside the table, each in its own run: 14.9 K and
+95.1 K at 0.75 MPa, and 0.499 MPa and 1.001 MPa at 50 K. A run counts as correct if it exits non-zero and its log
+contains `is outside the table`.
+
+| id | metric | op | bar | description |
+|----|--------|----|-----|-------------|
+| LP.17 | out_of_range_stopped | == | 4 | of the 4 out-of-table runs, how many stop with the out-of-table error |
+| LP.18 | out_of_range_values_written | == | 0 | of the 4 out-of-table runs, how many still wrote property values |
