@@ -522,3 +522,70 @@ contains `is outside the table`.
 |----|--------|----|-----|-------------|
 | LP.17 | out_of_range_stopped | == | 4 | of the 4 out-of-table runs, how many stop with the out-of-table error |
 | LP.18 | out_of_range_values_written | == | 0 | of the 4 out-of-table runs, how many still wrote property values |
+
+## LRG Real-gas against ideal-gas helium on the L5 slice (the author's request, 2026-10-24)
+
+Committed before any LRG run. The real-gas run starts only after the L5P ideal-gas reference has passed L5P.3 under
+L5P Amendment A2. It uses the L5P tools (`cases/L5P_periodicState/pss`) for the quantities, so it needs them on
+`main` first.
+
+**Ideal-gas side: no new run.** q_ideal is q_ref of the accepted L5P natural reference at N_ref.
+
+**Real-gas run.** It continues the L5P reference from a restart point, with natural cycles only and no jumps.
+- **Unchanged:** the mesh, dt, schemes, start-up history and every case input.
+- **Changed:** only the gas model, as `mkCase.py --gas real` writes it: thermophysicalProperties, the table,
+  `libs (ltneRealGas)` and `enthalpyReferenceCp`.
+- **Restart check:** the restart point used is the latest L5P restart point N_r strictly before N_ref. The ideal gas
+  is first continued from N_r to N_ref, and every quantity on cycles N_r+1..N_ref must reproduce the reference's
+  per-cycle table (LRG.1). Only then is the gas switched, at N_ref.
+- **At the switch:** the `rho` field is removed from the state, so the solver recomputes rho from p and T with the
+  real-gas equation of state. U, phi and the other carried fields stay as they are.
+- **Charge basis: equal initial mean pressure.** The p and T fields at N_ref are used unchanged.
+  - The gas inventory then differs from the ideal-gas reference: M_real0 = sum eps rho_real(p, T) V against
+    M_ideal = sum eps p / (R T) V, with R = 2077.3 J/kg/K from `params_L5.yaml`.
+  - An estimate from the L5 cycle-40 profile (`results/L5/profiles.csv`) is -0.64 %: -1.2 to -1.4 % in the warm
+    half, +0.04 % at the cold end. LRG.2 reports the value from the reference fields.
+  - Equal mass would need p about 0.64 % higher. That run is not made.
+  - Every real/ideal difference below is at equal initial mean pressure.
+
+**Quantities and tolerances: those of L5P, unchanged.**
+- The quantities are Q_hot, Q_cold, dT_seg1..4, Ts_seg1..4_mean, T_joint and p_mean, with the L5P tol_q.
+- They are computed by the L5P tools, with one change: the gas mass is sum eps rho V with the solver's `rho` field,
+  not p / (R T).
+- p_mean, the gas-volume-weighted pressure at the cycle boundary, has no equation of state in it and is unchanged.
+
+**Periodic acceptance: the L5P Amendment A2 rule, applied to the real-gas run itself.**
+- **r_A2:** the largest valid fit of r over the last 100 and the last 200 cycles, over every quantity.
+- **Remaining distance:** R_q = |q(N) - q(N - 50)| / 50 x r_A2 / (1 - r_A2). The run passes when max_q R_q / tol_q
+  <= 0.2.
+- **Schedule:** the first test is at N_ref + 400, so that both fit windows lie after the switch transient. Then the
+  test runs after every 100-cycle chunk.
+- **Cap:** N_ref + 6000 cycles, about 7.3 time constants of 820 cycles (the L5P late decay ratio r = 0.99878; slow
+  mode at the hot end). If the run has not passed by the cap, LRG.4 is FAIL and the cap state is reported.
+- **Expected length:** with an initial offset of order 0.1-0.5 K in the matrix temperatures, about 3000-4500 cycles.
+  At about 7.5 s per cycle on a GitHub runner that is 6-10 h, or 2-3 chained `run-case` jobs; the cap is about 12.5 h.
+
+**Reported:**
+- **dQ_x_rel** = (Q_x,real - Q_x,ideal) / Q_x,ideal, for x = hot and cold. Each comes with an uncertainty
+  dQ_x_unc = (R_Qx,real + R_Qx,ideal) / |Q_x,ideal|, the two remaining distances.
+- **p_mean drift** relative to the reference value, (p_mean,real(N_acc) - p_mean,ideal(N_ref)) / p_mean,ideal(N_ref).
+  The per-cycle series is in the results.
+
+| id | metric | op | bar | description |
+|----|--------|----|-----|-------------|
+| LRG.1 | restart_check_rel | <= | 1e-09 | ideal-gas continuation N_r -> N_ref: max over quantities and cycles of abs(q - q_table) / max(abs(q_table), tol_q) |
+| LRG.2 | inventory_rel | report | 0 | M_real0 / M_ideal - 1 at the switch (equal initial mean pressure) |
+| LRG.3 | rg_cycles | report | 0 | real-gas cycles from the switch to acceptance (or to the cap) |
+| LRG.4 | rg_remaining_max_frac | <= | 0.2 | max over q of R_q / tol_q at acceptance (A2 rule, real-gas run) |
+| LRG.5 | rg_mass_drift_max | <= | 1e-09 | max over cycle boundaries of abs(M - M_real0) / M_real0 (solver's rho) |
+| LRG.6 | Q_hot_ideal_W | report | 0 | Q_hot of the ideal-gas reference at N_ref, W |
+| LRG.7 | Q_hot_real_W | report | 0 | Q_hot of the real-gas run at acceptance, W |
+| LRG.8 | dQ_hot_rel | report | 0 | (Q_hot,real - Q_hot,ideal) / Q_hot,ideal, equal initial mean pressure |
+| LRG.9 | dQ_hot_unc | report | 0 | its uncertainty from the two remaining distances |
+| LRG.10 | Q_cold_ideal_W | report | 0 | Q_cold of the ideal-gas reference at N_ref, W |
+| LRG.11 | Q_cold_real_W | report | 0 | Q_cold of the real-gas run at acceptance, W |
+| LRG.12 | dQ_cold_rel | report | 0 | (Q_cold,real - Q_cold,ideal) / Q_cold,ideal, equal initial mean pressure |
+| LRG.13 | dQ_cold_unc | report | 0 | its uncertainty from the two remaining distances |
+| LRG.14 | p_mean_drift_rel | report | 0 | (p_mean,real(N_acc) - p_mean,ideal(N_ref)) / p_mean,ideal(N_ref) |
+| LRG.15 | crash_count | == | 0 | crash patterns over all logs (as L5; the trapFpe banner and out-of-table checks excepted, an out-of-table stop counts) |
+| LRG.16 | allclean_leftover | == | 0 | files left under the case directory after `Allclean` |
