@@ -25,6 +25,9 @@ TOL = dict(Q_hot=0.005, Q_cold=0.0005, T_joint=0.02, **{f'dT_seg{i}': 0.02 for i
            **{f'Ts_seg{i}_mean': 0.02 for i in range(1, 5)})
 P_REL, DRIFT, REMAIN = 1e-3, 1.5e-3, 0.2
 R_L5D = 0.99670
+# Amendment A2 (docs/VERIFICATION.md): r_A2 = slowest valid L5D-style fit over all quantities, windows 100 and 200;
+# drift tolerance 0.45 tol (1 - r_A2) per cycle
+A2_WINDOWS, A2_DRIFT = (100, 200), 0.45
 WORKERS = int(os.environ.get('L5P_WORKERS', '3'))
 
 
@@ -53,6 +56,12 @@ def write_csv(path, rows, fields=None):
 # ---------------------------------------------------------------- methods
 def method(name, start_run, work, out):
     os.makedirs(out, exist_ok=True)
+    # the methods' own drift test uses r_A2 of the accepted natural reference (Amendment A2); it is a property of
+    # the slow mode, not of the reference values, which the methods never see
+    refj = json.load(open(os.path.join(out, 'reference.json')))
+    if not refj.get('accepted'):
+        sys.exit('no accepted reference (L5P.3): methods do not start')
+    r_sys = refj['r_A2']
     s0 = start_state(start_run)
     C.check_eos(start_run)
     cmap = CM.CycleMap(os.path.join(work, name), s0.mass, workers=WORKERS)
@@ -81,7 +90,7 @@ def method(name, start_run, work, out):
             s = run.phi(pt, f'v{len(vrounds)}_{j}')
             pt = (s, None)
             rows.append(s.quantities())
-        ok, det = MT.drift_checks(rows, {q: DRIFT * t for q, t in tolerances(rows[-1]['p_mean']).items()})
+        ok, det = MT.drift_checks(rows, drift_tolerances(tolerances(rows[-1]['p_mean']), r_sys))
         vrounds.append({'round': len(vrounds) + 1, 'end_count': run.used(), 'self_ok': ok,
                         'first_cycle_count': run.used() - MT.NV + 1,
                         'fails': ';'.join(q for q, d in det.items() if not (d[2] and d[3]))})
@@ -177,13 +186,39 @@ def natural_rows(nat_out):
     return rows
 
 
-def passes_V(rows, ref, tol, k_index):
+def r_fit(values, n):
+    """L5D r_fit over the last n per-cycle changes: exp of the least-squares slope of ln|d_k|. None unless d_k
+    keeps one sign over the window and r < 1 (Amendment A2)."""
+    import math
+    d = [values[i] - values[i - 1] for i in range(len(values) - n, len(values))]
+    if len(d) < n or any(x == 0 for x in d) or len({x > 0 for x in d}) > 1:
+        return None
+    k = range(n)
+    y = [math.log(abs(x)) for x in d]
+    mk, my = (n - 1) / 2, sum(y) / n
+    r = math.exp(sum((a - mk) * (b - my) for a, b in zip(k, y)) / sum((a - mk) ** 2 for a in k))
+    return r if r < 1 else None
+
+
+def r_a2(rows):
+    """(r_A2, {quantity: {window: fit}}): the slowest valid fit over all quantities and both windows."""
+    fits = {q: {n: r_fit([r[q] for r in rows], n) for n in A2_WINDOWS} for q in QS}
+    valid = [f for d in fits.values() for f in d.values() if f is not None]
+    return (max(valid) if valid else None), fits
+
+
+def drift_tolerances(tol, r):
+    """Amendment A2: 0.45 tol (1 - r) per cycle."""
+    return {q: A2_DRIFT * tol[q] * (1 - r) for q in QS}
+
+
+def passes_V(rows, ref, tol, k_index, drift_tol):
     """V(k) on a list of per-cycle rows; rows[k_index] is cycle k. Returns (E, D, NR) booleans."""
     v = rows[k_index + 1:k_index + 1 + MT.NV]
     if len(v) < MT.NV:
         return None
     e = all(abs(r[q] - ref[q]) <= tol[q] for r in v[MT.SKIP:] for q in QS)
-    ok, det = MT.drift_checks(v, {q: DRIFT * tol[q] for q in QS})
+    ok, det = MT.drift_checks(v, drift_tol)
     return e, all(d[2] for d in det.values()), all(d[3] for d in det.values())
 
 
@@ -194,19 +229,29 @@ def reference(nat_out, out):
     ref = rows[-1]
     tol = tolerances(ref['p_mean'])
     back = {r['cycle']: r for r in rows}[n - 50]
-    remain = {q: abs(ref[q] - back[q]) / 50 * R_L5D / (1 - R_L5D) / tol[q] for q in QS}
+    # the registered rule (r = 0.99670), kept on record
+    remain_reg = {q: abs(ref[q] - back[q]) / 50 * R_L5D / (1 - R_L5D) / tol[q] for q in QS}
+    # Amendment A2: the measured late decay ratio
+    r, fits = r_a2(rows)
+    remain = {q: (abs(ref[q] - back[q]) / 50 * r / (1 - r) / tol[q]) if r else float('inf') for q in QS}
+    dtol = drift_tolerances(tol, r) if r else None
     M0 = rows[0]['mass']
     k_nat = None
-    for i, r in enumerate(rows):
-        if r['cycle'] < START_CYCLE:
+    accepted = max(remain.values()) <= REMAIN
+    for i, row in enumerate(rows):
+        if not accepted or row['cycle'] < START_CYCLE:
             continue
-        res = passes_V(rows, ref, tol, i)
+        res = passes_V(rows, ref, tol, i, dtol)
         if res is None:
             break
         if all(res):
-            k_nat = r['cycle']
+            k_nat = row['cycle']
             break
-    summ = {'ref_cycles': n, 'ref_remaining_max_frac': max(remain.values()), 'remaining_frac': remain,
+    summ = {'ref_cycles': n, 'rule': 'Amendment A2', 'accepted': accepted, 'r_A2': r,
+            'r_fits': {q: {str(w): f for w, f in d.items()} for q, d in fits.items()},
+            'ref_remaining_max_frac': max(remain.values()), 'remaining_frac': remain,
+            'ref_remaining_max_frac_registered_rule': max(remain_reg.values()),
+            'remaining_frac_registered_rule': remain_reg, 'drift_tol': dtol,
             'ref': {q: ref[q] for q in QS}, 'tol': tol, 'nat_k': k_nat,
             'nat_total': None if k_nat is None else k_nat + MT.NV,
             'nat_within_from': None if k_nat is None else k_nat + MT.SKIP + 1,
@@ -228,7 +273,7 @@ def score(out, names):
         if summ['status'] != 'ended' or len(rows) < MT.NV:
             res = (False, False, False)
         else:
-            res = passes_V([None] + rows, ref, tol, 0)
+            res = passes_V([None] + rows, ref, tol, 0, refj['drift_tol'])
         m_ok = max(summ['mass_err_max'] or 0, summ['jump_mass_err_max'] or 0) <= 1e-9
         summ.update(E=res[0], D=res[1], NR=res[2], M=m_ok, passed=int(all(res) and m_ok),
                     final_dist={q: abs(rows[-1][q] - ref[q]) / tol[q] for q in QS} if rows else None)
