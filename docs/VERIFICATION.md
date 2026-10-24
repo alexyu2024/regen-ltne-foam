@@ -589,3 +589,38 @@ dominated by faster modes, and one subspace iteration per Newton step improves t
 lambda_2/lambda_1 = 0.97 per step. With the residual rule added, all seven configurations end within 0.004 of the
 fixed point on the synthetic map. These synthetic numbers say nothing about the solver; they are recorded only as
 the reason for the change.
+
+### L5P Amendment A2 (2026-10-24, decided by the author (Qiming Yu) after reading the cycle-4000 data; post hoc)
+
+The L5P registration and Amendment A1 are unchanged. This amendment changes how L5P.3 is tested and the
+extension cap. It also sets the drift tolerance of the verification test V to match. It was decided after the
+reference test had been read at cycles 2400, 2800, 3200, 3600 and 4000.
+
+**What was found.** Under the rule as registered, L5P.3 is a FAIL at every extension:
+- max R_q/tol was 1.477 at 2400, 0.907 at 2800, 0.556 at 3200, 0.341 at 3600 and **0.2088 at 4000** (dT_seg1;
+  `results/L5P/reference_c*.json`). The 4000-cycle cap was reached.
+- That record stands. L5P.3 under the registered rule is FAIL, worst R_q 0.2088 at cycle 4000.
+- The registered R_q and drift tolerance assume r = 0.99670 (L5D, cycles 501-600). The natural run shows a late
+  decay ratio of r = 0.99878, the same for every quantity whose per-cycle change keeps one sign. That is a time
+  constant of about 820 cycles, and the slow mode sits at the hot end of the matrix
+  (`results/L5P/natural_decay_c2400.csv`).
+- With that r, the true remaining distance at cycle 4000 is about 0.57 tol for dT_seg1, about 0.011 K.
+- L5D's 0.9967 was a transitional value, measured while the ratio was still rising.
+
+**Rule from this amendment on.** The tolerances tol_q are unchanged.
+- **r_A2.** r is fitted as in L5D: exp of the least-squares slope of ln|d_k| against k, with d_k the per-cycle
+  change of a quantity.
+  - It is fitted over the last 100 and over the last 200 cycles of the natural run, for every registered quantity.
+  - A fit is valid if d_k keeps one sign over the window and the fit gives r < 1.
+  - r_A2 is the largest valid fit over all quantities and both windows, i.e. the slowest. With no valid fit, the
+    test fails.
+- **Remaining distance.** R_q = |q(N) - q(N - 50)| / 50 x r_A2 / (1 - r_A2). L5P.3 still requires max_q R_q/tol_q
+  <= 0.2.
+- **Drift tolerance of V** (method and natural verification): 0.45 tol_q (1 - r_A2) per cycle, replacing
+  1.5e-3 tol_q. Both changes only make the tests stricter.
+- **When it is tested.** The test is run after every 100-cycle chunk from cycle 4100 on. The reference is the first
+  chunk end at which it passes. The cap is 6000 cycles: if it has not passed by 6000, L5P.3 is FAIL and the run
+  stops, with no further amendment.
+- **Resumption.** The run resumes from the cycle-4000 restart point. The first resumed cycle is checked bit for bit
+  against a continuation of the original run directory.
+- **Methods.** No method run starts before the reference passes.
