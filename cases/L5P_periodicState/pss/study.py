@@ -71,7 +71,8 @@ def method(name, start_run, work, out):
     def record(states):
         for s in states:
             q = s.quantities()
-            evals.append({'count': cmap.count, 'dir': os.path.basename(s.case), **q})
+            # the evaluation's own number in the honest count (its directory prefix), also for concurrent batches
+            evals.append({'count': int(os.path.basename(s.case)[:5]), 'dir': os.path.basename(s.case), **q})
 
     # every evaluation is recorded as it finishes
     _orig = cmap.run_many
