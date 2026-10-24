@@ -1,0 +1,50 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
+Arch   : "LSB;label=32;scalar=64"
+Exec   : realGasPropsCheck -dict system/oorHighT
+Date   : Oct 24 2026
+Time   : 19:29:53
+Host   : vm
+PID    : 2126
+I/O    : uncollated
+Case   : <clone>/cases/LP_heliumRealGas
+nProcs : 1
+trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
+memory pool : not available
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create mesh for time = 0
+
+Selecting thermodynamics package 
+{
+    type            heRhoThermo;
+    mixture         pureMixture;
+    transport       tabulated2D;
+    thermo          hConst;
+    equationOfState tabulatedRealGas;
+    specie          specie;
+    energy          sensibleEnthalpy;
+}
+
+realGasTable: "<clone>/cases/LP_heliumRealGas/constant/helium_CoolProp.dat": T 15 to 95 K, p 500000 to 1e+06 Pa, 321 x 21
+
+
+--> FOAM FATAL ERROR: (openfoam-2512)
+state p = 750000 Pa, T = 95.1 K is outside the table "<clone>/cases/LP_heliumRealGas/constant/helium_CoolProp.dat" (T 15 to 95 K, p 500000 to 1e+06 Pa)
+
+    From void Foam::realGasTable::outOfRange(Foam::scalar, Foam::scalar) const
+    in file realGasTable.C at line 77.
+
+FOAM exiting
+
+exit status: 1

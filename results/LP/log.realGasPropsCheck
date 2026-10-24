@@ -8,10 +8,10 @@
 Build  : _bd2b6720-20260127 OPENFOAM=2512 version=2512
 Arch   : "LSB;label=32;scalar=64"
 Exec   : realGasPropsCheck
-Date   : Oct 23 2026
-Time   : 19:11:13
+Date   : Oct 24 2026
+Time   : 19:29:53
 Host   : vm
-PID    : 5439
+PID    : 2123
 I/O    : uncollated
 Case   : <clone>/cases/LP_heliumRealGas
 nProcs : 1
