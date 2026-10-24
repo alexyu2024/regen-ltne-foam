@@ -1,0 +1,3 @@
+#!/bin/sh
+cd "${0%/*}" || exit 1
+rm -rf __pycache__ pss l5p_ref run_ideal run_real accept restartcheck.json log.*
