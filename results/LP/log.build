@@ -1,0 +1,5 @@
+wmake libso pistonMotion
+wmake ltneFoam
+wmake libso ltneRealGas
+wmake realGasPropsCheck
+realGasPropsCheck binary: <WM_PROJECT_USER_DIR>/platforms/linux64GccDPInt32Opt/bin/realGasPropsCheck

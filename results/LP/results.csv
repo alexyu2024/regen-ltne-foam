@@ -1,0 +1,17 @@
+metric,value,source
+rho_rel_22,1.778622420456344e-07,results/LP/propsCheck.dat:3 vs nist_helium.csv:7
+cp_rel_22,8.904463832948295e-09,results/LP/propsCheck.dat:3 vs nist_helium.csv:7
+rho_rel_50,5.5572821455740495e-08,results/LP/propsCheck.dat:4 vs nist_helium.csv:8
+cp_rel_50,2.6088450066907853e-08,results/LP/propsCheck.dat:4 vs nist_helium.csv:8
+rho_rel_80,6.797573426364778e-08,results/LP/propsCheck.dat:5 vs nist_helium.csv:9
+cp_rel_80,5.944470915508759e-09,results/LP/propsCheck.dat:5 vs nist_helium.csv:9
+rho_rel_22c,3.5846840405806546e-05,results/LP/propsCheck.dat:6 vs nist_helium.csv:10
+cp_rel_22c,5.222590902187463e-06,results/LP/propsCheck.dat:6 vs nist_helium.csv:10
+rho_rel_50c,1.7929945408390324e-06,results/LP/propsCheck.dat:7 vs nist_helium.csv:11
+cp_rel_50c,1.0705469999372497e-07,results/LP/propsCheck.dat:7 vs nist_helium.csv:11
+rho_rel_80c,1.043641858600175e-06,results/LP/propsCheck.dat:8 vs nist_helium.csv:12
+cp_rel_80c,6.581716338605048e-08,results/LP/propsCheck.dat:8 vs nist_helium.csv:12
+T_roundtrip_max_K,7.180000238804496e-08,results/LP/propsCheck.dat:3-8 (column 6 vs column 1)
+mu_rel_50,6.770264571187568e-08,results/LP/propsCheck.dat:10 vs nist_helium.csv:8
+kappa_rel_50,8.197369094631313e-08,results/LP/propsCheck.dat:10 vs nist_helium.csv:8
+allclean_leftover,0,results/LP/log.allclean-check:empty file
