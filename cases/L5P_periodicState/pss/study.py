@@ -80,6 +80,8 @@ def method(name, start_run, work, out):
     def run_many(jobs):
         res = _orig(jobs)
         record(res)
+        # written as it grows, so a container restart leaves the evaluations so far on disk
+        write_csv(os.path.join(out, f'{name}_evals.csv'), evals)
         cmap.cleanup(keep=[j[0] for j in jobs] + res)
         return res
     cmap.run_many = run_many
@@ -107,7 +109,7 @@ def method(name, start_run, work, out):
     write_csv(os.path.join(out, f'{name}_hist.csv'), run.hist)
     write_csv(os.path.join(out, f'{name}_evals.csv'), evals)
     write_csv(os.path.join(out, f'{name}_verify.csv'), vrounds or [{'round': 0}])
-    summary = {'name': name, 'status': status, 'method_and_verify_cycles': run.used(),
+    summary = {'name': name, 'status': status, 'budget_after_start': MT.BUDGET, 'method_and_verify_cycles': run.used(),
                'total': START_CYCLE + run.used(), 'verification_rounds': len(vrounds),
                'jump_mass_err_max': getattr(cmap, 'jump_mass_err', 0.0),
                'crash_count': len(cmap.crash_hits), 'crash_hits': cmap.crash_hits[:20],
