@@ -1,0 +1,32 @@
+{
+ "name": "gm3",
+ "status": "budget",
+ "method_and_verify_cycles": 600,
+ "total": 640,
+ "verification_rounds": 0,
+ "jump_mass_err_max": 4.668181542517965e-16,
+ "crash_count": 0,
+ "crash_hits": [],
+ "log_lines_scanned": 68872,
+ "trapFpe_banners_skipped": 600,
+ "mass_err_max": 3.114579603957703e-11,
+ "E": false,
+ "D": false,
+ "NR": false,
+ "M": true,
+ "passed": 0,
+ "final_dist": {
+  "Q_hot": 0.703777824586993,
+  "Q_cold": 0.471902331496743,
+  "dT_seg1": 2.134112079825101,
+  "dT_seg2": 1.7343257482750118,
+  "dT_seg3": 0.4664235953997675,
+  "dT_seg4": 0.02338973824986823,
+  "Ts_seg1_mean": 1.39781557578047,
+  "Ts_seg2_mean": 1.4577384135854743,
+  "Ts_seg3_mean": 0.07431291205364232,
+  "Ts_seg4_mean": 0.008865119363399288,
+  "T_joint": 0.20661287949987894,
+  "p_mean": 0.08632609762636036
+ }
+}
