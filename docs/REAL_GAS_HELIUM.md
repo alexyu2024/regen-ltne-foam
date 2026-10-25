@@ -2,7 +2,7 @@
 
 The default gas model of every case is the ideal gas. This page describes the optional real-gas helium model, its
 data and validation, and its effect on the L5 regenerator slice. Bars and results: `docs/VERIFICATION.md`, levels
-LP and LRG; `results/LP`, `results/LRG`.
+LP and LRG; `results/LP`, `results/LRG`, `results/LRG_A3`.
 
 ## Model
 
@@ -83,13 +83,23 @@ cases, copy `cases/LP_heliumRealGas/constant/thermophysicalProperties` and the t
 - Equal mass would need a mean pressure about 0.7 % higher. That run was not made.
 - Every relative difference below holds at equal initial mean pressure.
 
-**Results.** (Filled in from `results/LRG` when the run has finished.)
+**Results** (`results/LRG_A3`, equal initial mean pressure):
 
-| quantity | ideal gas | real gas | relative difference | uncertainty |
+| quantity | ideal gas (cycle 4900) | real gas (cycle 11100) | relative difference | uncertainty |
 |---|---|---|---|---|
-| Q_hot, heat from the hot HX, W | | | | |
-| Q_cold, heat from the cold HX, W | | | | |
-| p_mean drift | | | | |
+| Q_hot, heat from the hot HX, W | -12.1892 | -12.7704 | +4.77 % | 0.011 % |
+| Q_cold, heat from the cold HX, W | 1.85456 | 1.97519 | +6.50 % | 0.005 % |
+| p_mean, MPa | 0.80252 | 0.81206 | +1.19 % (drift) | - |
+| helium inventory at the switch | M_ideal | M_real0 | -0.72 % | - |
+
+- **Outcome.** The real-gas run did not pass the A2 test by the registered cap, N_ref + 6000 = cycle 10900
+  (max R_q/tol 0.271 against 0.2; `results/LRG`, LRG.4 FAIL). Under Amendment A3, registered before that result,
+  the cap was raised to cycle 12900 and the run continued; it passed at cycle 11100 (max R_q/tol 0.193;
+  `results/LRG_A3`, 5/5 PASS). The values at the two cycles differ by less than 0.002 percentage points.
+- **Reading.** Both HX heat flows grow in magnitude with the real gas, the cold one more. The mean pressure rises
+  1.2 % above the reference although the helium mass is fixed (LRG.5, drift 5e-11). The differences are 400-1300
+  times their uncertainties. They hold for this charge basis: at equal mass the real-gas mean pressure would be
+  about 0.7 % higher again, and that run was not made.
 
 The uncertainty is the sum of the two runs' remaining distances to their periodic states (A2 rule), relative to the
 ideal-gas value.
