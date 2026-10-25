@@ -1,0 +1,32 @@
+{
+ "name": "np3",
+ "status": "budget",
+ "method_and_verify_cycles": 599,
+ "total": 639,
+ "verification_rounds": 0,
+ "jump_mass_err_max": 4.668181542517965e-16,
+ "crash_count": 0,
+ "crash_hits": [],
+ "log_lines_scanned": 67891,
+ "trapFpe_banners_skipped": 599,
+ "mass_err_max": 3.0781211061106375e-11,
+ "E": false,
+ "D": false,
+ "NR": false,
+ "M": true,
+ "passed": 0,
+ "final_dist": {
+  "Q_hot": 20.609131660991764,
+  "Q_cold": 17.602387870989222,
+  "dT_seg1": 33.77362799757471,
+  "dT_seg2": 30.21975235792489,
+  "dT_seg3": 2.1511304907750883,
+  "dT_seg4": 1.8440155128249813,
+  "Ts_seg1_mean": 18.43270506233665,
+  "Ts_seg2_mean": 23.982213579550304,
+  "Ts_seg3_mean": 1.0499638790399501,
+  "Ts_seg4_mean": 1.0789313646219156,
+  "T_joint": 8.881101603554953,
+  "p_mean": 3.758447364865438
+ }
+}
