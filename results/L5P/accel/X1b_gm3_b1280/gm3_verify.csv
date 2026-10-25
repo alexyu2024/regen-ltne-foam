@@ -1,0 +1,3 @@
+round,end_count,self_ok,first_cycle_count,fails
+1,725,False,676,dT_seg1
+2,785,True,736,
