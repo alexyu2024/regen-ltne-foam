@@ -50,8 +50,8 @@ if [ ! -f restartcheck.json ]; then
         rm -rf run_ideal && mkdir run_ideal && tar xzf l5p_ref/state_Nr.tgz -C run_ideal || exit 1
         rm -f run_ideal/per_cycle.csv run_ideal/cycles.csv      # tables of this run start at N_R + 1
         rm -f run_ideal/log.*                                    # the reference's own logs stay in the L5P record
-        cp $L5/Allrun.continue run_ideal/
     fi
+    cp $L5/Allrun.continue run_ideal/   # every job: the run-case state archive leaves Allrun.continue out
     while :; do
         python3 $L5/results.py summarise run_ideal 2400 > /dev/null || exit 1
         python3 lrg.py extract run_ideal || exit 1
@@ -69,6 +69,7 @@ python3 -c "import json,sys; sys.exit(0 if json.load(open('restartcheck.json'))[
 [ -f run_real/switch.json ] || python3 lrg.py switch run_ideal run_real $N_REF || exit 1
 
 # 4. real gas
+cp $L5/Allrun.continue run_real/   # every job: the run-case state archive leaves Allrun.continue out
 while :; do
     python3 $L5/results.py summarise run_real 2400 > /dev/null || exit 1
     python3 lrg.py extract run_real || exit 1
