@@ -3,3 +3,6 @@ src/**/lnInclude
 __pycache__/
 ci-out/
 out/
+cases/*/run_natural/
+cases/*/run_*/
+cases/L5P_periodicState/log.*

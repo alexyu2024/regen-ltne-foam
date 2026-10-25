@@ -1,0 +1,17 @@
+metric,value,source
+restart_check_rel,0.0,results/LRG/restartcheck.json:cycles 4801-4900
+inventory_rel,-0.007214758468591098,results/LRG/switch.json:inventory_rel
+rg_cycles,6000,results/LRG/real_cycles.csv:cycles 4901-10900
+rg_remaining_max_frac,0.2713365247729671,results/LRG/real_acceptance.json:ref_remaining_max_frac
+rg_mass_drift_max,4.923340194410067e-11,"results/LRG/real_cycles.csv:gas_mass_kg, cycles 4901-10900 vs switch.json M_real0"
+Q_hot_ideal_W,-12.189233105974894,"results/LRG/ideal_reference.json:ref.Q_hot (L5P reference, cycle 4900)"
+Q_hot_real_W,-12.770286607781353,results/LRG/real_acceptance.json:ref.Q_hot (cycle 10900)
+dQ_hot_rel,0.04766940600402816,results/LRG/real_acceptance.json:vs ideal_reference.json; equal initial mean pressure
+dQ_hot_unc,0.00013680727933683529,results/LRG/real_acceptance.json:remaining distances 9.860e-04 W (real) + 6.816e-04 W (ideal)
+Q_cold_ideal_W,1.8545558018103432,"results/LRG/ideal_reference.json:ref.Q_cold (L5P reference, cycle 4900)"
+Q_cold_real_W,1.9751817149708315,results/LRG/real_acceptance.json:ref.Q_cold (cycle 10900)
+dQ_cold_rel,0.06504302164579687,results/LRG/real_acceptance.json:vs ideal_reference.json; equal initial mean pressure
+dQ_cold_unc,6.310081393838012e-05,results/LRG/real_acceptance.json:remaining distances 7.102e-05 W (real) + 4.600e-05 W (ideal)
+p_mean_drift_rel,0.011890024284801098,results/LRG/real_acceptance.json:ref.p_mean vs ideal_reference.json
+crash_count,0,results/LRG/log.*:all lines of all logs; 61 trapFpe banner lines skipped
+allclean_leftover,0,results/LRG/log.allclean-check:empty file

@@ -27,7 +27,8 @@ On GitHub: `.github/workflows/run-case.yml` with `level = LRG`.
    Any other difference in `ltneProperties` stops the run. It removes `rho` and records the inventory difference
    (`switch.json`).
 4. **Real gas.** It runs in 100-cycle chunks. From N_REF + 400 it applies the L5P Amendment A2 test after every
-   chunk (`lrg.py accept`, the L5P `study.reference` on this run's own tables), up to the cap N_REF + 6000.
+   chunk (`lrg.py accept`, the L5P `study.reference` on this run's own tables), up to the cap N_REF + 6000
+   (N_REF + 8000 under Amendment A3, when `A3.env` is present; see `docs/VERIFICATION.md`, LRG).
 5. **Deliverables.** `lrg.py final` writes them.
 
 `lrg.py` uses the L5P tools unchanged except for the gas mass of a real-gas run: sum eps rho V with the solver's

@@ -17,6 +17,7 @@ budget=$(( ${2:-330} * 60 ))
 t0=$(date +%s)
 chunk=${LRG_CHUNK:-100}
 first=${LRG_FIRST_TEST:-400}
+[ -f A3.env ] && . ./A3.env            # Amendment A3: committed only if the run continues past N_REF + 6000
 cap=${LRG_CAP:-6000}
 L5=../L5_regenSlice
 for v in L5P_ACCEPT_SHA L5P_REF_JSON L5P_RESTART_SHA N_R N_REF; do
@@ -50,8 +51,8 @@ if [ ! -f restartcheck.json ]; then
         rm -rf run_ideal && mkdir run_ideal && tar xzf l5p_ref/state_Nr.tgz -C run_ideal || exit 1
         rm -f run_ideal/per_cycle.csv run_ideal/cycles.csv      # tables of this run start at N_R + 1
         rm -f run_ideal/log.*                                    # the reference's own logs stay in the L5P record
-        cp $L5/Allrun.continue run_ideal/
     fi
+    cp $L5/Allrun.continue run_ideal/   # every job: the run-case state archive leaves Allrun.continue out
     while :; do
         python3 $L5/results.py summarise run_ideal 2400 > /dev/null || exit 1
         python3 lrg.py extract run_ideal || exit 1
@@ -69,6 +70,7 @@ python3 -c "import json,sys; sys.exit(0 if json.load(open('restartcheck.json'))[
 [ -f run_real/switch.json ] || python3 lrg.py switch run_ideal run_real $N_REF || exit 1
 
 # 4. real gas
+cp $L5/Allrun.continue run_real/   # every job: the run-case state archive leaves Allrun.continue out
 while :; do
     python3 $L5/results.py summarise run_real 2400 > /dev/null || exit 1
     python3 lrg.py extract run_real || exit 1

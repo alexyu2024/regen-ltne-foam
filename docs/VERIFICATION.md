@@ -512,6 +512,157 @@ ideal-gas model stays the default; no existing case changes.
 | LP.15 | kappa_rel_50 | report | 0 | thermal conductivity at 50 K, 0.75 MPa, relative difference to NIST |
 | LP.16 | allclean_leftover | == | 0 | files under the case directory that `git status --porcelain --ignored` lists after `Allclean` |
 
+## L5P Periodic steady state by cycle-map acceleration (L5 slice; the author's request, 2026-10-23)
+
+Committed before any L5P number was read: the natural reference run, the noise tests and the method runs.
+The one exception, agreed beforehand, is T_joint on cycle 40 of the natural run, read to check the local OpenFOAM
+build against L5 (27.865715 K, |difference| <= 1e-5 K). Design and method details: `docs/L5P_PERIODIC_STATE.md`.
+The solver, the L5 case and its inputs are unchanged; L5P only drives ltneFoam one cycle at a time.
+
+**Map.** x_(k+1) = Phi(x_k): one ltneFoam cycle from a cycle-boundary state (t = k T, the same phase every cycle).
+x = [Ts on the 120 matrix cells, T on all 172 cells], in K. After every jump (any x not produced by a cycle) the
+pressure field is shifted uniformly so that the gas mass equals the run's inventory M0, and rho is recomputed by
+the solver from p and T. U, phi, rhoUf and dpdt are carried from the last cycle-boundary state.
+
+**Quantities** q, each per cycle k (cycle-mean over the cycle unless stated):
+- Q_hot = Qhot_gas + Qhot_solid and Q_cold = Qcold_gas + Qcold_solid: heat from the hot and the cold HX into the
+  gas and the matrix solid, W (the L5 `per_cycle.csv` columns, Amendment A1 terms);
+- dT_seg1..4: cycle-mean matrix Ts difference across each quarter of the matrix (nodes z = 0, 0.013, 0.026, 0.039,
+  0.052 m; linear interpolation of the cell-centre values, end nodes = end cells), K;
+- Ts_seg1..4_mean: cycle-mean matrix Ts averaged over the cells of each quarter, K;
+- T_joint: the L5 `Tjoint_mean`, K;
+- p_mean: the gas-volume-weighted pressure at the cycle boundary, Pa (same phase every cycle).
+
+| q | tolerance tol_q | drift tolerance (1.5e-3 tol_q, per cycle) |
+|---|---|---|
+| Q_hot | 0.005 W | 7.5e-6 W |
+| Q_cold | 0.0005 W | 7.5e-7 W |
+| dT_seg1..4 | 0.02 K each | 3e-5 K |
+| Ts_seg1..4_mean | 0.02 K each | 3e-5 K |
+| T_joint | 0.02 K | 3e-5 K |
+| p_mean | 1e-3 p_ref | 1.5e-6 p_ref |
+
+The drift tolerance is 1.5e-3 tol_q: with the L5D decay ratio r = 0.9967, a drift of 1.5e-3 tol_q per cycle means a
+remaining distance of about 0.45 tol_q to the periodic state.
+
+**Reference.** The natural run: the L5 case from t = 0, cycle by cycle, to N_ref = 2400 cycles. It is accepted if, for
+every q, the remaining distance R_q = |q(N_ref) - q(N_ref - 50)| / 50 x r / (1 - r), with r = 0.99670, is at most
+0.2 tol_q. Otherwise it is extended by 400 cycles at a time, up to 4000, and the test repeated. q_ref = q(N_ref).
+
+**Verification test V(k)** of a state reached after cycle k: 50 further natural cycles k+1..k+50, then
+- E: |q_j - q_ref| <= tol_q for every q and every cycle j = k+11..k+50;
+- D: |slope| of the least-squares line of q over cycles k+31..k+50 <= the drift tolerance, for every q;
+- NR (no rebound): |slope over k+31..k+50| <= |slope over k+11..k+30| + 0.1 x drift tolerance, for every q;
+- M: |gas mass - M0| / M0 <= 1e-9 on every cycle boundary of the run, jump states included.
+Cycles k+1..k+10 let the fast modes excited by a jump decay; they are counted but not tested.
+
+**Honest count.** Every cycle ltneFoam runs is counted: the 40 cycles from t = 0 to the common start state, every
+map evaluation (finite-difference perturbations, rejected or capped steps), and every verification cycle.
+- Methods: total = 40 + method cycles + verification cycles. A method stops iterating when its proposed correction
+  is at most 0.005 K in max norm over x; it then runs V. If D and NR hold (the method evaluates them itself, without
+  the reference) the run ends and is scored with E, D, NR and M. If not, it continues iterating from the end of the
+  verification cycles. A method that has not ended within 600 cycles after cycle 40 is FAIL at 640.
+- Natural: k_nat = the smallest k >= 40 for which V(k) holds on the natural run itself; its total is k_nat + 50. The
+  first cycle from which it stays within E, k_nat + 11, is reported beside it.
+
+**Methods** (all start from the cycle-40 state; parameters fixed here):
+- (a) Newton-Picard / RPM (Lust et al. 1998), p = 1, 2, 3: each iteration evaluates Phi(x_k) and p finite-difference
+  products M V at x_k (perturbation 0.05 K in max norm), takes H = V^T M V, steps x_(k+1) = Phi(x_k) +
+  V [(I - H)^-1 - I] V^T (Phi(x_k) - x_k) and updates V = orth(M V) (one subspace iteration per Newton step, so the
+  slow subspace is re-estimated at the current state every iteration). Initial V: the orthonormalised differences of
+  p natural cycles from cycle 40. Corrections are scaled down to at most 2 K in max norm.
+- (b) Broyden Rank Reduction (van de Rotten et al. 2006) on g(x) = Phi(x) - x, B0 = -I, memory p = 3 and p = 6;
+  one map evaluation per iteration; steps capped at 2 K in max norm.
+- (c) Graves-Morris vector extrapolation (eq. 6 of Subraveti et al. 2024, Systems and Control Transactions 3:215,
+  the method of Subraveti, Karimi, Gazzani 2026), alternating with plain cycles: m plain cycles, then x_n, x_(n+1),
+  x_(n+2) and the extrapolated state; m = 0 (as published) and m = 3. No Jacobian. Capped at 2 K in max norm.
+
+**Noise of the map** (reported, no bar), from the cycle-40 state: N1 the same Phi(x) twice; N2 two cycles continuous
+against 1 + 1 with a restart; N3 Phi of x written back unchanged (mass shift and rho recomputation) against plain
+Phi; N4 finite-difference products M v for perturbations 1, 0.3, 0.1, 0.03, 0.01, 1e-3, 1e-4 and 1e-5 K (max norm),
+v along the first natural difference and along a fixed random direction (seed 0). Each is reported for the
+same-phase state and for the cycle-mean fields.
+
+| id | metric | op | bar | description |
+|----|--------|----|-----|-------------|
+| L5P.1 | c40_Tjoint_diff_K | <= | 1e-05 | build check: |T_joint(cycle 40) - 27.865715| on the natural run |
+| L5P.2 | ref_cycles | report | 0 | N_ref, cycles of the natural reference |
+| L5P.3 | ref_remaining_max_frac | <= | 0.2 | max over q of R_q / tol_q at N_ref |
+| L5P.4 | nat_k | report | 0 | natural: k_nat (V(k_nat) holds) |
+| L5P.5 | nat_total | report | 0 | natural: k_nat + 50 |
+| L5P.6 | nat_within_from | report | 0 | natural: k_nat + 11 |
+| L5P.7 | nat_mass_drift_max | <= | 1e-09 | natural: max over cycles of abs(M - M0) / M0 |
+| L5P.8 | noise_N1_K | report | 0 | N1: max abs difference of x, K |
+| L5P.9 | noise_N2_K | report | 0 | N2: max abs difference of x, K |
+| L5P.10 | noise_N3_K | report | 0 | N3: max abs difference of x, K |
+| L5P.11 | noise_N4_floor | report | 0 | N4: smallest relative change of M v between successive perturbations |
+| L5P.12 | crash_count | == | 0 | crash patterns over all logs (as L5, trapFpe banner excepted) |
+| L5P.13 | allclean_leftover | == | 0 | files left under the case directory after `Allclean` |
+| L5P.14 | np1_total | report | 0 | (a) p = 1: total cycles (honest count) |
+| L5P.15 | np1_pass | report | 0 | (a) p = 1: 1 if E, D, NR and M hold, else 0 |
+| L5P.16 | np2_total | report | 0 | (a) p = 2: total cycles |
+| L5P.17 | np2_pass | report | 0 | (a) p = 2: 1 if E, D, NR and M hold |
+| L5P.18 | np3_total | report | 0 | (a) p = 3: total cycles |
+| L5P.19 | np3_pass | report | 0 | (a) p = 3: 1 if E, D, NR and M hold |
+| L5P.20 | brr3_total | report | 0 | (b) BRR p = 3: total cycles |
+| L5P.21 | brr3_pass | report | 0 | (b) BRR p = 3: 1 if E, D, NR and M hold |
+| L5P.22 | brr6_total | report | 0 | (b) BRR p = 6: total cycles |
+| L5P.23 | brr6_pass | report | 0 | (b) BRR p = 6: 1 if E, D, NR and M hold |
+| L5P.24 | gm0_total | report | 0 | (c) Graves-Morris m = 0: total cycles |
+| L5P.25 | gm0_pass | report | 0 | (c) Graves-Morris m = 0: 1 if E, D, NR and M hold |
+| L5P.26 | gm3_total | report | 0 | (c) Graves-Morris m = 3: total cycles |
+| L5P.27 | gm3_pass | report | 0 | (c) Graves-Morris m = 3: 1 if E, D, NR and M hold |
+
+### L5P Amendment A1 (2026-10-23, before any method run and before any L5P number other than L5P.1 was read)
+
+The stopping rule of the methods is tightened. A method now stops iterating only when its proposed correction is at
+most 0.005 K in max norm **and** the residual Phi(x) - x at the current iterate is at most 1.5e-5 K in max norm
+(0.005 K x (1 - 0.997)). Everything else in the L5P registration is unchanged.
+
+Why: before any run on the solver, the three methods were run on a synthetic map
+(`cases/L5P_periodicState/pss/selftest.py`, 60 unknowns, multipliers 0.9967, 0.97, 0.9 and fast modes, a mild
+quadratic nonlinearity). With the correction-only rule, every method stopped 0.07-0.7 away from the fixed point.
+Early on the correction is small because the slow subspace has not been found yet: the initial differences are
+dominated by faster modes, and one subspace iteration per Newton step improves the basis only by about
+lambda_2/lambda_1 = 0.97 per step. With the residual rule added, all seven configurations end within 0.004 of the
+fixed point on the synthetic map. These synthetic numbers say nothing about the solver; they are recorded only as
+the reason for the change.
+
+### L5P Amendment A2 (2026-10-24, decided by the author (Qiming Yu) after reading the cycle-4000 data; post hoc)
+
+The L5P registration and Amendment A1 are unchanged. This amendment changes how L5P.3 is tested and the
+extension cap. It also sets the drift tolerance of the verification test V to match. It was decided after the
+reference test had been read at cycles 2400, 2800, 3200, 3600 and 4000.
+
+**What was found.** Under the rule as registered, L5P.3 is a FAIL at every extension:
+- max R_q/tol was 1.477 at 2400, 0.907 at 2800, 0.556 at 3200, 0.341 at 3600 and **0.2088 at 4000** (dT_seg1;
+  `results/L5P/reference_c*.json`). The 4000-cycle cap was reached.
+- That record stands. L5P.3 under the registered rule is FAIL, worst R_q 0.2088 at cycle 4000.
+- The registered R_q and drift tolerance assume r = 0.99670 (L5D, cycles 501-600). The natural run shows a late
+  decay ratio of r = 0.99878, the same for every quantity whose per-cycle change keeps one sign. That is a time
+  constant of about 820 cycles, and the slow mode sits at the hot end of the matrix
+  (`results/L5P/natural_decay_c2400.csv`).
+- With that r, the true remaining distance at cycle 4000 is about 0.57 tol for dT_seg1, about 0.011 K.
+- L5D's 0.9967 was a transitional value, measured while the ratio was still rising.
+
+**Rule from this amendment on.** The tolerances tol_q are unchanged.
+- **r_A2.** r is fitted as in L5D: exp of the least-squares slope of ln|d_k| against k, with d_k the per-cycle
+  change of a quantity.
+  - It is fitted over the last 100 and over the last 200 cycles of the natural run, for every registered quantity.
+  - A fit is valid if d_k keeps one sign over the window and the fit gives r < 1.
+  - r_A2 is the largest valid fit over all quantities and both windows, i.e. the slowest. With no valid fit, the
+    test fails.
+- **Remaining distance.** R_q = |q(N) - q(N - 50)| / 50 x r_A2 / (1 - r_A2). L5P.3 still requires max_q R_q/tol_q
+  <= 0.2.
+- **Drift tolerance of V** (method and natural verification): 0.45 tol_q (1 - r_A2) per cycle, replacing
+  1.5e-3 tol_q. Both changes only make the tests stricter.
+- **When it is tested.** The test is run after every 100-cycle chunk from cycle 4100 on. The reference is the first
+  chunk end at which it passes. The cap is 6000 cycles: if it has not passed by 6000, L5P.3 is FAIL and the run
+  stops, with no further amendment.
+- **Resumption.** The run resumes from the cycle-4000 restart point. The first resumed cycle is checked bit for bit
+  against a continuation of the original run directory.
+- **Methods.** No method run starts before the reference passes.
+
 **LP addendum (2026-10-24, the author's request; added before the out-of-range check was first run).** A state outside
 the table, 15-95 K and 0.5-1.0 MPa, must stop the run with an error: never extrapolate, never clamp silently.
 `realGasPropsCheck -dict <file>` is run on four points just outside the table, each in its own run: 14.9 K and
@@ -589,3 +740,21 @@ L5P Amendment A2. It uses the L5P tools (`cases/L5P_periodicState/pss`) for the 
 | LRG.14 | p_mean_drift_rel | report | 0 | (p_mean,real(N_acc) - p_mean,ideal(N_ref)) / p_mean,ideal(N_ref) |
 | LRG.15 | crash_count | == | 0 | crash patterns over all logs (as L5; the trapFpe banner and out-of-table checks excepted, an out-of-table stop counts) |
 | LRG.16 | allclean_leftover | == | 0 | files left under the case directory after `Allclean` |
+
+**Amendment A3 (the author's decision, 2026-10-25, committed before the result of the second run-case job, which
+runs from cycle 8400 to the registered cap):** the cap is raised from N_ref + 6000 (cycle 10900) to N_ref + 8000
+(cycle 12900). The A2 acceptance rule (max_q R_q / tol_q <= 0.2), every other bar of the table above and the
+deliverables are unchanged.
+- **Status before A3:** in the first job, max_q R_q / tol_q fell from 34.1 at cycle 6000 to 4.5-6.9 at cycles
+  8200-8400, with single-test rises of up to 40 %, so the registered cap was likely to be reached without a pass.
+- **At the registered cap (cycle 10900):** if the run has not passed, the result is recorded as it is, "FAIL at the
+  registered cap", with all deliverables (`results/LRG`).
+- **Continue or stop:** let s_j be max_q R_q / tol_q at the eleven tests of cycles 9900, 10000, ..., 10900. The run
+  continues under A3 from the saved state only if s_j is still decreasing: the least-squares slope of ln s_j against
+  the cycle number is negative. A strictly monotonic series is not required, because single tests rise by up to
+  40 % (see above). If the slope is zero or positive, the run stops at cycle 10900.
+- **Under A3:** the test runs after every 100-cycle chunk as before, until a pass or cycle 12900. A run that has not
+  passed by cycle 12900 stops and is recorded as FAIL. The deliverables of the continued run go to
+  `results/LRG_A3`, checked against the same bars.
+- **How it is applied:** `cases/LRG_realGasL5/A3.env` (`LRG_CAP=8000`) is committed only when the test above says
+  continue, together with the eleven values of s_j.
