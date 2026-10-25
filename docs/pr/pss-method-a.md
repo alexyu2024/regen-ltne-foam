@@ -37,6 +37,10 @@ reference, in tolerances:
 The worst quantity is listed; `final_dist` in the summary JSON uses the last evaluation, which for a budget-stopped
 Newton-Picard run is a +0.05 K finite-difference perturbation, so it differs slightly from these numbers.
 
+Natural-equivalent cycle of each end state (post hoc, not registered: the first natural cycle whose worst
+distance is no larger): np1 391, np2 625, np3 568, against a cost of 639 each. For comparison, BRR p = 3 (PR 3)
+reaches 1112 for a cost of 640.
+
 At equal cost the Newton-Picard end states are no better than natural marching: worst 32-39 tol against 31.5. They
 pull some quantities closer (np2: T_joint 1.8 tol; np1: Q_cold 1.9 tol) and push others further away (dT_seg2).
 
