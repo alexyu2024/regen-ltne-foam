@@ -7,6 +7,15 @@
   - the L5 state at 40 cycles is about 0.8 K above the extrapolated periodic limit at the joint (27.04 K).
 
   See `results/L5D/README.md`.
+- **L5P: periodic steady state of the L5 slice by cycle-map acceleration** (`cases/L5P_periodicState`, one cycle =
+  one map, solver unchanged).
+  - The natural reference needs 4195 cycles to meet the registered tolerances. The late slow multiplier is 0.99878
+    per cycle (time constant about 820 cycles, slow mode at the hot end), not L5D's transitional 0.99670.
+  - Newton-Picard (p = 1-3), Broyden Rank Reduction (p = 3, 6) and Graves-Morris extrapolation (m = 0, 3) all FAIL
+    within their 640-cycle budget. The derivative-free methods ended 4.4-5.2 times further along the natural
+    trajectory than their cost.
+
+  See `docs/L5P_CONCLUSION.md` and `results/L5P/README.md`.
 
 ## v1.0.1
 

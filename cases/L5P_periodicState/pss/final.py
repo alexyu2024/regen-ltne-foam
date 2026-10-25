@@ -53,8 +53,7 @@ def main(out):
             elif CRASH.search(l):
                 hits.append(f'{os.path.relpath(path, out)}:{i + 1}')
     evals = 0
-    for j in [ns] + [jload(p) for p in sorted(glob.glob(os.path.join(out, '*_summary.json')))
-                     if not p.endswith('noise_summary.json')]:
+    for j in [ns] + [jload(p) for p in sorted(glob.glob(os.path.join(out, 'methods', '*_summary.json')))]:
         if j:
             hits += j.get('crash_hits', [])[:j.get('crash_count', 0)] or ([f'{j.get("crash_count")} hits'] if j.get('crash_count') else [])
             evals += 1
@@ -63,9 +62,9 @@ def main(out):
                             f'every map evaluation of {evals} study runs (scanned when they ran)')
 
     for name in ('np1', 'np2', 'np3', 'brr3', 'brr6', 'gm0', 'gm3'):
-        s = jload(os.path.join(out, f'{name}_summary.json'))
-        r.add(f'{name}_total', s and s['total'], f'{name}_summary.json', 'total' if s else None)
-        r.add(f'{name}_pass', s and s.get('passed'), f'{name}_summary.json',
+        s = jload(os.path.join(out, 'methods', f'{name}_summary.json'))
+        r.add(f'{name}_total', s and s['total'], f'methods/{name}_summary.json', 'total' if s else None)
+        r.add(f'{name}_pass', s and s.get('passed'), f'methods/{name}_summary.json',
               'passed' if s and 'passed' in s else None)
     r.write()
 

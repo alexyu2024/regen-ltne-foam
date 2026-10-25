@@ -10,19 +10,19 @@ noise_N1_K,0.0,results/L5P/noise.csv:2
 noise_N2_K,1.7356400405788008e-07,results/L5P/noise.csv:3
 noise_N3_K,1.122003823184059e-09,results/L5P/noise.csv:4
 noise_N4_floor,6.879137421659911e-05,results/L5P/noise_summary.json:N4_floor
-crash_count,0,results/L5P/natural/log.*:all lines of 53 natural logs (51 trapFpe banner lines skipped) and of every map evaluation of 1 study runs (scanned when they ran)
-np1_total,not read,results/L5P/np1_summary.json (not found)
-np1_pass,not read,results/L5P/np1_summary.json (not found)
-np2_total,not read,results/L5P/np2_summary.json (not found)
-np2_pass,not read,results/L5P/np2_summary.json (not found)
-np3_total,not read,results/L5P/np3_summary.json (not found)
-np3_pass,not read,results/L5P/np3_summary.json (not found)
-brr3_total,not read,results/L5P/brr3_summary.json (not found)
-brr3_pass,not read,results/L5P/brr3_summary.json (not found)
-brr6_total,not read,results/L5P/brr6_summary.json (not found)
-brr6_pass,not read,results/L5P/brr6_summary.json (not found)
-gm0_total,not read,results/L5P/gm0_summary.json (not found)
-gm0_pass,not read,results/L5P/gm0_summary.json (not found)
-gm3_total,not read,results/L5P/gm3_summary.json (not found)
-gm3_pass,not read,results/L5P/gm3_summary.json (not found)
+crash_count,0,results/L5P/natural/log.*:all lines of 53 natural logs (51 trapFpe banner lines skipped) and of every map evaluation of 8 study runs (scanned when they ran)
+np1_total,639,results/L5P/methods/np1_summary.json:total
+np1_pass,0,results/L5P/methods/np1_summary.json:passed
+np2_total,639,results/L5P/methods/np2_summary.json:total
+np2_pass,0,results/L5P/methods/np2_summary.json:passed
+np3_total,639,results/L5P/methods/np3_summary.json:total
+np3_pass,0,results/L5P/methods/np3_summary.json:passed
+brr3_total,640,results/L5P/methods/brr3_summary.json:total
+brr3_pass,0,results/L5P/methods/brr3_summary.json:passed
+brr6_total,640,results/L5P/methods/brr6_summary.json:total
+brr6_pass,0,results/L5P/methods/brr6_summary.json:passed
+gm0_total,640,results/L5P/methods/gm0_summary.json:total
+gm0_pass,0,results/L5P/methods/gm0_summary.json:passed
+gm3_total,640,results/L5P/methods/gm3_summary.json:total
+gm3_pass,0,results/L5P/methods/gm3_summary.json:passed
 allclean_leftover,0,results/L5P/log.allclean-check:empty file
