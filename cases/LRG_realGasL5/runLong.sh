@@ -17,6 +17,7 @@ budget=$(( ${2:-330} * 60 ))
 t0=$(date +%s)
 chunk=${LRG_CHUNK:-100}
 first=${LRG_FIRST_TEST:-400}
+[ -f A3.env ] && . ./A3.env            # Amendment A3: committed only if the run continues past N_REF + 6000
 cap=${LRG_CAP:-6000}
 L5=../L5_regenSlice
 for v in L5P_ACCEPT_SHA L5P_REF_JSON L5P_RESTART_SHA N_R N_REF; do

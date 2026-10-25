@@ -589,3 +589,21 @@ L5P Amendment A2. It uses the L5P tools (`cases/L5P_periodicState/pss`) for the 
 | LRG.14 | p_mean_drift_rel | report | 0 | (p_mean,real(N_acc) - p_mean,ideal(N_ref)) / p_mean,ideal(N_ref) |
 | LRG.15 | crash_count | == | 0 | crash patterns over all logs (as L5; the trapFpe banner and out-of-table checks excepted, an out-of-table stop counts) |
 | LRG.16 | allclean_leftover | == | 0 | files left under the case directory after `Allclean` |
+
+**Amendment A3 (the author's decision, 2026-10-25, committed before the result of the second run-case job, which
+runs from cycle 8400 to the registered cap):** the cap is raised from N_ref + 6000 (cycle 10900) to N_ref + 8000
+(cycle 12900). The A2 acceptance rule (max_q R_q / tol_q <= 0.2), every other bar of the table above and the
+deliverables are unchanged.
+- **Status before A3:** in the first job, max_q R_q / tol_q fell from 34.1 at cycle 6000 to 4.5-6.9 at cycles
+  8200-8400, with single-test rises of up to 40 %, so the registered cap was likely to be reached without a pass.
+- **At the registered cap (cycle 10900):** if the run has not passed, the result is recorded as it is, "FAIL at the
+  registered cap", with all deliverables (`results/LRG`).
+- **Continue or stop:** let s_j be max_q R_q / tol_q at the eleven tests of cycles 9900, 10000, ..., 10900. The run
+  continues under A3 from the saved state only if s_j is still decreasing: the least-squares slope of ln s_j against
+  the cycle number is negative. A strictly monotonic series is not required, because single tests rise by up to
+  40 % (see above). If the slope is zero or positive, the run stops at cycle 10900.
+- **Under A3:** the test runs after every 100-cycle chunk as before, until a pass or cycle 12900. A run that has not
+  passed by cycle 12900 stops and is recorded as FAIL. The deliverables of the continued run go to
+  `results/LRG_A3`, checked against the same bars.
+- **How it is applied:** `cases/LRG_realGasL5/A3.env` (`LRG_CAP=8000`) is committed only when the test above says
+  continue, together with the eleven values of s_j.
