@@ -15,9 +15,9 @@ Kept current on branch `pss/accel`. Last update: 2026-10-25.
 | id | configuration | registration | status |
 |---|---|---|---|
 | X1 | Graves-Morris m = 3, total budget 1280 (`L5P_BUDGET=1240`) | `docs/L5P_accel/2026-10-25_gm3_b1280.md` | done: **FAIL** (E), total 880; its cycle mean was defective, see `results/L5P/accel/X1_gm3_b1280/README.md` |
-| X1b | as X1, with the corrected cycle mean | `docs/L5P_accel/2026-10-25_gm3_b1280_fixedmean.md` | **running** (started 2026-10-25 in the cloud container) |
-| X2 | Newton-Picard with a larger subspace: p = 6-10, or several subspace iterations per Newton step | to be written if X1 fails | pending |
-| X3 | BRR with a trust region instead of the 2 K cap | to be written if X2 fails | pending |
+| X1b | as X1, with the corrected cycle mean | `docs/L5P_accel/2026-10-25_gm3_b1280_fixedmean.md` | done: **PASS**, total **825** against natural 4195 (`results/L5P/accel/X1b_gm3_b1280/README.md`) |
+| X2 | Newton-Picard with a larger subspace: p = 6-10, or several subspace iterations per Newton step | draft p = 8 (not registered) | **on hold**: X1b passed; per its registration the result goes to the leader before anything further runs |
+| X3 | BRR with a trust region instead of the 2 K cap | not written | on hold, as X2 |
 
 The next pending configuration is the first row not marked done. Results go to `results/L5P/accel/<id>_<name>/`.
 
