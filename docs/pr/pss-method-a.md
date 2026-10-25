@@ -13,12 +13,27 @@ cycles. The budget is 600 cycles after cycle 40, so a run that does not end is F
 
 | run | status | total cycles (honest) | E | D | NR | M | result |
 |---|---|---|---|---|---|---|---|
-| np3 | budget reached, never stopped on its own | 639 | - | - | - | yes (3.1e-11; jumps <= 4.7e-16) | **FAIL** |
-| np2 | running | | | | | | |
+| np3 | budget reached, never stopped on its own (149 iterations) | 639 | - | - | - | yes (3.1e-11; jumps <= 4.7e-16) | **FAIL** |
+| np2 | budget reached, never stopped on its own (199 iterations) | 639 | - | - | - | yes (3.0e-11; jumps <= 4.7e-16) | **FAIL** |
 | np1 | queued | | | | | | |
 
 The total for np3 is 639 rather than 640: the next iteration needs 4 cycles at once, and only 599 + 4 > 600 was
 checked, so the run stopped at 599 method cycles.
+
+Distance of the last unperturbed iterate (the last Phi evaluation, not a finite-difference perturbation) from the
+reference, in tolerances:
+
+| run | dT_seg1 | dT_seg2 | T_joint | Q_hot | Q_cold |
+|---|---|---|---|---|---|
+| np3 | 33.8 | - | 8.6 | 20.8 | 17.4 |
+| np2 | - | 32.0 | 1.8 | 16.7 | 11.6 |
+
+The worst quantity is listed; `final_dist` in the summary JSON uses the last evaluation, which for a budget-stopped
+Newton-Picard run is a +0.05 K finite-difference perturbation, so it differs slightly from these numbers.
+
+**np2** (`np2_hist.csv`) behaves like np3. The Ritz values reach 0.9978 and 0.9905 around iteration 100, then
+collapse into a complex pair at 0.9964 +- 0.002i by iteration 199. The max residual plateaus at about 3.7e-3 K
+from iteration 100 on.
 
 ## What happened in np3 (`np3_hist.csv`)
 
