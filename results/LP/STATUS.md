@@ -18,7 +18,7 @@
 | LP.14 mu_rel_50 | report (docs/VERIFICATION.md:511) | 6.770264571187568e-08 | REPORT (> 0) | results/LP/propsCheck.dat:10 vs nist_helium.csv:8 |
 | LP.15 kappa_rel_50 | report (docs/VERIFICATION.md:512) | 8.197369094631313e-08 | REPORT (> 0) | results/LP/propsCheck.dat:10 vs nist_helium.csv:8 |
 | LP.16 allclean_leftover | == 0 (docs/VERIFICATION.md:513) | 0 | PASS | results/LP/log.allclean-check:empty file |
-| LP.17 out_of_range_stopped | == 4 (docs/VERIFICATION.md:523) | 4 | PASS | results/LP/log.oorLowT:log.oorLowT:43, log.oorHighT:43, log.oorLowP:43, log.oorHighP:43 |
-| LP.18 out_of_range_values_written | == 0 (docs/VERIFICATION.md:524) | 0 | PASS | results/LP/log.oorLowT:oor*.dat present: 0 |
+| LP.17 out_of_range_stopped | == 4 (docs/VERIFICATION.md:674) | 4 | PASS | results/LP/log.oorLowT:log.oorLowT:43, log.oorHighT:43, log.oorLowP:43, log.oorHighP:43 |
+| LP.18 out_of_range_values_written | == 0 (docs/VERIFICATION.md:675) | 0 | PASS | results/LP/log.oorLowT:oor*.dat present: 0 |
 
 15/15 PASS
