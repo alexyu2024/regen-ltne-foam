@@ -81,7 +81,7 @@ only) would be a new amendment. None was made.
 
 ## Size of this PR's work
 
-- **1917 cycles of method runs**: np3, np2 and np1 each 599 method cycles plus the shared 40-cycle start, which was
+- **1797 cycles of method runs**: np3, np2 and np1 each 599 method cycles plus the shared 40-cycle start, which was
   counted in PR 1. No verification cycles: no run met its stop rule.
 - About 15 rounds, mostly monitor events.
 - The runs used 4, 3 and 2 cores concurrently, about 2 h 45 min of wall time.
