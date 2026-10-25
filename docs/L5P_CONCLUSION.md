@@ -33,6 +33,9 @@ Every cycle run is counted.
 
 \* Post hoc, not registered: the first natural cycle whose worst distance to the reference is no larger than that of
 the method's last iterate. It shows how far a failed run got for its 640 cycles, nothing more.
+**Correction (2026-10-25, branch `pss/accel`)**: the segment quantities of the method runs were running means
+across evaluations, not cycle means (`results/L5P/accel/X1_gm3_b1280/README.md`), so these figures are unreliable.
+The FAIL verdicts stand: no method reached its stop rule.
 
 ## What was learned
 
