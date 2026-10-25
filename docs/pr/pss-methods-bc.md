@@ -14,7 +14,7 @@ FAIL at 640.
 | run | status | total cycles (honest) | E | D | NR | M | result | natural-equivalent cycle of the end state* |
 |---|---|---|---|---|---|---|---|---|
 | brr3 | budget reached, never stopped on its own (600 iterations) | 640 | - | - | - | yes (3.1e-11; jumps <= 4.7e-16) | **FAIL** | 1112 |
-| brr6 | running | | | | | | | |
+| brr6 | budget reached, never stopped on its own (600 iterations) | 640 | - | - | - | yes (3.0e-11; jumps <= 4.7e-16) | **FAIL** | 2925 |
 | gm0 | running | | | | | | | |
 | gm3 | running | | | | | | | |
 | np1 / np2 / np3 (PR 2) | budget | 639 each | - | - | - | yes | **FAIL** | 391 / 625 / 568 |
@@ -35,4 +35,23 @@ cost, and nothing more.
   p_mean 0.3. Natural marching at the same cost (cycle 640) is at dT_seg1 31.5, Q_hot 21.7, Q_cold 17.2 and T_joint
   10.5. So BRR p = 3 got about as close as natural marching does by cycle 1112, but it did not converge.
 - **Consistency.** Gas mass after every jump matched M0 to 4.7e-16, the solver drift stayed at most 3.1e-11, and no
+  crash pattern was found.
+
+## brr6 (`brr6_hist.csv`)
+
+- **End state**, in tolerances: Ts_seg1_mean 1.9, dT_seg1 1.8, dT_seg2 1.4, Ts_seg2_mean 1.0, Q_hot 0.4, T_joint 0.3,
+  Q_cold 0.2, p_mean 0.1. Natural marching first gets this close at cycle 2925. It is the closest end state of all
+  runs so far, but it is still outside E (tolerance 1 on every quantity) and the run never met its stop rule, so it
+  is a FAIL by the registered rule.
+- **The residual is erratic, not steadily converging.**
+
+  | iteration | 100 | 200 | 300 | 400 | 500 | 550 | 575 | 600 |
+  |---|---|---|---|---|---|---|---|---|
+  | max residual, K | 1.9e-3 | 9.0e-4 | 4.2e-3 | 3.3e-4 | 1.5e-4 | 6.4e-3 | 4.5e-2 | 6.7e-5 |
+
+  - 26 steps hit the 2 K cap, in bursts spread over the whole run (iterations 9, 69-70, 138-174, 231-255, 292,
+    333-336, 436-437 and 566-567). After each burst the residual jumps up and is worked down again.
+  - The good end state is partly a matter of where the budget cut the run. With a larger budget it might have met
+    the stop rule (1.5e-5 K), or it might have hit another burst first. The data do not say which.
+- **Consistency.** Gas mass after every jump matched M0 to 4.7e-16, the solver drift stayed at most 3.0e-11, and no
   crash pattern was found.
