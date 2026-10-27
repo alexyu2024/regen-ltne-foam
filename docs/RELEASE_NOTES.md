@@ -1,6 +1,6 @@
 # Release notes
 
-## Unreleased
+## v1.1.0 (2026-10-27)
 
 - **Real-gas helium (optional; the ideal gas stays the default).** `src/ltneRealGas`: a T-p table from CoolProp 8.0.0
   (15-95 K, 0.5-1.0 MPa), bilinear interpolation, and a fatal error outside the table. Select it with
