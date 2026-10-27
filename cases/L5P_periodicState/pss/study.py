@@ -19,6 +19,9 @@ from . import foamio
 from . import methods as MT
 
 START_CYCLE = 40
+# the methods' start cycle; 40 as registered in L5P, a later dated registration (docs/L5P_accel) may set another
+# through L5P_START_CYCLE (the noise tests and the natural count keep 40)
+METHOD_START = int(os.environ.get('L5P_START_CYCLE', START_CYCLE))
 QS = ['Q_hot', 'Q_cold'] + [f'dT_seg{i}' for i in range(1, 5)] + [f'Ts_seg{i}_mean' for i in range(1, 5)] \
     + ['T_joint', 'p_mean']
 TOL = dict(Q_hot=0.005, Q_cold=0.0005, T_joint=0.02, **{f'dT_seg{i}': 0.02 for i in range(1, 5)},
@@ -37,10 +40,10 @@ def tolerances(p_ref):
     return t
 
 
-def start_state(run):
-    times = [t for t in foamio.time_dirs(run) if round(float(t) * C.F) == START_CYCLE]
+def start_state(run, cycle=START_CYCLE):
+    times = [t for t in foamio.time_dirs(run) if round(float(t) * C.F) == cycle]
     if not times:
-        sys.exit(f'{run}: no cycle-{START_CYCLE} time directory')
+        sys.exit(f'{run}: no cycle-{cycle} time directory')
     return CM.State(run, times[0])
 
 
@@ -62,7 +65,7 @@ def method(name, start_run, work, out):
     if not refj.get('accepted'):
         sys.exit('no accepted reference (L5P.3): methods do not start')
     r_sys = refj['r_A2']
-    s0 = start_state(start_run)
+    s0 = start_state(start_run, METHOD_START)
     C.check_eos(start_run)
     cmap = CM.CycleMap(os.path.join(work, name), s0.mass, workers=WORKERS)
     run = MT.Run(cmap, name)
@@ -110,7 +113,7 @@ def method(name, start_run, work, out):
     write_csv(os.path.join(out, f'{name}_evals.csv'), evals)
     write_csv(os.path.join(out, f'{name}_verify.csv'), vrounds or [{'round': 0}])
     summary = {'name': name, 'status': status, 'budget_after_start': MT.BUDGET, 'method_and_verify_cycles': run.used(),
-               'total': START_CYCLE + run.used(), 'verification_rounds': len(vrounds),
+               'start_cycle': METHOD_START, 'total': METHOD_START + run.used(), 'verification_rounds': len(vrounds),
                'jump_mass_err_max': getattr(cmap, 'jump_mass_err', 0.0),
                'crash_count': len(cmap.crash_hits), 'crash_hits': cmap.crash_hits[:20],
                'log_lines_scanned': cmap.log_lines, 'trapFpe_banners_skipped': cmap.banners,
