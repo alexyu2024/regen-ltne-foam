@@ -1,0 +1,5 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  regen-ltne-foam, LP out-of-table check: one point just outside the table
+\*---------------------------------------------------------------------------*/
+FoamFile { version 2.0; format ascii; class dictionary; object oorHighP; }
+points ( (50 1001000) );
