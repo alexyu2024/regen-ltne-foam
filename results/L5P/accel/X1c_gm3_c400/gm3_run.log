@@ -1,0 +1,1 @@
+{"name": "gm3", "status": "ended", "budget_after_start": 1240, "method_and_verify_cycles": 570, "start_cycle": 400, "total": 970, "verification_rounds": 2, "jump_mass_err_max": 3.1121210283363866e-16, "crash_count": 0, "crash_hits": [], "log_lines_scanned": 62729, "trapFpe_banners_skipped": 570, "mass_err_max": 3.5952466967753273e-11}
