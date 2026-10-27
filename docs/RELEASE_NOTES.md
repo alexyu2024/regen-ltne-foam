@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- **Real-gas helium (optional; the ideal gas stays the default).** `src/ltneRealGas`: a T-p table from CoolProp 8.0.0
+  (15-95 K, 0.5-1.0 MPa), bilinear interpolation, and a fatal error outside the table. Select it with
+  `mkCase.py <case> --gas real`. Level LP (in CI) checks rho and c_p against NIST at 0.75 MPa and 22/50/80 K:
+  15/15 PASS, largest difference 3.6e-5. Level LRG compares it with the ideal gas on the L5 slice at periodic state,
+  at equal initial mean pressure: Q_hot +4.77 %, Q_cold +6.50 %, p_mean +1.19 %. The run failed the A2 test at the
+  registered cap (cycle 10900) and passed under Amendment A3 at cycle 11100. See `docs/REAL_GAS_HELIUM.md`.
+
 - **L5D: decay ratio of the slow matrix thermal relaxation of the L5 slice**, measured over 600 cycles (no bar):
   - r = 0.99670 per cycle for the cycle-mean joint temperature, a time constant of 302 cycles (13.2 s);
   - the L5 state at 40 cycles is about 0.8 K above the extrapolated periodic limit at the joint (27.04 K).
