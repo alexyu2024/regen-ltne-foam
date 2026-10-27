@@ -16,11 +16,11 @@ Kept current on branch `pss/accel`. Last update: 2026-10-27.
 |---|---|---|---|
 | X1 | Graves-Morris m = 3, total budget 1280 (`L5P_BUDGET=1240`) | `docs/L5P_accel/2026-10-25_gm3_b1280.md` | done: **FAIL** (E), total 880; its cycle mean was defective, see `results/L5P/accel/X1_gm3_b1280/README.md` |
 | X1b | as X1, with the corrected cycle mean | `docs/L5P_accel/2026-10-25_gm3_b1280_fixedmean.md` | done: **PASS**, total **825** against natural 4195 (`results/L5P/accel/X1b_gm3_b1280/README.md`) |
-| X1c | as X1b, start at cycle 400 (`L5P_START_CYCLE=400`; 360 natural cycles from `run_c40`), robustness check approved 2026-10-27 | `docs/L5P_accel/2026-10-27_gm3_c400.md` | **running** (started 2026-10-27 in the cloud container) |
+| X1c | as X1b, start at cycle 400 (`L5P_START_CYCLE=400`; 360 natural cycles from `run_c40`), robustness check approved 2026-10-27 | `docs/L5P_accel/2026-10-27_gm3_c400.md` | done: **PASS**, total **970** (400 to the start + 570) against natural 4195 (`results/L5P/accel/X1c_gm3_c400/README.md`) |
 | X2 | Newton-Picard with a larger subspace | not registered | **cancelled** by the author on 2026-10-27: X1c is the last configuration |
 | X3 | BRR with a trust region | not written | **cancelled**, as X2 |
 
-After X1c nothing further is run. If X1c is lost, repeat it as below. Results go to `results/L5P/accel/<id>_<name>/`.
+The study is finished: after X1c nothing further is run (author, 2026-10-27). To reproduce X1c, run as below. Results go to `results/L5P/accel/<id>_<name>/`.
 
 ## Setup (Ubuntu 22.04/24.04, about 30 min)
 
