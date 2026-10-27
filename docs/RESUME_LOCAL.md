@@ -1,6 +1,6 @@
 # Resuming the L5P acceleration runs off-cloud
 
-Kept current on branch `pss/accel`. Last update: 2026-10-25.
+Kept current on branch `pss/accel`. Last update: 2026-10-27.
 
 ## Rules (leader-gen58, 2026-10-25)
 
@@ -16,10 +16,11 @@ Kept current on branch `pss/accel`. Last update: 2026-10-25.
 |---|---|---|---|
 | X1 | Graves-Morris m = 3, total budget 1280 (`L5P_BUDGET=1240`) | `docs/L5P_accel/2026-10-25_gm3_b1280.md` | done: **FAIL** (E), total 880; its cycle mean was defective, see `results/L5P/accel/X1_gm3_b1280/README.md` |
 | X1b | as X1, with the corrected cycle mean | `docs/L5P_accel/2026-10-25_gm3_b1280_fixedmean.md` | done: **PASS**, total **825** against natural 4195 (`results/L5P/accel/X1b_gm3_b1280/README.md`) |
-| X2 | Newton-Picard with a larger subspace: p = 6-10, or several subspace iterations per Newton step | draft p = 8 (not registered) | **on hold**: X1b passed; per its registration the result goes to the leader before anything further runs |
-| X3 | BRR with a trust region instead of the 2 K cap | not written | on hold, as X2 |
+| X1c | as X1b, start at cycle 400 (`L5P_START_CYCLE=400`; 360 natural cycles from `run_c40`), robustness check approved 2026-10-27 | `docs/L5P_accel/2026-10-27_gm3_c400.md` | **running** (started 2026-10-27 in the cloud container) |
+| X2 | Newton-Picard with a larger subspace | not registered | **cancelled** by the author on 2026-10-27: X1c is the last configuration |
+| X3 | BRR with a trust region | not written | **cancelled**, as X2 |
 
-The next pending configuration is the first row not marked done. Results go to `results/L5P/accel/<id>_<name>/`.
+After X1c nothing further is run. If X1c is lost, repeat it as below. Results go to `results/L5P/accel/<id>_<name>/`.
 
 ## Setup (Ubuntu 22.04/24.04, about 30 min)
 
@@ -64,7 +65,15 @@ averaged across evaluations; do not compare their dT_seg and Ts_seg values with 
   compare only the state-vector-driven quantities (Q_hot, Q_cold, T_joint, p_mean) with earlier runs.
 - Run `python3 -m pss.selftest` (seconds, no solver) after any change to `pss/methods.py`.
 
-## Adding the next configuration
+**X1c**: make the start state first, then run from it:
+
+    cp -a run_c40 run_c400 && L5P_RUN=run_c400 ./runNatural.sh /tmp/c400 400 360
+    O=../../results/L5P/accel/X1c_gm3_c400; mkdir -p $O && cp ../../results/L5P/reference.json $O/
+    cp /tmp/c400/per_cycle.csv $O/start_per_cycle.csv
+    L5P_START_CYCLE=400 L5P_BUDGET=1240 L5P_WORKERS=1 python3 -m pss.study method gm3 run_c400 /tmp/accel_work/X1c $O > $O/gm3_run.log 2>&1
+    python3 -m pss.study score $O gm3
+
+## Adding another configuration (not planned)
 
 1. Copy the X1 registration to `docs/L5P_accel/<date>_<name>.md` and fix in it, before running: the method and its
    parameters, budget, stop rule, verification, reference, and pass rule. Commit and push.
