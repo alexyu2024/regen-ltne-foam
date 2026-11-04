@@ -758,3 +758,50 @@ deliverables are unchanged.
   `results/LRG_A3`, checked against the same bars.
 - **How it is applied:** `cases/LRG_realGasL5/A3.env` (`LRG_CAP=8000`) is committed only when the test above says
   continue, together with the eleven values of s_j.
+
+## L4E Single blow with Ergun drag: gas and solid breakthrough (Schumann) and bed pressure drop (Ergun)
+
+Committed before any L4E case (`cases/L4E_schumannErgun`) was run (the maintainer's request, 2026-11-04). It extends
+L4 in three ways: the bed has a packed-bed drag (Ergun coefficients in the Darcy-Forchheimer source), the solid
+temperature is compared pointwise, and the gas temperature is compared inside the bed as well as at its end.
+
+References: T. E. W. Schumann, J. Franklin Inst. 208 (1929) 405-416 (the solution and its evaluation as in L4);
+S. Ergun, "Fluid flow through packed columns", Chem. Eng. Prog. 48 (1952) 89-94:
+dp / L = 150 mu (1 - eps)^2 u / (eps^3 d_p^2) + 1.75 (1 - eps) rho u^2 / (eps^3 d_p), with u the superficial
+velocity.
+
+Setup (as L4 except where stated):
+- 1-D channel x in [0, 0.1] m filled by the bed (cellZone `porous`), 200 cells of 0.5 mm, cross-section 1e-4 m2;
+- helium (L4 thermo: perfect gas, c_p = 5193 J/kg/K, mu = 1.99e-5 Pa s constant) at 2 MPa;
+- bed of spheres: eps = 0.4, d_p = 0.5 mm, a_sf = 6 (1 - eps) / d_p = 7200 1/m, h_sf = 25 W/m2/K constant,
+  so hA = 1.8e5 W/m3/K; rho_s = 7900 kg/m3, c_s = 250 J/kg/K, k_s = 0;
+- drag: `DarcyForchheimer` with d = 150 (1 - eps)^2 / (eps^3 d_p^2) = 3.375e9 1/m2 and
+  f = 2 x 1.75 (1 - eps) / (eps^3 d_p) = 65625 1/m (OpenFOAM's source is (mu d + rho |U| f / 2) U);
+- initial gas and solid at T_0 = 300 K, U = 0.1 m/s; inlet: fixed U = 0.1 m/s, T = T_1 = 310 K; outlet:
+  fixed p = 2 MPa; dt = 5e-3 s, to t = 150 s (30000 steps).
+
+Resulting numbers: G = rho(310 K) u = 0.31058 kg/m2/s; xi = hA x / (G c_p) = 111.6 x (11.16 at x = L);
+eta = (hA / C_s)(t - eps rho x / G) with hA / C_s = 0.15190 1/s (22.8 at t = 150 s); Re_p = G d_p / mu = 7.8;
+Ergun dp at 310 K about 774 Pa, 87 % from the viscous term.
+
+Definitions:
+- Probes (`probes`, every 20 steps) at the cell centres x = 0.05025 m (mid-bed) and x = 0.09975 m (last cell).
+  theta = (T - 300) / 10.
+- gas_err = max over both probes and over rows with t >= 2 s of |theta_g - theta_g,Schumann(xi(x), eta(x, t))|.
+- solid_err = the same for Ts against theta_s, over all rows.
+- dp_rel_err = max over rows with t >= 2 s of |dp / dp_Ergun - 1|, where dp = areaAverage(p) on the inlet patch -
+  2 MPa, and dp_Ergun is the Ergun formula over L - dx/2 (the inlet patch value of the zeroGradient p is the first
+  cell's value) with rho = volume average of rho over the bed and u = G / rho, G = |sum(phi)| on the inlet / 1e-4 m2,
+  all from the same row.
+
+| id | metric | op | bar | description |
+|----|--------|----|-----|-------------|
+| L4E.1 | final_time | == | 150 | run reaches endTime |
+| L4E.2 | fatal_or_nan_count | == | 0 | lines matching `FOAM FATAL`, `nan` or `inf` in the blockMesh and solver logs |
+| L4E.3 | gas_err | <= | 0.03 | gas breakthrough curves at mid-bed and bed end against Schumann, fraction of the step |
+| L4E.4 | solid_err | <= | 0.03 | solid breakthrough curves at mid-bed and bed end against Schumann, fraction of the step |
+| L4E.5 | dp_rel_err | <= | 0.02 | bed pressure drop against Ergun |
+| L4E.6 | dp_final_Pa | report | 0 | bed pressure drop at t = 150 s, Pa |
+| L4E.7 | dp_ergun_final_Pa | report | 0 | Ergun pressure drop at t = 150 s, Pa |
+| L4E.8 | Re_p | report | 0 | particle Reynolds number G d_p / mu |
+| L4E.9 | allclean_leftover | == | 0 | files under the case directory that `git status --porcelain --ignored` lists after `Allclean` |
