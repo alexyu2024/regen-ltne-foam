@@ -4,6 +4,8 @@ A point is (base, x): a state vector x placed into the fast fields of the cycle-
 base.x unchanged, i.e. a plain cycle). Every map evaluation is one counted cycle (CycleMap.count). The parameters
 are those registered in docs/VERIFICATION.md, L5P.
 """
+import os
+
 import numpy as np
 
 STOP = 0.005        # K: stop iterating when the proposed correction is at most this, max norm,
@@ -11,7 +13,9 @@ RES = 1.5e-5        # K: and the residual Phi(x) - x at the current iterate is a
 CAP = 2.0           # K: corrections are scaled down to at most this, max norm
 FD_EPS = 0.05       # K: finite-difference perturbation, max norm
 NV, SKIP = 50, 10   # verification cycles, of which the first SKIP are not tested
-BUDGET = 600        # cycles after the start state
+# cycles after the start state; 600 as registered in L5P, a later dated registration (docs/L5P_accel) may set
+# another through L5P_BUDGET
+BUDGET = int(os.environ.get('L5P_BUDGET', '600'))
 
 
 class Budget(Exception):

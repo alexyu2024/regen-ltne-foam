@@ -121,6 +121,12 @@ class CycleMap:
                              ('purgeWrite', '0'), ('timePrecision', '17')):
                 if l.startswith(key + ' '):
                     l = f'{key:<16}{val};'
+            # the cycle mean is the fieldAverage of this run alone: averaging restarts when the run starts. The
+            # periodic restart of the L5 case is not used here: on a restart it can miss the cycle boundary by
+            # rounding of the start time and keep accumulating across evaluations (docs/L5P_accel, X1 finding)
+            if l.strip() == 'periodicRestart true;':
+                l = l.replace('periodicRestart true;', 'periodicRestart false;') + '\n' + \
+                    l[:len(l) - len(l.lstrip())] + 'restartOnRestart true;'
             out.append(l)
         open(cd, 'w').write('\n'.join(out) + '\n')
         return d, abs(dp)
@@ -142,6 +148,11 @@ class CycleMap:
         if rc != 0 or '\nEnd' not in text:
             raise RuntimeError(f'ltneFoam failed in {d} (exit {rc})')
         times = [t for t in foamio.time_dirs(d)]
+        # the cycle mean must cover exactly this cycle
+        props = open(os.path.join(d, times[-1], 'uniform', 'functionObjects', 'functionObjectProperties')).read()
+        iters = {int(n) for n in re.findall(r'totalIter\s+(\d+);', props)}
+        if iters != {C.STEPS}:
+            raise RuntimeError(f'{d}: cycle mean over {sorted(iters)} steps, not {C.STEPS}')
         return State(d, times[-1])
 
     def run(self, start, x=None, tag=None):

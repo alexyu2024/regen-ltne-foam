@@ -1,0 +1,32 @@
+{
+ "name": "brr3",
+ "status": "budget",
+ "method_and_verify_cycles": 600,
+ "total": 640,
+ "verification_rounds": 0,
+ "jump_mass_err_max": 4.668181542517965e-16,
+ "crash_count": 0,
+ "crash_hits": [],
+ "log_lines_scanned": 68872,
+ "trapFpe_banners_skipped": 600,
+ "mass_err_max": 3.050750001666341e-11,
+ "E": false,
+ "D": false,
+ "NR": false,
+ "M": true,
+ "passed": 0,
+ "final_dist": {
+  "Q_hot": 6.722682499955468,
+  "Q_cold": 1.6010251581159984,
+  "dT_seg1": 11.588416732999818,
+  "dT_seg2": 18.447851549349892,
+  "dT_seg3": 2.146058266125195,
+  "dT_seg4": 4.059372798324823,
+  "Ts_seg1_mean": 11.857106827014618,
+  "Ts_seg2_mean": 3.1592778749772066,
+  "Ts_seg3_mean": 7.46487654357324,
+  "Ts_seg4_mean": 1.2759511245448607,
+  "T_joint": 2.0103678202206154,
+  "p_mean": 0.2555651512226158
+ }
+}

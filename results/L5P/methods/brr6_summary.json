@@ -1,0 +1,32 @@
+{
+ "name": "brr6",
+ "status": "budget",
+ "method_and_verify_cycles": 600,
+ "total": 640,
+ "verification_rounds": 0,
+ "jump_mass_err_max": 4.668181542517965e-16,
+ "crash_count": 0,
+ "crash_hits": [],
+ "log_lines_scanned": 68872,
+ "trapFpe_banners_skipped": 600,
+ "mass_err_max": 3.049645198701278e-11,
+ "E": false,
+ "D": false,
+ "NR": false,
+ "M": true,
+ "passed": 0,
+ "final_dist": {
+  "Q_hot": 0.3906308480299714,
+  "Q_cold": 0.1895930423465586,
+  "dT_seg1": 1.7757717706000875,
+  "dT_seg2": 1.4371298418001999,
+  "dT_seg3": 0.15680222674969713,
+  "dT_seg4": 0.27560824420014285,
+  "Ts_seg1_mean": 1.8596811672171754,
+  "Ts_seg2_mean": 1.0203074083172226,
+  "Ts_seg3_mean": 0.4307404025446715,
+  "Ts_seg4_mean": 0.07386346838664792,
+  "T_joint": 0.2994537022839694,
+  "p_mean": 0.09007504361556704
+ }
+}

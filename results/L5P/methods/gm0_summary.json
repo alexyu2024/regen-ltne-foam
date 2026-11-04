@@ -1,0 +1,32 @@
+{
+ "name": "gm0",
+ "status": "budget",
+ "method_and_verify_cycles": 600,
+ "total": 640,
+ "verification_rounds": 0,
+ "jump_mass_err_max": 4.668181542517965e-16,
+ "crash_count": 0,
+ "crash_hits": [],
+ "log_lines_scanned": 68872,
+ "trapFpe_banners_skipped": 600,
+ "mass_err_max": 3.108619892188422e-11,
+ "E": false,
+ "D": false,
+ "NR": false,
+ "M": true,
+ "passed": 0,
+ "final_dist": {
+  "Q_hot": 0.42076850024947987,
+  "Q_cold": 0.2811757865290865,
+  "dT_seg1": 1.1052351197502475,
+  "dT_seg2": 0.8992622580752396,
+  "dT_seg3": 0.24056314684983704,
+  "dT_seg4": 0.012159320225002546,
+  "Ts_seg1_mean": 0.7244705670611751,
+  "Ts_seg2_mean": 0.7540319624421699,
+  "Ts_seg3_mean": 0.03814154879506759,
+  "Ts_seg4_mean": 0.0046084652865374665,
+  "T_joint": 0.123158736153961,
+  "p_mean": 0.051503644472434724
+ }
+}

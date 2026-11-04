@@ -1,0 +1,32 @@
+{
+ "name": "np1",
+ "status": "budget",
+ "method_and_verify_cycles": 599,
+ "total": 639,
+ "verification_rounds": 0,
+ "jump_mass_err_max": 6.22424205669062e-16,
+ "crash_count": 0,
+ "crash_hits": [],
+ "log_lines_scanned": 68787,
+ "trapFpe_banners_skipped": 599,
+ "mass_err_max": 3.064785667504178e-11,
+ "E": false,
+ "D": false,
+ "NR": false,
+ "M": true,
+ "passed": 0,
+ "final_dist": {
+  "Q_hot": 13.358364998745387,
+  "Q_cold": 4.244224673714658,
+  "dT_seg1": 28.97607728985001,
+  "dT_seg2": 37.446593023225105,
+  "dT_seg3": 4.088446089350128,
+  "dT_seg4": 3.656080825775021,
+  "Ts_seg1_mean": 20.34681197307755,
+  "Ts_seg2_mean": 12.523219002720154,
+  "Ts_seg3_mean": 8.152215176725086,
+  "Ts_seg4_mean": 1.0489295698532075,
+  "T_joint": 7.7405501930075005,
+  "p_mean": 0.11065315268653908
+ }
+}

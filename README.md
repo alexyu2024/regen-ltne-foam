@@ -97,6 +97,7 @@ The long levels (L5, L6) run with `cases/<level>_*/runLong.sh <outdir>`, or thro
 | L5 regenerator slice | `cases/L5_regenSlice` | 11/12 PASS as preregistered (L5.7 FAIL); supplementary check L5.7a PASS (Amendment A1) (`results/L5`); the code-to-code comparison with ANSYS Fluent (B1-B4) is not part of this release |
 | L6 verification of L5 (grid, time step, periodicity) | `cases/L6_regenConvergence` | 17/21 PASS as preregistered: periodicity, GCI_fine < 3 % and dt/2 < 1 % pass; the apparent-order check fails for 4 of 5 QoIs (`results/L6`) |
 | L5D decay ratio of the slow matrix thermal relaxation (L5 slice) | `cases/L5D_decayRatio` | measured, no bar: r = 0.99670 per cycle (tau = 302 cycles = 13.2 s) over 600 cycles; crash and Allclean checks PASS (`results/L5D`) |
+| L5P periodic steady state by cycle-map acceleration (L5 slice) | `cases/L5P_periodicState` | 5/5 PASS (reference at cycle 4900 under Amendment A2; under the registered rule L5P.3 is FAIL at 4000). Natural marching needs 4195 cycles; all seven method configurations (Newton-Picard p = 1-3, BRR p = 3, 6, Graves-Morris m = 0, 3) FAIL within their 640-cycle budget. Late slow multiplier 0.99878 (tau about 820 cycles), not 0.9967 (`results/L5P`, `docs/L5P_CONCLUSION.md`) |
 | LP real-gas helium properties (optional model) | `cases/LP_heliumRealGas` | see `results/LP` |
 
 Scope:

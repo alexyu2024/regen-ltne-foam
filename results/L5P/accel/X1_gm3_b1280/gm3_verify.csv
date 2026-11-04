@@ -1,0 +1,4 @@
+round,end_count,self_ok,first_cycle_count,fails
+1,725,False,676,dT_seg1;dT_seg2;dT_seg3;Ts_seg1_mean;Ts_seg2_mean
+2,785,False,736,dT_seg1;dT_seg2;dT_seg3;Ts_seg1_mean;Ts_seg2_mean
+3,840,True,791,
