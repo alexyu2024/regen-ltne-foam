@@ -805,3 +805,5 @@ Definitions:
 | L4E.7 | dp_ergun_final_Pa | report | 0 | Ergun pressure drop at t = 150 s, Pa |
 | L4E.8 | Re_p | report | 0 | particle Reynolds number G d_p / mu |
 | L4E.9 | allclean_leftover | == | 0 | files under the case directory that `git status --porcelain --ignored` lists after `Allclean` |
+
+L4E figure: `docs/figures/L4E_breakthrough.png` (results in `results/L4E`).
