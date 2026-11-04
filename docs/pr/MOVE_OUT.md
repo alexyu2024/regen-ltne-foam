@@ -57,13 +57,24 @@ To keep the history, filter a clone of `pss/accel`:
 
 ## What the driver depends on in the solver
 
-- **Solver version**: `ltneFoam` of **v1.0.2** (`fab56a3`).
-  - The natural reference (cycles 0-4900), the start state, the noise tests and the registration were all run
-    with this source.
-  - The method runs used main after PR #19 (`be728cc`). That code adds the optional real-gas library and two
-    monitor lines. One cycle from cycle 40 was bit for bit identical to the v1.0.2 binary, so either works. The
-    tag to build against is `v1.0.2`, or any later release whose L5 ideal-gas path is unchanged; check this with
-    the cycle-40 test below.
+- **Solver version**: build against **v1.1.0** (`1af0f83`), the current release.
+  - Checked on 2026-11-04: the tool from `pss/accel` was run against `ltneFoam` built from v1.1.0 on
+    `openfoam2512-dev` 2512.0-2. All three checks were bit for bit:
+    - **Cycle 40**: T_joint = 27.865715113898297 K, 1.1e-7 K from 27.865715, within the 1e-5 K bar. The per-cycle
+      table of cycles 1-40 is identical to `results/L5P/natural/per_cycle.csv`.
+    - **Self-test**: `python3 -m pss.selftest` passes, with the same output as before.
+    - **Map evaluation**: one evaluation from cycle 40 with the corrected cycle mean gives all 21 quantities
+      identical to the first evaluation of X1b.
+  - Between main at `eab2432` and v1.1.0, the solver sources (`src/ltneFoam`), the L5 case and `tools/` are
+    unchanged. Only `src/realGasPropsCheck` differs.
+  - The results were produced as follows:
+    - the natural reference (cycles 0-4900), the start state, the noise tests and the registration with v1.0.2
+      (`fab56a3`);
+    - the method runs with main after PR #19 (`be728cc`), which was bit for bit identical on the L5 path.
+    - v1.0.2 also works; any later release must pass the cycle-40 test below.
+  - **The v1.1.0 release itself ships `cases/L5P_periodicState`** in its PR 1 form (identical to `eab2432`). That
+    form lacks the cycle-mean fix (`restartOnRestart`, 2400-step check) and the start-cycle and budget overrides
+    of `pss/accel`. Take the tool from `pss/accel`, not from the release.
 - **OpenFOAM**: `openfoam2512-dev` 2512.0-2 (the solver's `tools/install.sh`). Results are bit-reproducible only on
   this package.
 - **The L5 case** `cases/L5_regenSlice`, read unchanged:
@@ -84,7 +95,7 @@ To keep the history, filter a clone of `pss/accel`:
 ## Build and run against the released solver
 
     # 1. solver at the release tag (Ubuntu 22.04/24.04)
-    git clone --branch v1.0.2 https://github.com/alexyu2024/regen-ltne-foam
+    git clone --branch v1.1.0 https://github.com/alexyu2024/regen-ltne-foam
     cd regen-ltne-foam && sudo tools/install.sh        # openfoam2512-dev=2512.0-2, then src/Allwmake
     sudo apt-get install -y python3-numpy
     source /usr/lib/openfoam/openfoam2512/etc/bashrc  # every shell; puts ltneFoam on PATH
@@ -111,5 +122,5 @@ building the solver from the same checkout (`sudo tools/install.sh`).
 ## Citation
 
 Credit as in the solver's `CITATION.cff` (Qiming Yu, University of Southampton). The new repository gets its own
-`CITATION.cff` with the same author, and a reference to the solver (DOI 10.5281/zenodo.23499221, v1.0.2). No DOI
+`CITATION.cff` with the same author, and a reference to the solver (DOI 10.5281/zenodo.23499221, v1.1.0). No DOI
 is minted and nothing is tagged or released by this session.

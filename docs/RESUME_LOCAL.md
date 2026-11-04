@@ -1,6 +1,6 @@
 # Resuming the L5P acceleration runs off-cloud
 
-Kept current on branch `pss/accel`. Last update: 2026-10-27.
+Kept current on branch `pss/accel`. Last update: 2026-11-04.
 
 ## Rules (leader-gen58, 2026-10-25)
 
@@ -24,12 +24,16 @@ The study is finished: after X1c nothing further is run (author, 2026-10-27). To
 
 ## Setup (Ubuntu 22.04/24.04, about 30 min)
 
-    git clone --branch pss/accel https://github.com/alexyu2024/regen-ltne-foam && cd regen-ltne-foam
+    git clone --branch v1.1.0 https://github.com/alexyu2024/regen-ltne-foam && cd regen-ltne-foam
     sudo tools/install.sh                              # openfoam2512-dev=2512.0-2 and src/Allwmake
+    # the tool and its results from pss/accel (the release has the PR 1 driver without the cycle-mean fix)
+    git fetch origin pss/accel && git checkout FETCH_HEAD -- cases/L5P_periodicState results/L5P docs
     sudo apt-get install -y python3-numpy python3-yaml
     source /usr/lib/openfoam/openfoam2512/etc/bashrc   # in every shell
     cd cases/L5P_periodicState
     L5P_RUN=run_c40 ./runNatural.sh /tmp/c40 40 40     # start state, 40 cycles, about 8 min
+
+Solver: v1.1.0 (checked 2026-11-04 bit for bit against the earlier runs, see `docs/pr/MOVE_OUT.md`).
 
 Build check: in `/tmp/c40/per_cycle.csv`, the cycle-40 `Tjoint_mean` must be within 1e-5 K of 27.865715 K. Every
 number in this study was produced on 2512.0-2; another OpenFOAM version is not bit for bit comparable.
