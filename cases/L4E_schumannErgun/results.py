@@ -7,7 +7,6 @@ from resultslib import Results, last_match
 
 case = os.path.dirname(os.path.abspath(__file__))
 out = sys.argv[1]
-os.makedirs(out, exist_ok=True)
 CP, W, P0, MU = 5193.0, 4.0026, 2e6, 1.99e-5
 R = 8314.462618 / W
 T0, T1, DT = 300.0, 310.0, 10.0
@@ -19,18 +18,6 @@ RHO1 = P0 / (R * T1)
 G = RHO1 * 0.1
 XI_PER_M, ETA_RATE = HA / (G * CP), HA / CS
 PROBES = (0.05025, 0.09975)     # cell centres, in the order of probeLocations
-
-for f in ('log.build', 'log.blockMesh', 'log.ltneFoam'):
-    if os.path.exists(os.path.join(case, f)):
-        shutil.copy(os.path.join(case, f), os.path.join(out, f))
-for src, dst in (('postProcessing/probesTTs/0/T', 'probe_T.dat'),
-                 ('postProcessing/probesTTs/0/Ts', 'probe_Ts.dat'),
-                 ('postProcessing/inletP/0/surfaceFieldValue.dat', 'inletP.dat'),
-                 ('postProcessing/inletFlux/0/surfaceFieldValue.dat', 'inletFlux.dat'),
-                 ('postProcessing/bedRho/0/volFieldValue.dat', 'bedRho.dat')):
-    if os.path.exists(os.path.join(case, src)):
-        shutil.copy(os.path.join(case, src), os.path.join(out, dst))
-
 
 def poisson(a, kmax):
     p = [math.exp(-a)]
@@ -68,56 +55,72 @@ def table(name):
     return rows
 
 
-r = Results(out)
-ln, m = last_match(out, 'log.ltneFoam', r'^Time = (\S+)$')
-r.add('final_time', None if m is None else float(m.group(1)), 'log.ltneFoam', ln)
-bad, src = 0, None
-for f in ('log.blockMesh', 'log.ltneFoam'):
-    if os.path.exists(os.path.join(out, f)):
-        for i, l in enumerate(open(os.path.join(out, f))):
-            if re.search(r'FOAM FATAL|\bnan\b|\binf\b', l, re.I):
-                bad += 1
-                src = src or f'{f}:{i + 1}'
-r.add('fatal_or_nan_count', bad, 'log.ltneFoam', src or 'all lines of log.blockMesh and log.ltneFoam')
+def main():
+    os.makedirs(out, exist_ok=True)
+    for f in ('log.build', 'log.blockMesh', 'log.ltneFoam'):
+        if os.path.exists(os.path.join(case, f)):
+            shutil.copy(os.path.join(case, f), os.path.join(out, f))
+    for src, dst in (('postProcessing/probesTTs/0/T', 'probe_T.dat'),
+                     ('postProcessing/probesTTs/0/Ts', 'probe_Ts.dat'),
+                     ('postProcessing/inletP/0/surfaceFieldValue.dat', 'inletP.dat'),
+                     ('postProcessing/inletFlux/0/surfaceFieldValue.dat', 'inletFlux.dat'),
+                     ('postProcessing/bedRho/0/volFieldValue.dat', 'bedRho.dat')):
+        if os.path.exists(os.path.join(case, src)):
+            shutil.copy(os.path.join(case, src), os.path.join(out, dst))
+    r = Results(out)
+    ln, m = last_match(out, 'log.ltneFoam', r'^Time = (\S+)$')
+    r.add('final_time', None if m is None else float(m.group(1)), 'log.ltneFoam', ln)
+    bad, src = 0, None
+    for f in ('log.blockMesh', 'log.ltneFoam'):
+        if os.path.exists(os.path.join(out, f)):
+            for i, l in enumerate(open(os.path.join(out, f))):
+                if re.search(r'FOAM FATAL|\bnan\b|\binf\b', l, re.I):
+                    bad += 1
+                    src = src or f'{f}:{i + 1}'
+    r.add('fatal_or_nan_count', bad, 'log.ltneFoam', src or 'all lines of log.blockMesh and log.ltneFoam')
 
-# Gas and solid breakthrough curves at the two probes
-for key, fname, col in (('gas_err', 'probe_T.dat', 0), ('solid_err', 'probe_Ts.dat', 1)):
-    rows = table(fname)
-    if not rows:
-        r.add(key, None, fname, None)
-        continue
-    err, where = 0.0, None
-    for lno, v in rows:
-        t = v[0]
-        if col == 0 and t < 2.0:      # gas: skip the first 2 s, as in L4
+    # Gas and solid breakthrough curves at the two probes
+    for key, fname, col in (('gas_err', 'probe_T.dat', 0), ('solid_err', 'probe_Ts.dat', 1)):
+        rows = table(fname)
+        if not rows:
+            r.add(key, None, fname, None)
             continue
-        for x, T in zip(PROBES, v[1:]):
-            e = abs((T - T0) / DT - schumann(XI_PER_M * x, eta_at(x, t))[col])
+        err, where = 0.0, None
+        for lno, v in rows:
+            t = v[0]
+            if col == 0 and t < 2.0:      # gas: skip the first 2 s, as in L4
+                continue
+            for x, T in zip(PROBES, v[1:]):
+                e = abs((T - T0) / DT - schumann(XI_PER_M * x, eta_at(x, t))[col])
+                if e > err:
+                    err, where = e, f'line {lno}, x = {x} m, t = {t:g} s'
+        r.add(key, err, fname, f'{rows[0][0]}-{rows[-1][0]}; max at {where}')
+
+    # Bed pressure drop against Ergun
+    pin, flux, rho = table('inletP.dat'), table('inletFlux.dat'), table('bedRho.dat')
+    if pin and flux and rho:
+        n = min(len(pin), len(flux), len(rho))
+        err, where, last = 0.0, None, None
+        for (lp, vp), (_, vf), (_, vr) in zip(pin[:n], flux[:n], rho[:n]):
+            t = vp[0]
+            if t < 2.0:
+                continue
+            g = abs(vf[1]) / AREA
+            u = g / vr[1]
+            dp_e = (L - 0.5 * DX) * (MU * D_ERGUN * u + F_ERGUN * vr[1] * u * u)
+            e = abs((vp[1] - P0) / dp_e - 1.0)
             if e > err:
-                err, where = e, f'line {lno}, x = {x} m, t = {t:g} s'
-    r.add(key, err, fname, f'{rows[0][0]}-{rows[-1][0]}; max at {where}')
+                err, where = e, f'line {lp}, t = {t:g} s'
+            last = (lp, vp[1] - P0, dp_e, g * DP / MU)
+        r.add('dp_rel_err', err, 'inletP.dat', f'{pin[0][0]}-{pin[n - 1][0]}; max at {where}')
+        r.add('dp_final_Pa', last[1], 'inletP.dat', f'line {last[0]}')
+        r.add('dp_ergun_final_Pa', last[2], 'inletP.dat', f'line {last[0]}; Ergun with bedRho.dat and inletFlux.dat')
+        r.add('Re_p', last[3], 'inletFlux.dat', f'G d_p / mu, line {last[0]}')
+    else:
+        for k in ('dp_rel_err', 'dp_final_Pa', 'dp_ergun_final_Pa', 'Re_p'):
+            r.add(k, None, 'inletP.dat', None)
+    r.write()
 
-# Bed pressure drop against Ergun
-pin, flux, rho = table('inletP.dat'), table('inletFlux.dat'), table('bedRho.dat')
-if pin and flux and rho:
-    n = min(len(pin), len(flux), len(rho))
-    err, where, last = 0.0, None, None
-    for (lp, vp), (_, vf), (_, vr) in zip(pin[:n], flux[:n], rho[:n]):
-        t = vp[0]
-        if t < 2.0:
-            continue
-        g = abs(vf[1]) / AREA
-        u = g / vr[1]
-        dp_e = (L - 0.5 * DX) * (MU * D_ERGUN * u + F_ERGUN * vr[1] * u * u)
-        e = abs((vp[1] - P0) / dp_e - 1.0)
-        if e > err:
-            err, where = e, f'line {lp}, t = {t:g} s'
-        last = (lp, vp[1] - P0, dp_e, g * DP / MU)
-    r.add('dp_rel_err', err, 'inletP.dat', f'{pin[0][0]}-{pin[n - 1][0]}; max at {where}')
-    r.add('dp_final_Pa', last[1], 'inletP.dat', f'line {last[0]}')
-    r.add('dp_ergun_final_Pa', last[2], 'inletP.dat', f'line {last[0]}; Ergun with bedRho.dat and inletFlux.dat')
-    r.add('Re_p', last[3], 'inletFlux.dat', f'G d_p / mu, line {last[0]}')
-else:
-    for k in ('dp_rel_err', 'dp_final_Pa', 'dp_ergun_final_Pa', 'Re_p'):
-        r.add(k, None, 'inletP.dat', None)
-r.write()
+
+if __name__ == '__main__':
+    main()
