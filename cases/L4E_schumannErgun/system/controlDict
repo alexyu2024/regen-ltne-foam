@@ -1,0 +1,79 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  regen-ltne-foam, OpenFOAM v2512
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     ltneFoam;
+startFrom       startTime;
+startTime       0;
+stopAt          endTime;
+endTime         150;
+deltaT          5e-3;
+writeControl    runTime;
+writeInterval   150;
+purgeWrite      0;
+writeFormat     ascii;
+writePrecision  12;
+writeCompression off;
+timeFormat      general;
+timePrecision   8;
+runTimeModifiable false;
+adjustTimeStep  no;
+
+DebugSwitches
+{
+    SolverPerformance   0;
+}
+
+functions
+{
+    probesTTs
+    {
+        type            probes;
+        libs            (sampling);
+        fields          (T Ts);
+        // cell centres: x = 0.05025 m (cell 100, mid-bed) and 0.09975 m (cell 199, last cell)
+        probeLocations  ((0.05025 0.005 0.005) (0.09975 0.005 0.005));
+        writeControl    timeStep;
+        writeInterval   20;
+    }
+    inletP
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        regionType      patch;
+        name            inlet;
+        operation       areaAverage;
+        fields          (p);
+        writeFields     false;
+        writeControl    timeStep;
+        writeInterval   20;
+    }
+    inletFlux
+    {
+        $inletP;
+        operation       sum;
+        fields          (phi);
+    }
+    bedRho
+    {
+        type            volFieldValue;
+        libs            (fieldFunctionObjects);
+        regionType      cellZone;
+        name            porous;
+        operation       volAverage;
+        fields          (rho);
+        writeFields     false;
+        writeControl    timeStep;
+        writeInterval   20;
+    }
+}
+
+// ************************************************************************* //

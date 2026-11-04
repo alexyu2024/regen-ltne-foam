@@ -1,5 +1,12 @@
 # Release notes
 
+## Unreleased
+
+- **L4E: single blow with Ergun drag** (in CI): gas and solid breakthrough curves at mid-bed and bed end against
+  the Schumann solution, and the bed pressure drop against Ergun. 6/6 PASS: max |theta| differences 0.0023 (gas) and
+  0.0024 (solid) against a bar of 0.03; pressure drop within 0.25 % of Ergun against 2 %. Figure:
+  `docs/figures/L4E_breakthrough.png`.
+
 ## v1.1.0 (2026-10-27)
 
 - **Real-gas helium (optional; the ideal gas stays the default).** `src/ltneRealGas`: a T-p table from CoolProp 8.0.0

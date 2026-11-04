@@ -1,0 +1,10 @@
+metric,value,source
+final_time,150.0,results/L4E/log.ltneFoam:433577
+fatal_or_nan_count,0,results/L4E/log.ltneFoam:all lines of log.blockMesh and log.ltneFoam
+gas_err,0.0022647689188936004,"results/L4E/probe_T.dat:4-1503; max at line 818, x = 0.09975 m, t = 81.5 s"
+solid_err,0.0023923357806601153,"results/L4E/probe_Ts.dat:4-1503; max at line 880, x = 0.09975 m, t = 87.7 s"
+dp_rel_err,0.0025049220296875507,"results/L4E/inletP.dat:6-1505; max at line 1505, t = 150 s"
+dp_final_Pa,769.7926819999702,results/L4E/inletP.dat:line 1505
+dp_ergun_final_Pa,771.7257949446051,results/L4E/inletP.dat:line 1505; Ergun with bedRho.dat and inletFlux.dat
+Re_p,7.806564887326633,"results/L4E/inletFlux.dat:G d_p / mu, line 1505"
+allclean_leftover,0,results/L4E/log.allclean-check:empty file
